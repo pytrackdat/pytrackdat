@@ -1,4 +1,4 @@
-# Building an Python-Powered Web Database for a Biological Dataset
+# Building Python-Powered Web Databases for Biological Datasets
 
 
 ## Introduction
@@ -8,7 +8,7 @@ TODO
 
 ## Vocabulary
 
-For illustrative purposes, consider the following tables, which contain data that can be modeled in a database:
+For illustrative purposes, consider the following tables, which contain data that can be modeled and stored in a database:
 
 ### Table 1: Specimens
 <table>
@@ -58,7 +58,7 @@ For illustrative purposes, consider the following tables, which contain data tha
 </table>
 
 ### Relation
-A relation is a collection of similar items, with a (mostly) consistent set of **fields** (see below). Analogous to a **table** or **sheet** in a spreadsheet. For example, in database lingo, the Specimens and Sites tables described above could be called **relations**.
+A relation is a collection of similar items, with a (mostly) consistent set of **fields** (see below). Analogous to a **table** or **sheet** in a spreadsheet. For example, the Specimens and Sites tables described above, when translated into database definitions, will be called **relations**.
 
 ### Field
 A field is some property of an item in the database. Consider the Specimens relation above, which has four fields: specimen number, date collected, species name, and site name.
@@ -78,6 +78,50 @@ Writing Notes:
 * Consistent formats are ideal for reliable importing
 * Know your data! Timezones, possible values, future uses
 * Unknowns
+
+Creating a database becomes much easier when the data that will be stored in the database has a clearly-defined format, with well-understood value ranges for all fields.
+
+TODO
+
+
+### Aside on Inconsistent Data
+
+A major problem in database design and day-to-day usage is **inconsistent data**. In some cases, these inconsistencies can be fixed by a human – for example, formatting inconsistencies can often trivially be fixed with find-and-replace operations in a spreadsheet.
+
+However, this issue can much worse if data gets coerced into incorrect values in a manner that is **indestingishable** from
+
+
+### Step 1: Know Your Data
+
+The most important consideration, when preparing to create a database for a specific dataset, is to know as much as possible about the data as possible. This information is often kept track of in metadata files, and will greatly assist in translating more loosely-structured data into the rigid structures required by a database.
+
+The following are useful and potentially subtle factors that should be known prior to creating a database:
+
+#### Timezones
+
+In many cases, timezones are impled in data files. However, in databases, which explicitly store timezones, this can result in incorrect data. For example, the database may assume all time is passed in as `GMT` (Greenwich Mean Time), whereas it was implied to users of the dataset that it was in EST/EDT. In this case, times will be incorrect by an offset of 4-5 hours depending on time of year. However, it still appears that these are correct dates – they just don't correspond with what dates were *intended* by the datasets' authors.
+
+This is further complicated by Daylight Savings Time – is a given piece of data in EST or EDT? This can be inferred from the date itself, but doing post-hoc operations on a database can be a recipe for disaster.
+
+For these reasons, it is important to clearly define what timezone(s) your data is passed in as, and what it should be stored as.
+
+TODO: STORE IN GMT ALWAYS?
+
+#### Missing, Unknown, and Unknowable Values
+
+TODO
+
+#### Decimal Precision and Floating Points
+
+TODO
+
+
+### Step 2: Define a Consistent Data Format
+
+TODO
+
+
+### Step 3: Clearly Describe Data Format in Database Terms
 
 TODO
 
