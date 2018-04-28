@@ -156,23 +156,54 @@ operations on a database can be a recipe for disaster.
 For these reasons, it is important to clearly define what timezone(s) your data
 is passed in as, and what it should be stored as.
 
-##### Potential Solution 1 – Using GMT Internally and Transforming as Needed
+##### Solution – Using GMT Internally and Transforming as Needed
 
-TODO: STORE IN GMT ALWAYS?
+One common solution to this issue is to store all times in the database in GMT,
+which is a universally-recognized standard timezone.
 
-##### Potential Solution 2 – Naive Date/Time Storage with Documentation
+This still needs to be thoroughly documented for anyone using the dataset.
+In Django's case, the timezones can be **internally** stored as GMT,
+but will be automatically translated into the user's **local** timezone when
+displaying it [1]. This feature must be manually enabled, but is highly
+suggested.
 
-TODO
+While this mechanism is useful, all users should be aware of this internal
+storage mechanism – if the raw database data is viewed, it will be in GMT time.
 
 #### Problem: Missing, Unknown, and Unknowable Values
 
-Writing Notes:
-* Blank cells – what do they mean?
-* Differences between:
-	* Not recorded (i.e. will never be available)
-	* Not available right now
-	* Not applicable – doesn't make sense for the entity
-	* Missing for some other reason...
+Missing data are a part of almost any real-word dataset. It is useful to
+awknowledge this inevitability when designing databases in order to accurately
+represent the missing data – the question that must be asked here is
+*in which way* is the data "missing"?
+
+Consider the following scenarios which could lead to a blank cell or
+"N/A" in a spreadsheet cell, in some way representing missing data:
+
+1. The data was not recorded by accident, and will never be available (since,
+	for example, the ability to take the measurement has been lost).
+	TODO: Concrete Example?
+2. The data was not recorded yet, but can be later filled in. For example, one
+	could go back and take the measurement after the fact. TODO: Concrete ex?
+3. The data was not recorded because it doesn't make sense (i.e. is not
+	applicable) given the other values in the column.
+
+Now, all three of these could be represented as a `NULL` or blank value in a
+database. However, by doing this we may be **losing information** about the
+actual meaning behind a blank field. An "N/A" has different semantic meaning
+than a blank cell in a spreadsheet, but in the case of a restricted field
+in a database, such as an integer or date field, there are no options for values
+except an integer or a `NULL`.
+
+Even if this information is stored in a comment in the spreadsheet or database,
+or if the reason for the missing data is implicitly known, it can be useful
+to differentiate between these types of missing values. This allows us to query
+the database for specific types of missing data, allowing a user to for example
+find all items in a database which fit the situation mentioned in case 2 above,
+in order to make a list of entries which need further measurements to be taken
+to "complete" the entry in the database.
+
+##### Solution: TODO
 
 TODO
 
@@ -387,6 +418,9 @@ TODO: Created files
 
 TODO
 
+Writing Notes:
+* We need to enable timezone awareness...
+
 
 ### Transforming the Database Design into Python Code with Django's Models
 
@@ -405,6 +439,10 @@ TODO
 ## Importing the Dataset Automatically
 
 TODO
+
+Writing Notes:
+* TODO: Figure out django's mechanism for timezone awareness with these
+	commands...
 
 ### Writing an Import Command for Django
 
@@ -430,7 +468,14 @@ TODO
 ## Hosting the Database on a Linux Server
 
 While the database can be ran and accessed locally, as has already been seen,
-a lot of the power of a web database is having any collaborator be able to access it from their own devices using usernames and passwords.
+a lot of the power of a web database is having any collaborator be able to
+access it from their own devices using usernames and passwords.
 
 
 TODO
+
+
+
+## References
+1. Django Framework Documentation: Time zones.
+	https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/
