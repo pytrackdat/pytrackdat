@@ -137,19 +137,40 @@ TODO: STORE IN GMT ALWAYS?
 
 #### Missing, Unknown, and Unknowable Values
 
+Writing Notes:
+* Blank cells – what do they mean?
+* Differences between:
+	* Not recorded (i.e. will never be available)
+	* Not available right now
+	* Not applicable – doesn't make sense for the entity
+	* Missing for some other reason...
+
 TODO
 
 #### Decimal Precision and Floating Points
+
+Writing Notes:
+* Significant figures
+	* Different significant figures????
+* Floating-point errors
+* Approximation...
 
 TODO
 
 
 ### Step 2: Define a Consistent Data Format
 
+* Sane field names
+* Same fields for multiple sheets with the same type of data
+
 TODO
 
 
 ### Step 3: Simplify and Deduplicate Data
+
+* Don't have anything except primary keys in more than one place
+* Exactly one row in a spreadsheet per instance
+* TODO: where to talk about primary keys?
 
 TODO
 
@@ -163,6 +184,9 @@ Writing Notes:
 * Relationships: one-one, one-many, many-many
 	* ADVANCED: Attaching information to relationships
 * Which field types to use?
+* Combine multiple sheets with the same "type" of data
+	* For example, 2017 specimens, 2016 specimens:
+	* Make fields consistent, possibly combine sheets and just add a year field
 
 TODO
 
@@ -170,24 +194,44 @@ TODO
 
 Writing Notes:
 * Primary keys
-* When to split apart relations
-* When to group relations
+* When to split apart relations - difficult boundary
+* When to group relations - see above with 2017/2016 specimens
 
 TODO
 
 #### Primary Keys
 
+Writing Notes:
+* Unique identifier
+* Typically numeric or if alphanumeric, more "code-like" than english
+	* Avoid fully-written sentences etc.
+* Don't include useless info – instead of "Specimen 5", use "5"
+	within the specimen_id field
+
 TODO
 
 #### Fields
+
+Writing Notes:
+* Careful with this vs. vocabulary section – how to distinguish?
+* Talk about data types to use -- see below too -- how to distinguish?
+* Talk about missing values, referring to previous section
 
 TODO
 
 #### Relationships
 
+Writing Notes:
+* One-one, one-many, many-many
+* Relationships versus normal fields - when to have a foreign key vs. a normal
+	attribute?
+
 TODO
 
 ### Common Data Types for Fields
+
+Writing Notes:
+* TODO: Discuss null values further???
 
 #### Integer Fields
 Integer fields can store whole numbers within a certain range, typically
@@ -228,20 +272,46 @@ TODO
 
 ### Further Restricting Possible Field Values
 
+Writing Notes:
+* Need some introduction to django before this>
+* May want to limit ranges - doesn't make sense to have for example -200°C
+	* Can prevent typos and give good sanity checks
+
 TODO
 
 
 ### Balancing Future Expandability and Restrictiveness
 
+Writing Notes:
+* Contrast to above - have to be careful when restricting values, since in the
+	future this may result in re-architecture being needed.
+
 TODO
 
 #### When to Create Secondary Fields
+
+Writing Notes:
+* <1 versus 1233 (fisheries issue) -- introducing more fields
+* Better representing missing values -- status fields
+* ...
 
 TODO
 
 
 
 ## Modeling the Schema in Python with Django
+
+TODO
+
+### Introduction
+
+TODO
+
+### Creating a Django Site
+
+TODO
+
+### Creating a Django App
 
 TODO
 
