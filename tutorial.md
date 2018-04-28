@@ -86,6 +86,15 @@ A **data type** describes what types of values a field can hold. For example,
 an *integer* field can only hold whole numbers (for example `-4324` or
 `10000002`).
 
+### Null Values
+
+A **null** value is a database's way of representing a missing value of an
+item's field. For example, a blank cell or a "N/A" in anotherwise numeric column
+in a spreadsheet could be represented as `NULL` in the database.
+
+These values are not always a good substitute for any missing value; there are
+associated usage issues that can pose problems for data integrity.
+
 
 
 ## Preparing the Dataset
@@ -101,18 +110,22 @@ Creating a database becomes much easier when the data that will be stored in the
 database has a clearly-defined format, with well-understood value ranges for all
 fields.
 
+It is important to understand and account for extreme cases in the database,
+since these outliers are what needs considering most when choosing how to model
+a particular dataset.
+
 TODO
 
 
-### Aside on Inconsistent Data
-
-A major problem in database design and day-to-day usage is
-**inconsistent data**. In some cases, these inconsistencies can be fixed by a
-human – for example, formatting inconsistencies can often trivially be fixed
-with find-and-replace operations in a spreadsheet.
-
-However, this issue can much worse if data gets coerced into incorrect values in
-a manner that is **indestingishable** from
+> ### Aside on Inconsistent Data
+>
+> A major problem in database design and day-to-day usage is
+> **inconsistent data**. In some cases, these inconsistencies can be fixed by a
+> human – for example, formatting inconsistencies can often trivially be fixed
+> with find-and-replace operations in a spreadsheet.
+>
+> However, this issue can much worse if data gets coerced into incorrect values
+> in a manner that is **indestingishable** from TODO
 
 
 ### Step 1: Know Your Data
@@ -126,7 +139,7 @@ required by a database.
 The following are useful and potentially subtle factors that should be
 understood prior to creating a database:
 
-#### Timezones
+#### Problem: Date/Time Storage and Timezones
 
 In many cases, timezones are impled in data files. However, in databases, which
 explicitly store timezones, this can result in incorrect data. For example, the
@@ -143,9 +156,15 @@ operations on a database can be a recipe for disaster.
 For these reasons, it is important to clearly define what timezone(s) your data
 is passed in as, and what it should be stored as.
 
+##### Potential Solution 1 – Using GMT Internally and Transforming as Needed
+
 TODO: STORE IN GMT ALWAYS?
 
-#### Missing, Unknown, and Unknowable Values
+##### Potential Solution 2 – Naive Date/Time Storage with Documentation
+
+TODO
+
+#### Problem: Missing, Unknown, and Unknowable Values
 
 Writing Notes:
 * Blank cells – what do they mean?
@@ -157,7 +176,7 @@ Writing Notes:
 
 TODO
 
-#### Decimal Precision and Floating Points
+#### Problem: Decimal Precision, Significant Figures, and Floating Points
 
 Writing Notes:
 * Significant figures
@@ -167,11 +186,24 @@ Writing Notes:
 
 TODO
 
+##### Possible Solution: TODO
+
+TODO
+
+#### Problem: Units
+
+Writing Notes:
+* Clearly defined units
+* Units in cells versus in headers
+* Multiple units
+	* Cleaning up beforehand vs. programmatically fixing with regex (see below)
+
 
 ### Step 2: Define a Consistent Data Format
 
 * Sane field names
 * Same fields for multiple sheets with the same type of data
+* Define data types, significant figures (from instrumentation), ... ????
 
 TODO
 
@@ -308,6 +340,17 @@ Writing Notes:
 TODO
 
 
+## Introduction to Django
+
+Writing Notes:
+* Explain (loosely) web frameworks
+* Prior knowledge: python?
+* GUI Admin console
+* ...
+
+TODO
+
+
 
 ## Modeling the Schema in Python with Django
 
@@ -369,9 +412,16 @@ TODO
 
 #### Making Values Consistent
 
+Writing Notes:
+* capitalization
+* trimming whitespace
+
 TODO
 
 #### Parsing Values with Regular Expressions
+
+Writing Notes:
+* units
 
 TODO
 
