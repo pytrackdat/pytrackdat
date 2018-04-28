@@ -8,7 +8,8 @@ TODO
 
 ## Vocabulary
 
-For illustrative purposes, consider the following tables, which contain data that can be modeled and stored in a database:
+For illustrative purposes, consider the following tables, which contain data
+that can be modeled and stored in a database:
 
 ### Table 1: Specimens
 <table>
@@ -58,15 +59,22 @@ For illustrative purposes, consider the following tables, which contain data tha
 </table>
 
 ### Relation
-A relation is a collection of similar items, with a (mostly) consistent set of **fields** (see below). Analogous to a **table** or **sheet** in a spreadsheet. For example, the Specimens and Sites tables described above, when translated into database definitions, will be called **relations**.
+A relation is a collection of similar items, with a (mostly) consistent set of
+**fields** (see below). Analogous to a **table** or **sheet** in a spreadsheet.
+For example, the Specimens and Sites tables described above, when translated
+into database definitions, will be called **relations**.
 
 ### Field
-A field is some property of an item in the database. Consider the Specimens relation above, which has four fields: specimen number, date collected, species name, and site name.
+A field is some property of an item in the database. Consider the Specimens
+relation above, which has four fields: specimen number, date collected, species
+name, and site name.
 
 In databases, fields **must** be associated with a specific **data type**.
 
 ### Data Type
-A **data type** describes what types of values a field can hold. For example, an *integer* field can only hold whole numbers (for example `-4324` or `10000002`). The following are common data types used in database definitions:
+A **data type** describes what types of values a field can hold. For example,
+an *integer* field can only hold whole numbers (for example `-4324` or
+`10000002`).
 
 
 
@@ -79,31 +87,51 @@ Writing Notes:
 * Know your data! Timezones, possible values, future uses
 * Unknowns
 
-Creating a database becomes much easier when the data that will be stored in the database has a clearly-defined format, with well-understood value ranges for all fields.
+Creating a database becomes much easier when the data that will be stored in the
+database has a clearly-defined format, with well-understood value ranges for all
+fields.
 
 TODO
 
 
 ### Aside on Inconsistent Data
 
-A major problem in database design and day-to-day usage is **inconsistent data**. In some cases, these inconsistencies can be fixed by a human – for example, formatting inconsistencies can often trivially be fixed with find-and-replace operations in a spreadsheet.
+A major problem in database design and day-to-day usage is
+**inconsistent data**. In some cases, these inconsistencies can be fixed by a
+human – for example, formatting inconsistencies can often trivially be fixed
+with find-and-replace operations in a spreadsheet.
 
-However, this issue can much worse if data gets coerced into incorrect values in a manner that is **indestingishable** from
+However, this issue can much worse if data gets coerced into incorrect values in
+a manner that is **indestingishable** from
 
 
 ### Step 1: Know Your Data
 
-The most important consideration, when preparing to create a database for a specific dataset, is to know as much as possible about the data as possible. This information is often kept track of in metadata files, and will greatly assist in translating more loosely-structured data into the rigid structures required by a database.
+The most important consideration, when preparing to create a database for a
+specific dataset, is to know as much as possible about the data as possible.
+This information is often kept track of in metadata files, and will greatly
+assist in translating more loosely-structured data into the rigid structures
+required by a database.
 
-The following are useful and potentially subtle factors that should be known prior to creating a database:
+The following are useful and potentially subtle factors that should be
+understood prior to creating a database:
 
 #### Timezones
 
-In many cases, timezones are impled in data files. However, in databases, which explicitly store timezones, this can result in incorrect data. For example, the database may assume all time is passed in as `GMT` (Greenwich Mean Time), whereas it was implied to users of the dataset that it was in EST/EDT. In this case, times will be incorrect by an offset of 4-5 hours depending on time of year. However, it still appears that these are correct dates – they just don't correspond with what dates were *intended* by the datasets' authors.
+In many cases, timezones are impled in data files. However, in databases, which
+explicitly store timezones, this can result in incorrect data. For example, the
+database may assume all time is passed in as `GMT` (Greenwich Mean Time),
+whereas it was implied to users of the dataset that it was in EST/EDT. In this
+case, times will be incorrect by an offset of 4-5 hours depending on time of
+year. However, it still appears that these are correct dates – they just don't
+correspond with what dates were *intended* by the datasets' authors.
 
-This is further complicated by Daylight Savings Time – is a given piece of data in EST or EDT? This can be inferred from the date itself, but doing post-hoc operations on a database can be a recipe for disaster.
+This is further complicated by Daylight Savings Time – is a given piece of data
+in EST or EDT? This can be inferred from the date itself, but doing post-hoc
+operations on a database can be a recipe for disaster.
 
-For these reasons, it is important to clearly define what timezone(s) your data is passed in as, and what it should be stored as.
+For these reasons, it is important to clearly define what timezone(s) your data
+is passed in as, and what it should be stored as.
 
 TODO: STORE IN GMT ALWAYS?
 
@@ -121,7 +149,7 @@ TODO
 TODO
 
 
-### Step 3: Clearly Describe Data Format in Database Terms
+### Step 3: Simplify and Deduplicate Data
 
 TODO
 
@@ -147,14 +175,26 @@ Writing Notes:
 
 TODO
 
-### On "Relational" Databases
+#### Primary Keys
+
+TODO
+
+#### Fields
+
+TODO
+
+#### Relationships
 
 TODO
 
 ### Common Data Types for Fields
 
 #### Integer Fields
-Integer fields can store whole numbers within a certain range, typically defined by the specific database software being used. Most databases support integers between `−9 223 372 036 854 775 808` and `9 223 372 036 854 775 807`. These limits may seem arbitrary, but are a result of the underlying representation of this data type (which will not be touched on).
+Integer fields can store whole numbers within a certain range, typically
+defined by the specific database software being used. Most databases support
+integers between `−9 223 372 036 854 775 808` and `9 223 372 036 854 775 807`.
+These limits may seem arbitrary, but are a result of the underlying
+representation of this data type (which will not be touched on).
 
 #### Floating-Point Number Fields
 
@@ -167,9 +207,14 @@ TODO
 TODO
 
 #### Variable Character Fields (So-Called `VARCHAR`s)
-Variable character fields can store a *limited* number of text characters. When defining these fields, a maximum number of characters, `n`, is passed in, which gives an upper bound on the length of the text which can be stored in these types of fields.
+Variable character fields can store a *limited* number of text characters. When
+defining these fields, a maximum number of characters, `n`, is passed in, which
+gives an upper bound on the length of the text which can be stored in these
+types of fields.
 
-For example, a `VARCHAR(10)` field can store the text `Hello` (5 characters) or `Hello Mike` (10 characters), but **cannot** store the text `Hello Allan`, since it is 11 characters.
+For example, a `VARCHAR(10)` field can store the text `Hello` (5 characters) or
+`Hello Mike` (10 characters), but **cannot** store the text `Hello Allan`, since
+it is 11 characters.
 
 #### Text Fields
 
