@@ -203,9 +203,29 @@ find all items in a database which fit the situation mentioned in case 2 above,
 in order to make a list of entries which need further measurements to be taken
 to "complete" the entry in the database.
 
-##### Solution: TODO
+##### Stopgap Solution: A Second Status Field
 
-TODO
+Consider, now, two fields. The first field, when available, contains the actual
+value of the measurement or information. The second field contains the status
+of the measurement, which can illuminate the cause of a `NULL` value in the
+first field. For example, we can have `length` as the first field, and
+`length_status` as the second. This `length_status` field can be restricted
+to the following candidate values:
+
+* `valid`
+* `missing`
+* `unrecorded`
+* `not_applicable`
+
+Now, when the first field is `NULL`, a database user can set the second status
+field to a value which helps keep track of the cause for the missing data.
+
+> This setup has an **important caveat:** It is up to the database users
+> themselves to make sure this value is actually correct. It is possible but
+> very difficult to enforce a constraint on a database which prevents the
+> status field from reading `valid` if the first field is `NULL`, meaning that
+> the burden of correct information is almost entirely on the database
+> maintainer(s) without help from the database schema.
 
 #### Problem: Decimal Precision, Significant Figures, and Floating Points
 
