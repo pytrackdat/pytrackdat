@@ -22,22 +22,28 @@ that can be modeled and stored in a database:
 	<th>Date Collected</th>
 	<th>Species Name</th>
 	<th>Site Name</th>
+	<th>Sex</th>
+	<th>Collectors</th>
 </tr>
 <tr>
 	<td>1</td>
 	<td>2018-04-23</td>
 	<td><em>Pseudacris crucifer</em></td>
 	<td>Round Pond</td>
+	<td>M</td>
+	<td>Mike, Jim</td>
 </tr>
 <tr>
 	<td>2</td>
 	<td>2018-04-26</td>
 	<td><em>Lithobates pipiens</em></td>
 	<td>Shallow Swamp</td>
+	<td>F</td>
+	<td>Jim, Louise</td>
 </tr>
 <tr>
 	<td>...</td>
-	<td></td><td></td><td></td>
+	<td></td><td></td><td></td><td></td><td></td>
 </table>
 
 ### Table 2: Sites
@@ -312,14 +318,26 @@ TODO
 TODO
 
 
-### Creating a Django Site
+### Creating a Django Project
 
 TODO
+
+```bash
+django-admin startproject my_project_db
+```
+
+TODO: Created folder structure explanation
 
 
 ### Creating a Django App
 
 TODO
+
+```bash
+python ./manage.py startapp core
+```
+
+TODO: Created files
 
 
 ### Setting Up the Basics
