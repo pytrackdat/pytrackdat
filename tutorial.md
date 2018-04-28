@@ -5,6 +5,10 @@
 
 TODO
 
+### The Value of Structure
+
+TODO
+
 
 ## Vocabulary
 
@@ -307,29 +311,58 @@ TODO
 
 TODO
 
+
 ### Creating a Django Site
 
 TODO
+
 
 ### Creating a Django App
 
 TODO
 
 
+### Setting Up the Basics
+
+TODO
+
+
+### Transforming the Database Design into Python Code with Django's Models
+
+TODO
+
+### Database Systems, Schemas, and Migrations
+
+TODO
+
+### Running the Site (for Development Purposes)
+
+TODO
+
+
+
 ## Importing the Dataset Automatically
 
 TODO
 
-### Making Values Consistent
+### Writing an Import Command for Django
 
 TODO
 
-### Parsing Values with Regular Expressions
+#### Making Values Consistent
+
+TODO
+
+#### Parsing Values with Regular Expressions
 
 TODO
 
 
 
-## Hosting the Database on a Server
+## Hosting the Database on a Linux Server
+
+While the database can be ran and accessed locally, as has already been seen,
+a lot of the power of a web database is having any collaborator be able to access it from their own devices using usernames and passwords.
+
 
 TODO
