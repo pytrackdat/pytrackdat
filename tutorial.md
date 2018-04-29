@@ -102,6 +102,27 @@ in a spreadsheet could be represented as `NULL` in the database.
 These values are not always a good substitute for any missing value; there are
 associated usage issues that can pose problems for data integrity.
 
+### Primary Key
+A **primary key** is a field of a relation which serves as a **unique
+identifier** for the tuple in question. These are especially useful when
+referencing a different tuple from within a tuple while avoiding needless
+data duplication.
+
+Primary keys can be divided into two categories: natural keys and artificial
+keys.
+
+**Natural keys** are fields which describe some "real-world" property
+of whatever is being described by the tuple.
+
+**Artificial keys** are fields which are explicitly designed as an otherwise
+meaningless number or string of alphanumeric characters that uniquely identify
+the tuple (and often by extension the actual item) in question.
+
+For example, in the two tables described above, the "Specimen Number" field
+of Table 1 could be used as an artificial key and the "Site Name" field of
+Table 2 could be used as a natural key, assuming that no two sites will have
+the same English name.
+
 ### Method *(General Programming)*
 ***Also known as:** Function*
 
@@ -350,6 +371,8 @@ TODO
 > **floating-point error**. It is easy to see how this can lead to subtle issues
 > in the dataset which may misrepresent the values originally input.
 
+TODO: Lead into the below text
+
 This gets significantly more complex if the level of significant figures varies
 measurement-to-measurement. For example, multiple different instruments may be
 used to collect the same type of reading depending on the item.
@@ -413,6 +436,26 @@ Writing Notes:
 	* Make fields consistent, possibly combine sheets and just add a year field
 
 TODO
+
+### General Principles
+
+The following are rules that should typically be followed when designing a
+database in order to ensure maximum data integrity and expandibility.
+
+TODO
+
+#### Avoid Data and Relationship Duplication
+
+TODO
+
+#### Use Consistent Relation and Field Names
+
+TODO
+
+#### TODO: More...
+
+TODO
+
 
 ### Defining Relations
 
