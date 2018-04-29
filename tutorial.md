@@ -10,7 +10,9 @@ TODO
 TODO
 
 
-## Vocabulary
+## Vocabulary and Concepts Used
+
+TODO: Purpose of the section
 
 For illustrative purposes, consider the following tables, which contain data
 that can be modeled and stored in a database:
@@ -164,6 +166,20 @@ class Specimen:
         return self.species_name + "!!!"  # Returns the species with excitement!
 
 ```
+
+TODO
+
+We can create an instance of the `Specimen` as follows:
+
+```python
+a_frog = Specimen(1, "2018-04-23", "Pseudacris crucifer", "Round Pond", "M",
+                  "Mike, Jim")
+```
+
+Notice that the values we pass in to the *instantiation* method of the class
+correspond with two things: the properties we want the instance to have, and
+the parameters of the special method we defined within the `Specimen` class
+called `__init__` (with two underscores on either side).
 
 TODO
 
