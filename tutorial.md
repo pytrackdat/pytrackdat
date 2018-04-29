@@ -189,6 +189,15 @@ a capital letter, like this: `ExampleClassName`.
 
 TODO
 
+TODO: Slot this in somewhere and describe what's going on
+```python
+# Print the collectors property of the a_frog object:
+print(a_frog.collectors)
+
+# Call the member method we defined and print the returned result:
+print(a_frog.get_species_with_excitement())
+```
+
 
 
 ## Preparing the Dataset
@@ -326,7 +335,20 @@ field to a value which helps keep track of the cause for the missing data.
 TODO
 
 > ##### The Issue with Floating Points
-> TODO
+> Floating point numbers are a method used by most programming languages to
+> represent fractional numbers, e.g. `0.2` or `-432.542668`. However, due to
+> the internal representation of these numbers, they aren't always entirely
+> precise in reflecting the "correct" value of their assigned number.
+> For example, consider the expression `4 - 3.2`. This obviously evaluates to
+> `0.8`. However, when the expression is evaluated using Python, the results
+> are suprising:
+> ```python
+> print(4 - 3.2)
+> 0.7999999999999998  # Result of the above print
+> ```
+> This is obviously not correct! This is an example of a
+> **floating-point error**. It is easy to see how this can lead to subtle issues
+> in the dataset which may misrepresent the values originally input.
 
 This gets significantly more complex if the level of significant figures varies
 measurement-to-measurement. For example, multiple different instruments may be
@@ -342,7 +364,11 @@ Writing Notes:
 
 TODO
 
-##### Possible Solution: TODO
+##### Solution to Floating Point Issues: Fixed-Precision Decimals
+
+TODO
+
+##### Possible Solution to Different Significant Figures: An Additional Field
 
 TODO
 
@@ -536,6 +562,16 @@ TODO
 TODO
 
 
+### Installing Django
+
+TODO
+
+
+### Using the Terminal to Navigate the Computer
+
+TODO
+
+
 ### Creating a Django Project
 
 TODO
@@ -558,7 +594,7 @@ python ./manage.py startapp core
 TODO: Created files
 
 
-### Setting Up the Basics
+### Basic Setup
 
 TODO
 
