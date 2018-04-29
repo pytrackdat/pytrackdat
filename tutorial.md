@@ -20,7 +20,7 @@ that can be modeled and stored in a database:
 ### Table 1: Specimens
 <table>
 <tr>
-	<th>Specimen Number</th>
+	<th><span style="text-decoration: underline;">Specimen Number</span></th>
 	<th>Date Collected</th>
 	<th>Species Name</th>
 	<th>Site Name</th>
@@ -51,7 +51,7 @@ that can be modeled and stored in a database:
 ### Table 2: Sites
 <table>
 <tr>
-	<th>Site Name</th>
+	<th><span style="text-decoration: underline;">Site Name</span></th>
 	<th>Longitude</th>
 	<th>Latitude</th>
 	<th>Comments</th>
