@@ -133,7 +133,43 @@ print(sum_of_two(5, 6))  # Prints "11" to the screen
 The part of the line here preceded by a `#` is a **comment**, which can be
 used to clarify and otherwise explain code for future readers.
 
+By convention in Python, methods' names are in all lowercase letters, with words
+separated by underscores.
+
 ### Class *(General Programming)*
+
+In programming, a class describes a *type* of data. It provides an abstract
+template of sorts for modeling objects that share common properties.
+
+Objects that use this template are called **instances** of the class.
+
+Classes can themselves have **member methods**, which are methods that can
+be called on instances of the class.
+
+Consider the following class, written again in the Python language, which models
+the data described in Table 1 above:
+
+```python
+class Specimen:
+    def __init__(self, specimen_no, date_collected, species_name, site_name,
+                 sex, collectors):
+        self.specimen_no = specimen_no
+    	self.date_collected = date_collected
+    	self.species_name = species_name
+    	self.site_name = site_name
+    	self.sex = sex
+    	self.collectors = collectors
+
+    def get_species_with_excitement(self):
+        return self.species_name + "!!!"  # Returns the species with excitement!
+
+```
+
+TODO
+
+By convention, class names in Python start with a capital letter. Multiple-word
+class names are written without any separators by starting the next word with
+a capital letter, like this: `ExampleClassName`.
 
 TODO
 
