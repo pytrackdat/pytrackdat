@@ -468,6 +468,33 @@ TODO
 
 #### Primary Keys
 
+Primary keys have been defined in the above Vocabulary and Concepts section.
+They uniquely identify a tuple within the relation; and by extension are often
+used to identify the physical entity (if there is one) being modeled in the
+relation.
+
+Each relation defined should have **exactly one** primary key. They can be
+either artificial or natural keys. It should be noted which field is the
+primary key, and whether or not it is a natural key.
+
+When designing an artifical key, a simple integer field which auto-increments
+(database software will do this automatically with the correct setup) is the
+most popular choice. A downside to this, apart from the inherent downside of
+having an artifical key, is a tendency for human readers to assign more
+meaning to the key than it should contain. Despite typically being a seqential,
+increasing number, a numerical key of `42` **does not** necessarily represent
+the 42<sup>nd</sup> entry in the database chronologically. The order can be
+altered by deleting records, and in fact relations should not be considered as
+having any inherent order at all by default.
+
+> ##### Aside: Ordering Tuples in a Relation
+> If chronological ordering of tuples is desired, TODO.
+
+If not using this auto-incrementing integer method, there are some
+guidelines that should usually be followed when designing artifical keys:
+
+TODO
+
 Writing Notes:
 * Unique identifier
 * Typically numeric or if alphanumeric, more "code-like" than english
