@@ -69,12 +69,16 @@ that can be modeled and stored in a database:
 </table>
 
 ### Relation
+***Also known as:** Entity set, table*
+
 A relation is a collection of similar items, with a (mostly) consistent set of
 **fields** (see below). Analogous to a **table** or **sheet** in a spreadsheet.
 For example, the Specimens and Sites tables described above, when translated
 into database definitions, will be called **relations**.
 
 ### Field
+***Also known as:** Attribute, property*
+
 A field is some property of an item in the database. Consider the Specimens
 relation above, which has four fields: specimen number, date collected, species
 name, and site name.
@@ -82,18 +86,56 @@ name, and site name.
 In databases, fields **must** be associated with a specific **data type**.
 
 ### Data Type
+***Also known as:** Type*
+
 A **data type** describes what types of values a field can hold. For example,
 an *integer* field can only hold whole numbers (for example `-4324` or
 `10000002`).
 
-### Null Values
-
+### Null Value
 A **null** value is a database's way of representing a missing value of an
 item's field. For example, a blank cell or a "N/A" in anotherwise numeric column
 in a spreadsheet could be represented as `NULL` in the database.
 
 These values are not always a good substitute for any missing value; there are
 associated usage issues that can pose problems for data integrity.
+
+### Method *(General Programming)*
+***Also known as:** Function*
+
+In programming, a method is a self-contained piece of code which takes in
+input parameters and returns a value calculated with these parameters and,
+optionally, other external data.
+
+The purpose of a method is to reduce code duplication and combine similar bits
+of logic used in multiple places in the program by containing it to one named
+and isolated piece of code.
+
+For example, the following is a definition of a method that calculates the sum
+of two numbers in the Python programming language:
+
+```python
+def sum_of_two(first, second):
+    return first + second
+```
+
+The `return` statement here tells the program what value the method will give
+back to any code which **calls** the method, i.e. uses the resulting value
+in other calculations.
+
+This method could then be used to print out the sum of `5` and `6` to the screen
+with another piece of code:
+
+```python
+print(sum_of_two(5, 6))  # Prints "11" to the screen
+```
+
+The part of the line here preceded by a `#` is a **comment**, which can be
+used to clarify and otherwise explain code for future readers.
+
+### Class *(General Programming)*
+
+TODO
 
 
 
@@ -403,6 +445,25 @@ TODO
 
 
 ## Introduction to Django
+
+Django is a general-purpose web framework for the Python programming language
+that makes it easy to create what are called Create-Read-Update-Delete (CRUD)
+applications powered by a database.
+
+When the term "web framework" is used, it in this case means a set of
+pre-created methods and classes (if you do not know these terms, see the
+Vocabulary section above) for creating a web server which powers a
+database-driven "web application", or complex interactive website.
+
+One of its main advantages as a framework for creating database-driven
+applications is its built-in administration console, which can automatically
+generate a website which acts as a Graphical User Interface (GUI) for managing
+data stored in the application.
+
+TODO: Picture of Django Admin Console
+
+For this section, it is useful to have some prior knowledge of the basics of
+Python and the command line.
 
 Writing Notes:
 * Explain (loosely) web frameworks
