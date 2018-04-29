@@ -229,6 +229,17 @@ field to a value which helps keep track of the cause for the missing data.
 
 #### Problem: Decimal Precision, Significant Figures, and Floating Points
 
+TODO
+
+> ##### The Issue with Floating Points
+> TODO
+
+This gets significantly more complex if the level of significant figures varies
+measurement-to-measurement. For example, multiple different instruments may be
+used to collect the same type of reading depending on the item.
+
+In this case, TODO.
+
 Writing Notes:
 * Significant figures
 	* Different significant figures????
