@@ -123,6 +123,11 @@ of Table 1 could be used as an artificial key and the "Site Name" field of
 Table 2 could be used as a natural key, assuming that no two sites will have
 the same English name.
 
+### Tuple
+**Also known as:** Row, entity
+
+TODO
+
 ### Method *(General Programming)*
 ***Also known as:** Function*
 
@@ -188,7 +193,15 @@ class Specimen:
 
 ```
 
-TODO
+> #### Class Naming Conventions
+> By convention, class names in Python start with a capital letter.
+> Multiple-word class names are written without any separators by starting the
+> next word with a capital letter, like this: `ExampleClassName`.
+
+Within the class, there are two member methods defined. The first one, defined
+with the name `__init__`, is a special method called a **constructor**. Passed
+into it is any data that the new instance should have as properties, or values
+that are used to set the properties of the instance in some other way.
 
 We can create an instance of the `Specimen` as follows:
 
@@ -197,16 +210,26 @@ a_frog = Specimen(1, "2018-04-23", "Pseudacris crucifer", "Round Pond", "M",
                   "Mike, Jim")
 ```
 
+> #### Don't Worry!
+> When making the database with Django, this type of code will mostly be
+> automatically handled by Django, including the definition of any
+> constructors. Except for the fundamental concepts of a class and an
+> instantiation of a class, everything here is just to supplement
+> understanding of how Django is handling the data and how it relates to the
+> concepts of relations and tuples described above.
+>
+> For more advanced Django usage and customization of the database, these
+> concepts can be applied more directly.
+
 Notice that the values we pass in to the *instantiation* method of the class
-correspond with two things: the properties we want the instance to have, and
-the parameters of the special method we defined within the `Specimen` class
-called `__init__` (with two underscores on either side).
+correspond with the parameters of the constructor method. The `__init__` method
+is not called directly by name; instead, the name of the class is used.
 
-TODO
-
-By convention, class names in Python start with a capital letter. Multiple-word
-class names are written without any separators by starting the next word with
-a capital letter, like this: `ExampleClassName`.
+Inside the constructor method, there are various lines setting the values of
+variables preceded by `self.`. The `self` variable (passed automatically into
+any member method as the first parameter of the method) is how the instance
+can refer to **itself**. This allows it to set variables within *itself* to
+the values of the parameters passed into the constructor method.
 
 TODO
 
