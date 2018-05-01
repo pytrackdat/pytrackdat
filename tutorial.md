@@ -488,7 +488,11 @@ altered by deleting records, and in fact relations should not be considered as
 having any inherent order at all by default.
 
 > ##### Aside: Ordering Tuples in a Relation
-> If chronological ordering of tuples is desired, TODO.
+> If chronological ordering of tuples is desired, an additional field can be
+> added. Typically, this would take the form of a date field called something
+> like `date_created`, which would be set exactly once when the object is
+> created. Then, the tuples can be sorted by their creation date to give a
+> chronological order.
 
 If not using this auto-incrementing integer method, there are some
 guidelines that should usually be followed when designing artifical keys:
