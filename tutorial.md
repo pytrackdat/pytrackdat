@@ -242,6 +242,7 @@ print(a_frog.collectors)
 We can also call the other method we defined on the object, which calculates
 its value based on properties of the instance accessed within the method itself:
 
+```python
 # Call the member method we defined and print the returned result:
 print(a_frog.get_species_with_excitement())
 ```
@@ -382,7 +383,27 @@ field to a value which helps keep track of the cause for the missing data.
 
 #### Problem: Decimal Precision, Significant Figures, and Floating Points
 
-TODO
+In a scientific setting, it is often important to keep track of significant
+figures, and have decimals be represented accurately and with little data
+loss. While these standards are relatively easily met with a normal spreadsheet,
+there can be suprisingly subtle issues representing decimals with standard
+data types provided by the database software, and indeed in most programming
+languages in general.
+
+The Django framework provides both floating-point and fixed-precision decimal
+data types for fields. These both have disadvantages; the fixed-precision
+decimal data type provided requires the database designer to specify the
+**exact** precision (length) of the parts of the number both before and after
+the decimal, so the field can only represent a fixed significance with a
+relatively low maximum value.
+
+Floating points have the advantage of being able to represent a *huge* range
+of numbers, but do not have a concept of precision in the same way. For example,
+if the value ends in `.00`, it will get truncated to a whole number.
+
+Floating points also have more subtle accuracy issues, resulting in slighty
+odd representations of seemingly simple numbers. These issues are difficult
+to control and more nuanced.
 
 > ##### The Issue with Floating Points
 > Floating point numbers are a method used by most programming languages to
