@@ -231,16 +231,22 @@ any member method as the first parameter of the method) is how the instance
 can refer to **itself**. This allows it to set variables within *itself* to
 the values of the parameters passed into the constructor method.
 
-TODO
+We can access the values of the parameters set in the `a_frog` instance defined
+above as follows, in this case with the `collectors` variable in the instance:
 
-TODO: Slot this in somewhere and describe what's going on
 ```python
 # Print the collectors property of the a_frog object:
 print(a_frog.collectors)
+```
+
+We can also call the other method we defined on the object, which calculates
+its value based on properties of the instance accessed within the method itself:
 
 # Call the member method we defined and print the returned result:
 print(a_frog.get_species_with_excitement())
 ```
+
+TODO: finishing notes?
 
 
 
