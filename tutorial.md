@@ -421,28 +421,18 @@ to control and more nuanced.
 > **floating-point error**. It is easy to see how this can lead to subtle issues
 > in the dataset which may misrepresent the values originally input.
 
-TODO: Lead into the below text
+However, if it is not particularely important to store the *exact* value of
+a measurement, floating points offer a good, widely supported and compact
+representation for a wide range of numbers. If a fixed level of precision makes
+sense for the field, decimal fields offer better accuracy with the trade-off
+of having to make a decision on precision level beforehand.
 
-This gets significantly more complex if the level of significant figures varies
-measurement-to-measurement. For example, multiple different instruments may be
-used to collect the same type of reading depending on the item.
+Precise decimal fields get significantly more complex to manage if the level of
+significant figures varies measurement-to-measurement. For example, multiple
+different instruments may be used to collect the same type of reading depending
+on the item. One may read to one deciman point, and another to two.
 
-In this case, TODO.
-
-Writing Notes:
-* Significant figures
-	* Different significant figures????
-* Floating-point errors
-* Approximation...
-
-TODO
-
-##### Solution to Floating Point Issues: Fixed-Precision Decimals
-
-TODO
-
-##### Possible Solution to Different Significant Figures: An Additional Field
-
+##### Potential Solution to Multiple Precision Levels: A Second Field
 TODO
 
 #### Problem: Units
