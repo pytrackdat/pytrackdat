@@ -433,7 +433,16 @@ different instruments may be used to collect the same type of reading depending
 on the item. One may read to one deciman point, and another to two.
 
 ##### Potential Solution to Multiple Precision Levels: A Second Field
-TODO
+
+If significant figures are important to a field, a second field can be
+introduced which stores auxiliary metadata about the actual value in question.
+This field can store either the instrument type or the *actual* decimal
+precision of the value in the primary field. In the first case, additional
+information should be recorded elsewhere about what precision the instruments
+in question can achieve. In both cases, the decimal data type of the primary
+field should be able to store the maximum precision achievable for that
+particular measurement.
+
 
 #### Problem: Units
 
