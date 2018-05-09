@@ -446,6 +446,27 @@ particular measurement.
 
 #### Problem: Units
 
+Databases have no way of specifying a "unit" for a particular field. It is up
+to the researcher to make sure units are kept track of for given measurements,
+and that all units in the data files prior to database import are in consistent
+units.
+
+##### "Solution": Consistent Units in Data Prior to Import, with Documentation
+
+Before importing data, as mentioned above, make sure all data are in standard
+units. The bare minimum for this is within columns, but it is also helpful
+to keep measurements in consistent units (or at least systems) across columns.
+
+This can either be documented on a per-field basis in a separate metadata file
+or by naming the columns in a way which incorporates unit suffixes, for example
+instead of calling a field `length` calling it `length_mm`. This has the benifit
+of storing unit information without keeping track of any separate files, but
+the downside of a more verbose and less readable field name.
+
+##### Programmatically Cleaning Up Units
+
+TODO
+
 Writing Notes:
 * Clearly defined units
 * Units in cells versus in headers
