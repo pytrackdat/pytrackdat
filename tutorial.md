@@ -465,13 +465,15 @@ the downside of a more verbose and less readable field name.
 
 ##### Programmatically Cleaning Up Units
 
-TODO
+If a dataset is particularly large, it may be difficult to fix unit
+consistency issues by hand. It is possible to programmatically detect and
+interconvert units during the data import process, assuming prefixes are
+consistent within the dataset and, if units are left off, there is a consistent
+default unit to defer to or simple rules to follow to decide what unit
+the measurement has.
 
-Writing Notes:
-* Clearly defined units
-* Units in cells versus in headers
-* Multiple units
-	* Cleaning up beforehand vs. programmatically fixing with regex (see below)
+The process of doing this interconversion is covered below in the
+"Importing the Dataset Automatically" section.
 
 
 ### Step 2: Define a Consistent Data Format
