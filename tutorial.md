@@ -255,10 +255,13 @@ TODO: finishing notes?
 
 Writing Notes:
 * Easier if the metadata is clearly defined
+	* including relations between sheets/tables
 * Avoiding data transformations is good to avoid hidden data corruption
+	* it's difficult to think of all edge cases (examples? / logic errors)
 * Consistent formats are ideal for reliable importing
 * Know your data! Timezones, possible values, future uses
 * Unknowns
+	* different types of unknowns (this has already been mentioned?)
 
 Creating a database becomes much easier when the data that will be stored in the
 database has a clearly-defined format, with well-understood value ranges for all
@@ -479,7 +482,9 @@ The process of doing this interconversion is covered below in the
 ### Step 2: Define a Consistent Data Format
 
 * Sane field names
+	* lowercase, underscore separated, describe the data, no redundant info
 * Same fields for multiple sheets with the same type of data
+	* i.e. use consistent field names across
 * Define data types, significant figures (from instrumentation), ... ????
 
 TODO
@@ -488,6 +493,7 @@ TODO
 ### Step 3: Simplify and Deduplicate Data
 
 * Don't have anything except primary keys in more than one place
+	* Only use primary keys for referencing rows from other tables
 * Exactly one row in a spreadsheet per instance
 * TODO: where to talk about primary keys?
 
@@ -499,6 +505,8 @@ TODO
 
 Writing Notes:
 * Avoid data duplication at all times!
+	* if one field can be calculated from others (!!! not talked about yet),
+	  can use Django / programming / display to automatically calculate
 * Use additional relations
 * Relationships: one-one, one-many, many-many
 	* ADVANCED: Attaching information to relationships
@@ -753,6 +761,14 @@ Writing Notes:
 TODO
 
 ### Database Systems, Schemas, and Migrations
+
+TODO
+
+#### Calculating Values On-The-Fly
+
+Notes:
+* can calculate things from other fields (ex. percentages) without needing to
+	manually input them (prone to errors!)
 
 TODO
 
