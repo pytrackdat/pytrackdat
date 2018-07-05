@@ -5,6 +5,13 @@
 
 TODO
 
+Notes:
+* large projects have datasets that will be edited by multiple people, data
+	collected by multiple people
+	* can lead to inconsistencies in nomenclature, measurement systems,
+		and representations of the data
+* databases are often used in (INSERT COMMON DATABASE SYSTEM TYPES HERE) to ...
+
 ### The Value of Structure
 
 TODO
