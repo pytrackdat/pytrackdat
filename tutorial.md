@@ -3,13 +3,26 @@
 
 ## Introduction
 
-TODO
+When building a dataset, a common early step is to design and populate a
+spreadsheet. This lets a researcher organize data entries based on their
+common measurements, keep data consistent, and perform analysis on the data.
+
+Spreadsheets, however, have downsides when datasets become large, collaborative
+projects as is often the case in modern projects. Editors may have different
+ideas about what aspects of a spreadsheet mean if column definitions are not
+clearly defined; multiple versions can lead to **multiple sources of "truth"**
+and conflicting data (meaning it is not clean where the canonical master
+dataset actually resides, if there is one at all). Other, more insidious issues
+may also appear, such as inconsistencies in measurement systems and
+nomenclature.
+
+Databases provide a solution to this problem by providing a highly structured,
+multi-user system for organizing, searching, and filtering data. They do this
+by requiring the database architect to construct a **schema**; a clear
+definition of data tables and relations that fully encapsulate the possible
+values and relationships of the dataset.
 
 Notes:
-* large projects have datasets that will be edited by multiple people, data
-	collected by multiple people
-	* can lead to inconsistencies in nomenclature, measurement systems,
-		and representations of the data
 * databases are often used in (INSERT COMMON DATABASE SYSTEM TYPES HERE) to ...
 
 ### The Value of Structure
