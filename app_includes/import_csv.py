@@ -30,4 +30,4 @@ class ImportCSVMixin:
         urls = super().get_urls()
         mixin_urls = [path("import-csv/", self.import_csv)]
 
-        return urls + mixin_urls
+        return mixin_urls + urls
