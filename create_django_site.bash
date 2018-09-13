@@ -11,6 +11,7 @@ pip install -r ../util_files/requirements_setup.txt
 django-admin startproject $1
 cp ../util_files/requirements.txt $1/
 cd $1
-python ./manage.py startapp core
+chmod +x ./manage.py
+./manage.py startapp core
 cp -r ../../app_includes/* ./core/
 deactivate
