@@ -12,7 +12,7 @@ class ImportCSVForm(forms.Form):
 class ImportCSVMixin:
     def import_csv(self, request):
         if request.method == "POST":
-            form = ImportCSVForm(request.POST)
+            form = ImportCSVForm(request.POST, request.FILES)
             if form.is_valid():
                 csv_file = form.cleaned_data["csv_file"]
                 reader = csv.reader(csv_file)
