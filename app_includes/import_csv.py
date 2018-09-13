@@ -4,6 +4,8 @@ from django import forms
 from django.shortcuts import redirect, render
 from django.urls import path
 
+from io import TextIOWrapper
+
 
 class ImportCSVForm(forms.Form):
     csv_file = forms.FileField()
@@ -14,9 +16,15 @@ class ImportCSVMixin:
         if request.method == "POST":
             form = ImportCSVForm(request.POST, request.FILES)
             if form.is_valid():
-                csv_file = form.cleaned_data["csv_file"]
-                reader = csv.reader(csv_file)
+                encoding = form.cleaned_data["csv_file"].charset if form.cleaned_data["csv_file"].charset else "utf-8"
+                csv_file = TextIOWrapper(request.FILES["csv_file"], encoding=encoding)
+                reader = csv.DictReader(csv_file)
+                headers = [h for h in reader.fieldnames if h != ""]
+                print(self.model.ptd_info())
                 # TODO
+            else:
+                # TODO: Handle Errors
+                print(form.errors)
 
             return redirect("..")
 
