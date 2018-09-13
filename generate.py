@@ -49,6 +49,10 @@ INSTALLED_APPS_NEW = """INSTALLED_APPS = [
 ]"""
 
 
+def print_usage():
+    print("Usage: ./generate.py design.csv output_site_name")
+
+
 def auto_key_formatter(f):
     return "models.AutoField(primary_key=True, help_text='{}')".format(f["description"].replace("'", "\\'"))
 
@@ -156,9 +160,6 @@ def to_relation_name(name):
 
 
 def main(args):
-    if len(args) != 2:
-        print("Usage: ./generate.py design.csv output_site_name")
-
     design_file = args[0]  # File name for design file input
     django_site_name = args[1]
 
@@ -262,4 +263,8 @@ def main(args):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print_usage()
+        exit(1)
+
     main(sys.argv[1:])
