@@ -128,7 +128,7 @@ def main(args):
                     # TODO: Find number of digits!!!
                     detected_type = "decimal"
                     nullable = (len(other_values) == 1)
-                    max_length = max_seen_length + 4
+                    max_length = max_seen_length + max_seen_decimals + 4
 
                 # Floats: TODO: more
 
