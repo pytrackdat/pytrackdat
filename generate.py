@@ -89,6 +89,16 @@ def integer_formatter(f):
     )
 
 
+def decimal_formatter(f):
+    return "models.DecimalField(help_text='{}', max_digits={}, decimal_places={}, null={}{})".format(
+        f["description"].replace("'", "\\'"),
+        f["additional_fields"][0],
+        f["additional_fields"][1],
+        str(f["nullable"]),
+        "" if f["default"] is None else ", default=Decimal({})".format(f["default"])
+    )
+
+
 def boolean_formatter(f):
     return "models.BooleanField(help_text='{}', null={}{})".format(
         f["description"].replace("'", "\\'"),
@@ -137,6 +147,7 @@ DJANGO_TYPE_FORMATTERS = {
     "manual key": manual_key_formatter,
     "foreign key": foreign_key_formatter,
     "integer": integer_formatter,
+    "decimal": decimal_formatter,
     "boolean": boolean_formatter,
     "text": text_formatter,
     "date": date_formatter,
