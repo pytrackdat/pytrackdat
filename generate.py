@@ -233,7 +233,7 @@ def main(args):
 
                     mf.write("\n\nclass {}(models.Model):\n".format(python_relation_name))
                     mf.write("    @classmethod\n")
-                    mf.write("    def ptd_info(cls):")
+                    mf.write("    def ptd_info(cls):\n")
                     mf.write("        return json.loads(\"\"\"{}\"\"\")\n\n".format(json.dumps(relation_fields)))
 
                     af.write("\n\n@admin.register({})\n".format(python_relation_name))
