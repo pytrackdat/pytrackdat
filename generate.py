@@ -109,7 +109,7 @@ def text_formatter(f):
 
     if len(f["additional_fields"]) == 2:
         # TODO: Choice human names
-        choice_names = [c.strip() for c in f["additional_fields"][0].split(";")]
+        choice_names = [c.strip() for c in f["additional_fields"][1].split(";")]
         choices = tuple(zip(choice_names, choice_names))
 
     return "models.{}(help_text='{}'{}{}{})".format(
