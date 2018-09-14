@@ -62,6 +62,11 @@ INSTALLED_APPS_NEW = """INSTALLED_APPS = [
     'advanced_filters',
 ]"""
 
+BASIC_NUMBER_TYPES = {
+    "integer": "IntegerField",
+    "float": "FloatField",
+}
+
 
 def print_usage():
     print("Usage: ./generate.py design.csv output_site_name")
@@ -81,8 +86,10 @@ def foreign_key_formatter(f):
     return "models.ForeignKey('{}', on_delete=models.CASCADE)".format(to_relation_name(f["additional_fields"]))
 
 
-def integer_formatter(f):
-    return "models.IntegerField(help_text='{}', null={}{})".format(
+def basic_number_formatter(f):
+    t = BASIC_NUMBER_TYPES[f["data_type"]]
+    return "models.{}(help_text='{}', null={}{})".format(
+        t,
         f["description"].replace("'", "\\'"),
         str(f["nullable"]),
         "" if f["default"] is None else ", default={}".format(f["default"])
@@ -146,8 +153,9 @@ DJANGO_TYPE_FORMATTERS = {
     "auto key": auto_key_formatter,
     "manual key": manual_key_formatter,
     "foreign key": foreign_key_formatter,
-    "integer": integer_formatter,
+    "integer": basic_number_formatter,
     "decimal": decimal_formatter,
+    "float": basic_number_formatter,
     "boolean": boolean_formatter,
     "text": text_formatter,
     "date": date_formatter,
