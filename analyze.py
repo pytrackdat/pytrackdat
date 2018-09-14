@@ -74,6 +74,7 @@ def main(args):
                 other_values_seen = 0
                 choices = []
                 max_seen_length = -1
+                max_seen_decimals = -1
                 max_length = -1
                 include_alternate = False
 
@@ -83,6 +84,8 @@ def main(args):
                         integer_values += 1
                     elif re.match(r"^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$", str_v):
                         decimal_values += 1
+                        max_seen_decimals = max(max_seen_decimals, (len(str_v.split(".")[-1].split("e")[0])
+                                                                    if "." in str_v else -1))
                         if "e" in str_v:
                             float_values += 1
                     else:
@@ -125,6 +128,7 @@ def main(args):
                     # TODO: Find number of digits!!!
                     detected_type = "decimal"
                     nullable = (len(other_values) == 1)
+                    max_length = max_seen_length + 4
 
                 # Floats: TODO: more
 
@@ -182,6 +186,7 @@ def main(args):
                     "; ".join(null_values),  # What value(s) will become null in the database
                     "",  # The default value for the field (optional, null/blank if left empty)
                     "!fill me in!",  # Field description
+                    *[m for m in [max(max_length, 2), max(max_seen_decimals, 1)] if detected_type == "decimal"],
                     *[m for m in [max_length] if detected_type == "text" and max_length > 0],  # IF TEXT/ENUM: max l.
                     *["; ".join([c for c in choices
                                  if len(choices) > 0 and detected_type != "boolean"])],  # IF ENUM: Choices
