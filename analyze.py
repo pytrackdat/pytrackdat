@@ -52,7 +52,7 @@ def main(args):
             if len(fields) == 0:
                 continue
 
-            design_writer.writerow([rn, "new field name", "data type", "nullable?", "null values", "default", "alt",
+            design_writer.writerow([rn, "new field name", "data type", "nullable?", "null values", "default",
                                     "description", "additional fields..."])
 
             key_found = False
@@ -181,7 +181,6 @@ def main(args):
                     str(nullable).lower(),  # Whether the field is nullable
                     "; ".join(null_values),  # What value(s) will become null in the database
                     "",  # The default value for the field (optional, null/blank if left empty)
-                    "false",
                     "!fill me in!",  # Field description
                     *[m for m in [max_length] if detected_type == "text" and max_length > 0],  # IF TEXT/ENUM: max l.
                     *["; ".join([c for c in choices
@@ -196,9 +195,7 @@ def main(args):
                         "false",  # Alt. fields cannot be null
                         "",
                         "",
-                        "true",
-                        "!fill me in!",
-                        new_name  # Alternate of
+                        "!fill me in!"
                     ])
 
                 print("Detected type for field '{}': '{}' (nullable: {}{}{})".format(

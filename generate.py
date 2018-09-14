@@ -221,11 +221,10 @@ def main(args):
                             "data_type": data_type,
                             "nullable": nullable,
                             "null_values": null_values,
-                            "alt": current_field[6] == "true",
                             "default": get_default_from_csv_with_type(current_field[5], data_type, nullable,
                                                                       null_values),
-                            "description": current_field[7].strip(),
-                            "additional_fields": current_field[8:]
+                            "description": current_field[6].strip(),
+                            "additional_fields": current_field[7:]
                         }
 
                         relation_fields.append(current_field_data)
