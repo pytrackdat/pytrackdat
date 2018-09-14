@@ -10,6 +10,20 @@ from common import *
 
 TEMP_DIRECTORY = "tmp"
 
+ADMIN_FILE_HEADER = """
+from django.contrib import admin
+from core.models import *
+from .export_csv import ExportCSVMixin
+from .import_csv import ImportCSVMixin
+
+"""
+
+MODELS_FILE_HEADER = """
+import json
+from django.db import models
+
+"""
+
 URL_OLD = """urlpatterns = [
     path('admin/', admin.site.urls),
 ]"""
@@ -171,12 +185,8 @@ def main(args):
     with open(design_file, "r") as df, \
             open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "models.py"), "w") as mf, \
             open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "admin.py"), "w") as af:
-        mf.write("from django.db import models\n")
-
-        af.write("from django.contrib import admin\n")
-        af.write("from core.models import *\n")
-        af.write("from .export_csv import ExportCSVMixin\n")
-        af.write("from .import_csv import ImportCSVMixin\n")
+        af.write(ADMIN_FILE_HEADER)
+        mf.write(MODELS_FILE_HEADER)
 
         design_reader = csv.reader(df)
 
