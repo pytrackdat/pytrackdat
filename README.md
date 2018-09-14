@@ -58,6 +58,59 @@ stored in `samples1.csv` and `samples2.csv`, respectively.
 
 ### Step 2: Design File Layout and Customization
 
+A PyTrackDat design file contains specifications for all tables in the database
+within a single CSV file. The file consists of 'blocks' which correspond to the
+specification for a single table. Blocks are separated by blank lines.
+
+A single block may look like this:
+
+<table>
+<tr>
+    <th>my_sample</th>
+    <th>new field name</th>
+    <th>data type</th>
+    <th>nullable?</th>
+    <th>null values</th>
+    <th>default</th>
+    <th>description</th>
+    <th colspan="2">additional fields...</th>
+</tr>
+<tr>
+    <td></td>
+    <td>sample_id</td>
+    <td>auto key</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>Unique automatically-generated sample identifier.</td>
+    <td></td>
+    <td></td>
+</tr>
+<tr>
+    <td>Date</td>
+    <td>date</td>
+    <td>integer</td>
+    <td>false</td>
+    <td></td>
+    <td></td>
+    <td>Date the sample was collected.</td>
+    <td></td>
+    <td></td>
+</tr>
+<tr>
+    <td>Site ID</td>
+    <td>site_id</td>
+    <td>foreign key</td>
+    <td>false</td>
+    <td></td>
+    <td></td>
+    <td>Site where the sample was found.</td>
+    <td></td>
+    <td></td>
+</tr>
+<tr><td colspan="9">...</td></tr>
+</table>
+
 TODO
 
 
