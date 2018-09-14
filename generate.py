@@ -8,6 +8,11 @@ import sys
 
 from common import *
 
+# TODO: TIMEZONES
+# TODO: Multiple date formats
+# TODO: More ways for custom validation
+# TODO: More customization options
+
 TEMP_DIRECTORY = "tmp"
 
 ADMIN_FILE_HEADER = """
