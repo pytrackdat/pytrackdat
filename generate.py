@@ -83,7 +83,10 @@ def manual_key_formatter(f):
 
 
 def foreign_key_formatter(f):
-    return "models.ForeignKey('{}', on_delete=models.CASCADE)".format(to_relation_name(f["additional_fields"]))
+    return "models.ForeignKey('{}', help_text='{}', on_delete=models.CASCADE)".format(
+        to_relation_name(f["additional_fields"]),
+        f["description"].replace("'", "\\'")
+    )
 
 
 def basic_number_formatter(f):
