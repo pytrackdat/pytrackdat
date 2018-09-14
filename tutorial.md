@@ -1,4 +1,4 @@
-# Building Python-Powered Web Databases for Biological Datasets
+# Building Python-Powered Web Databases for Biological Datasets with PyTrackDat
 
 
 ## Introduction
@@ -143,131 +143,14 @@ of Table 1 could be used as an artificial key and the "Site Name" field of
 Table 2 could be used as a natural key, assuming that no two sites will have
 the same English name.
 
+### Foreign Keys
+
+TODO
+
 ### Tuple
 **Also known as:** Row, entity
 
 TODO
-
-### Method *(General Programming)*
-***Also known as:** Function*
-
-In programming, a method is a self-contained piece of code which takes in
-input parameters and returns a value calculated with these parameters and,
-optionally, other external data.
-
-The purpose of a method is to reduce code duplication and combine similar bits
-of logic used in multiple places in the program by containing it to one named
-and isolated piece of code.
-
-For example, the following is a definition of a method that calculates the sum
-of two numbers in the Python programming language:
-
-```python
-def sum_of_two(first, second):
-    return first + second
-```
-
-The `return` statement here tells the program what value the method will give
-back to any code which **calls** the method, i.e. uses the resulting value
-in other calculations.
-
-This method could then be used to print out the sum of `5` and `6` to the screen
-with another piece of code:
-
-```python
-print(sum_of_two(5, 6))  # Prints "11" to the screen
-```
-
-The part of the line here preceded by a `#` is a **comment**, which can be
-used to clarify and otherwise explain code for future readers.
-
-By convention in Python, methods' names are in all lowercase letters, with words
-separated by underscores.
-
-### Class *(General Programming)*
-
-In programming, a class describes a *type* of data. It provides an abstract
-template of sorts for modeling objects that share common properties.
-
-Objects that use this template are called **instances** of the class.
-
-Classes can themselves have **member methods**, which are methods that can
-be called on instances of the class.
-
-Consider the following class, written again in the Python language, which models
-the data described in Table 1 above:
-
-```python
-class Specimen:
-    def __init__(self, specimen_no, date_collected, species_name, site_name,
-                 sex, collectors):
-        self.specimen_no = specimen_no
-    	self.date_collected = date_collected
-    	self.species_name = species_name
-    	self.site_name = site_name
-    	self.sex = sex
-    	self.collectors = collectors
-
-    def get_species_with_excitement(self):
-        return self.species_name + "!!!"  # Returns the species with excitement!
-
-```
-
-> #### Class Naming Conventions
-> By convention, class names in Python start with a capital letter.
-> Multiple-word class names are written without any separators by starting the
-> next word with a capital letter, like this: `ExampleClassName`.
-
-Within the class, there are two member methods defined. The first one, defined
-with the name `__init__`, is a special method called a **constructor**. Passed
-into it is any data that the new instance should have as properties, or values
-that are used to set the properties of the instance in some other way.
-
-We can create an instance of the `Specimen` as follows:
-
-```python
-a_frog = Specimen(1, "2018-04-23", "Pseudacris crucifer", "Round Pond", "M",
-                  "Mike, Jim")
-```
-
-> #### Don't Worry!
-> When making the database with Django, this type of code will mostly be
-> automatically handled by Django, including the definition of any
-> constructors. Except for the fundamental concepts of a class and an
-> instantiation of a class, everything here is just to supplement
-> understanding of how Django is handling the data and how it relates to the
-> concepts of relations and tuples described above.
->
-> For more advanced Django usage and customization of the database, these
-> concepts can be applied more directly.
-
-Notice that the values we pass in to the *instantiation* method of the class
-correspond with the parameters of the constructor method. The `__init__` method
-is not called directly by name; instead, the name of the class is used.
-
-Inside the constructor method, there are various lines setting the values of
-variables preceded by `self.`. The `self` variable (passed automatically into
-any member method as the first parameter of the method) is how the instance
-can refer to **itself**. This allows it to set variables within *itself* to
-the values of the parameters passed into the constructor method.
-
-We can access the values of the parameters set in the `a_frog` instance defined
-above as follows, in this case with the `collectors` variable in the instance:
-
-```python
-# Print the collectors property of the a_frog object:
-print(a_frog.collectors)
-```
-
-We can also call the other method we defined on the object, which calculates
-its value based on properties of the instance accessed within the method itself:
-
-```python
-# Call the member method we defined and print the returned result:
-print(a_frog.get_species_with_excitement())
-```
-
-TODO: finishing notes?
 
 
 
@@ -662,11 +545,6 @@ it is 11 characters.
 
 TODO
 
-#### Django's GIS Types
-
-DOES THIS GO HERE?
-TODO
-
 
 ### Further Restricting Possible Field Values
 
@@ -696,127 +574,34 @@ Writing Notes:
 TODO
 
 
-## Introduction to Django
-
-Django is a general-purpose web framework for the Python programming language
-that makes it easy to create what are called Create-Read-Update-Delete (CRUD)
-applications powered by a database.
-
-When the term "web framework" is used, it in this case means a set of
-pre-created methods and classes (if you do not know these terms, see the
-Vocabulary section above) for creating a web server which powers a
-database-driven "web application", or complex interactive website.
-
-One of its main advantages as a framework for creating database-driven
-applications is its built-in administration console, which can automatically
-generate a website which acts as a Graphical User Interface (GUI) for managing
-data stored in the application.
-
-TODO: Picture of Django Admin Console
-
-For this section, it is useful to have some prior knowledge of the basics of
-Python and the command line.
-
-Writing Notes:
-* Explain (loosely) web frameworks
-* Prior knowledge: python?
-* GUI Admin console
-* ...
+## Introduction to PyTrackDat
 
 TODO
 
 
 
-## Modeling the Schema in Python with Django
-
-TODO
-
-### Introduction
-
-TODO
-
-
-### Installing Django
-
-TODO
-
-
-### Using the Terminal to Navigate the Computer
-
-TODO
-
-
-### Creating a Django Project
-
-TODO
-
-```bash
-django-admin startproject my_project_db
-```
-
-TODO: Created folder structure explanation
-
-
-### Creating a Django App
-
-TODO
-
-```bash
-python ./manage.py startapp core
-```
-
-TODO: Created files
-
-
-### Basic Setup
-
-TODO
-
-Writing Notes:
-* We need to enable timezone awareness...
-
-
-### Transforming the Database Design into Python Code with Django's Models
-
-TODO
-
-### Database Systems, Schemas, and Migrations
-
-TODO
-
-#### Calculating Values On-The-Fly
-
-Notes:
-* can calculate things from other fields (ex. percentages) without needing to
-	manually input them (prone to errors!)
-
-TODO
-
-### Running the Site (for Development Purposes)
+## Automatically Analyzing a Dataset with PyTrackDat
 
 TODO
 
 
 
-## Importing the Dataset Automatically
+## Manually Modeling the Schema in PyTrackDat with a Design File
+
+TODO
+
+### Running the Site (for Testing Purposes)
+
+TODO
+
+
+### Importing the Dataset Automatically
 
 TODO
 
 Writing Notes:
 * TODO: Figure out django's mechanism for timezone awareness with these
 	commands...
-
-### Writing an Import Command for Django
-
-TODO
-
-#### Making Values Consistent
-
-Writing Notes:
-* capitalization
-* trimming whitespace
-
-TODO
 
 #### Parsing Values with Regular Expressions
 
