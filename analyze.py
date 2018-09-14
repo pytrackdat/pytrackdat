@@ -24,7 +24,7 @@ from common import *
 
 def main(args):
     if len(args) % 2 != 1:
-        print("Usage: ./analyze.py design_out.csv file1.csv relation_1_name file2.csv relation_2_name ...")
+        print("Usage: ./analyze.py design_out.csv relation_1_name file1.csv relation_2_name file2.csv ...")
         exit(1)
 
     design_file = args[0]  # Name for output
