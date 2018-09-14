@@ -16,7 +16,8 @@ class ImportCSVMixin:
         if request.method == "POST":
             form = ImportCSVForm(request.POST, request.FILES)
             if form.is_valid():
-                encoding = form.cleaned_data["csv_file"].charset if form.cleaned_data["csv_file"].charset else "utf-8"
+                encoding = form.cleaned_data["csv_file"].charset \
+                    if form.cleaned_data["csv_file"].charset else "utf-8-sig"
                 csv_file = TextIOWrapper(request.FILES["csv_file"], encoding=encoding)
                 reader = csv.DictReader(csv_file)
                 headers = [h for h in reader.fieldnames if h != ""]
