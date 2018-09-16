@@ -3,6 +3,7 @@
 import csv
 import json
 import os
+import shutil
 import subprocess
 import sys
 
@@ -287,6 +288,8 @@ def main(args):
         uf.truncate()
 
     subprocess.run(["./run_site_setup.bash", django_site_name, TEMP_DIRECTORY], check=True)
+
+    shutil.make_archive(django_site_name, "zip", base_dir=os.path.join("tmp", django_site_name))
 
 
 if __name__ == "__main__":
