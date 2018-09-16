@@ -217,6 +217,7 @@ def main(args):
             python_relation_name = to_relation_name(relation_name[0])
 
             relation_fields = []
+            id_type = ""
 
             while True:
                 try:
@@ -229,10 +230,21 @@ def main(args):
                                 current_field[1],
                                 current_field[2].lower()
                             ))
+                            exit(1)
 
                         data_type = current_field[2].lower()
                         nullable = current_field[3].lower() in ("true", "t", "yes", "y", "1")
                         null_values = tuple([n.strip() for n in current_field[4].split(";")])
+
+                        if data_type in ("auto_key", "manual_key") and id_type != "":
+                            print("Error: Primary key was already specified for relation "
+                                  "'{}'. Please only specify one primary key.".format(python_relation_name))
+                            exit(1)
+
+                        if data_type == "auto key":
+                            id_type = "integer"
+                        elif data_type == "manual key":
+                            id_type = "text"
 
                         current_field_data = {
                             "name": field_to_py_code(current_field[1].lower()),
@@ -254,6 +266,10 @@ def main(args):
                     mf.write("    @classmethod\n")
                     mf.write("    def ptd_info(cls):\n")
                     mf.write("        return json.loads(\"\"\"{}\"\"\")\n\n".format(json.dumps(relation_fields)))
+
+                    mf.write("    @classmethod\n")
+                    mf.write("    def get_id_type(cls):\n")
+                    mf.write("        return '{}'\n\n".format(id_type))
 
                     af.write("\n\n@admin.register({})\n".format(python_relation_name))
                     af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, admin.ModelAdmin):\n".format(

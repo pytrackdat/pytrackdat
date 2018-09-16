@@ -31,6 +31,7 @@ class ImportCSVMixin:
 
                 reader = csv.DictReader(csv_file)
 
+                model_name = self.model.__name__
                 ptd_info = self.model.ptd_info()
                 headers = [h.strip() for h in reader.fieldnames if h != ""]
                 header_fields = {h: tuple([f for f in ptd_info if f["csv_name"] == h]) for h in headers}
@@ -49,15 +50,6 @@ class ImportCSVMixin:
                             elif f["data_type"] == "manual key":
                                 object_data[f["name"]] = str_v
                                 break
-
-                            elif f["data_type"] == "foreign key":
-                                # TODO: TYPES PROPERLY
-                                rel_name = to_relation_name(f["additional_fields"][0])
-                                if rel_name not in models:
-                                    raise ValueError("Unavailable model reference for foreign key field "
-                                                     "{}: {}".format(f["name"], rel_name))
-                                object_data[f["name"]] = models[to_relation_name(str_v)].objects.get(pk=str_v)
-                                # TODO!
 
                             elif f["data_type"] == "integer":
                                 if re.match(r"^([+-]?[1-9]\d*|0)$", str_v):
@@ -114,8 +106,9 @@ class ImportCSVMixin:
                                     if f["nullable"]:
                                         object_data[f["name"]] = None
                                     else:
-                                        raise ValueError("Value for text field {} is not one of the available choices "
-                                                         "{}: {}".format(f["name"], tuple(choices), str_v))
+                                        raise ValueError("Value for text field {} in model {} is not one of the "
+                                                         "available choices {}: {}".format(f["name"], model_name,
+                                                                                           tuple(choices), str_v))
 
                                 object_data[f["name"]] = str_v
                                 break
@@ -129,7 +122,27 @@ class ImportCSVMixin:
                                 elif f["nullable"]:
                                     object_data[f["name"]] = None
                                 else:
-                                    raise ValueError("Incorrect value for date field {}: {}".format(f["name"], str_v))
+                                    raise ValueError("Incorrect value for date field {} in model {}: "
+                                                     "{}".format(f["name"], model_name, str_v))
+
+                            elif f["data_type"] == "foreign key":
+                                # TODO: TYPES PROPERLY
+                                rel_name = to_relation_name(f["additional_fields"][0])
+                                rel_id_data_type = models[rel_name].get_id_type()
+
+                                if rel_id_data_type == "":
+                                    raise ValueError("Target model for foreign key field {} in model {} has no "
+                                                     "primary key.".format(f["name"], model_name))
+
+                                foreign_key_value = str_v
+                                if rel_id_data_type == "integer":
+                                    foreign_key_value = int(foreign_key_value)
+
+                                if rel_name not in models:
+                                    raise ValueError("Unavailable model reference for foreign key field "
+                                                     "{} in model {}: {}".format(f["name"], model_name, rel_name))
+                                object_data[f["name"]] = models[rel_name].objects.get(pk=foreign_key_value)
+                                # TODO!
 
                     new_object = self.model(**object_data)
                     new_object.save()
