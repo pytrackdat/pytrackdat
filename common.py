@@ -2,7 +2,7 @@ PYTHON_KEYWORDS = ["False", "None", "True", "and", "as", "assert", "async", "awa
                    "def", "del", "else", "elif", "except", "finally", "for", "from", "global", "if", "import", "in",
                    "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"]
 
-DATA_TYPES = ["auto key", "manual key", "foreign key", "integer", "float", "decimal", "boolean", "text", "date", "time"]
+DATA_TYPES = ["auto key", "manual key", "integer", "float", "decimal", "boolean", "text", "date", "time", "foreign key"]
 
 
 def field_to_py_code(field):

@@ -252,13 +252,57 @@ explanations of possible values if non-obvious.
 It is also used to display help text below the fields in the database
 single-item entry GUI.
 
-###### Additional Fields
+###### Type-Specific Settings
+
+Any cell after the description cell is type-specific and the valid values
+depend on what data type the field has. There can be more than one
+type-specific setting available, and the exact number also depends on the
+field's type. For a description of each data type, including type-specific
+setting options, see the section below.
+
+#### Data Type Descriptions
+
+TODO: With additional field descriptions
+
+##### `auto key`: Automatic Primary Key
 
 TODO
 
-##### Data Type Descriptions
+##### `manual key`: Manually-Specified Primary Key
 
-TODO: With additional field descriptions
+TODO
+
+##### `integer`: Integer (Negative or Positive Whole Number)
+
+TODO
+
+##### `float`: Floating Point Number (Non-Fixed Precision Decimal)
+
+TODO
+
+##### `decimal`: Fixed-Precision Decimal Number
+
+TODO
+
+##### `boolean`: Boolean (True or False) Value
+
+TODO
+
+##### `text`: Fixed- or Unbounded-Length Text
+
+TODO
+
+##### `date`: Date (TODO: TIMEZONED??)
+
+TODO
+
+##### `time`: Time (TODO: 24 hr probably)
+
+TODO
+
+##### `foreign key`: Foreign Key (Cross-Relation)
+
+TODO
 
 
 ### Step 3: Database Generator
