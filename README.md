@@ -241,10 +241,7 @@ to `NULL`.
 This cell contains a value, of the same type as would appear in the data CSV
 file, specifying the default value for the field in the database.
 
-The default value of a field will be used during data import if the field is
-not nullable and a non-valid or blank value is provided for the field.
-
-TODO: IS IT ALSO USED IN THE GUI????
+TODO: WHERE IS THIS ACTUALLY USED???
 
 ###### Description
 
