@@ -324,7 +324,10 @@ TODO
 
 ##### `float`: Floating Point Number (Non-Fixed Precision Decimal)
 
-TODO
+Floating-point numbers can store a huge range of numbers, including numbers
+with decimal points. However, there are precision issues, and
+**whenever possible** the `decimal` type should be used instead to prevent
+floating-point-specific errors (see [tutorial.md](tutorial.md).) 
 
 ###### Type-Specific Settings
 
