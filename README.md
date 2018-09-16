@@ -164,6 +164,45 @@ The generic format for a design file field description row is the following:
 </tr>
 </table>
 
+Each of these columns in the field description row has specific acceptable
+values which directly decide the resulting database structure. As such, it is
+important to double-check these values if the automatic analyzer is used.
+
+###### CSV Column Name
+
+This field should correspond exactly to the column name in the original data CSV
+which stores data for field being described.
+
+###### Database Field Name
+
+TODO
+
+###### Data Type
+
+TODO
+
+###### Nullable?
+
+TODO
+
+###### Null Values
+
+TODO
+
+###### Default
+
+TODO
+
+###### Description
+
+TODO
+
+###### Additional Fields
+
+TODO
+
+##### Data Tye Additional Field Options
+
 TODO
 
 
