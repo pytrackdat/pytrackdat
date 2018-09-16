@@ -4,12 +4,15 @@ import re
 import core.models
 
 from django import forms
+from django.apps import apps
 from django.shortcuts import redirect, render
 from django.urls import path
 
 from datetime import datetime
 from decimal import *
 from io import TextIOWrapper
+
+from .common import *
 
 
 class ImportCSVForm(forms.Form):
@@ -32,6 +35,8 @@ class ImportCSVMixin:
                 headers = [h.strip() for h in reader.fieldnames if h != ""]
                 header_fields = {h: tuple([f for f in ptd_info if f["csv_name"] == h]) for h in headers}
 
+                models = {m.__name__: m for m in apps.get_app_config("core").get_models()}
+
                 for row in reader:
                     object_data = {}
                     for h in header_fields:
@@ -46,8 +51,13 @@ class ImportCSVMixin:
                                 break
 
                             elif f["data_type"] == "foreign key":
+                                # TODO: TYPES PROPERLY
+                                rel_name = to_relation_name(f["additional_fields"][0])
+                                if rel_name not in models:
+                                    raise ValueError("Unavailable model reference for foreign key field "
+                                                     "{}: {}".format(f["name"], rel_name))
+                                object_data[f["name"]] = models[to_relation_name(str_v)].objects.get(pk=str_v)
                                 # TODO!
-                                pass
 
                             elif f["data_type"] == "integer":
                                 if re.match(r"^([+-]?[1-9]\d*|0)$", str_v):

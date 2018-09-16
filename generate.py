@@ -89,7 +89,7 @@ def manual_key_formatter(f):
 
 def foreign_key_formatter(f):
     return "models.ForeignKey('{}', help_text='{}', on_delete=models.CASCADE)".format(
-        to_relation_name(f["additional_fields"]),
+        to_relation_name(f["additional_fields"][0]),
         f["description"].replace("'", "\\'")
     )
 
@@ -189,15 +189,6 @@ def get_default_from_csv_with_type(dv, dt, nullable=False, null_values=()):
         return dv.lower() in ("y", "yes", "t", "true")
 
     return dv
-
-
-def to_relation_name(name):
-    python_relation_name = "".join([n.capitalize() for n in name.split("_")])
-
-    if python_relation_name in PYTHON_KEYWORDS:
-        python_relation_name += "Class"
-
-    return python_relation_name
 
 
 def main(args):

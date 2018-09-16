@@ -14,4 +14,5 @@ cd $1
 chmod +x ./manage.py
 ./manage.py startapp core
 cp -r ../../app_includes/* ./core/
+cp -r ../../common.py ./core/
 deactivate

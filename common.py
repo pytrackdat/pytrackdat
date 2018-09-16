@@ -9,3 +9,12 @@ def field_to_py_code(field):
     if field in PYTHON_KEYWORDS:
         return field + "_field"
     return field
+
+
+def to_relation_name(name):
+    python_relation_name = "".join([n.capitalize() for n in name.split("_")])
+
+    if python_relation_name in PYTHON_KEYWORDS:
+        python_relation_name += "Class"
+
+    return python_relation_name
