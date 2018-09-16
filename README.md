@@ -335,7 +335,10 @@ TODO
 
 ##### `decimal`: Fixed-Precision Decimal Number
 
-TODO
+Decimal-typed numbers can store fixed-precision decimal numbers. Both the
+overall maximum length and decimal precision must be specified, in number of
+digits. This type is useful for encoding significant figures and **avoiding**
+floating-point-specific errors (see [tutorial.md](tutorial.md).)
 
 ###### Type-Specific Settings
 
