@@ -115,6 +115,33 @@ TODO
 
 #### Design File Specification
 
+#### Blocks
+
+Blocks must be separated by at least one blank line in the CSV (i.e. 2
+newlines.)
+
+##### Block: Row 1
+
+The first row of a block contains only one piece of information: the name of
+the entity being represented, in singular form (for example, "sample")
+contained in the first column. The other columns of the block's first row are
+ignored, but can be used as column headers to make the design file more
+human-readable.
+
+A block's first (header) row may look like this:
+
+<table>
+<tr>
+<td><strong>sample</strong></td><td>this is ignored</td><td>as is this</td><td>...</td>
+</tr>
+</table>
+
+What this means is that the block in the design file represents a "sample",
+i.e. one entry in the block's equivalent table in the database contains a
+single sample's data.
+
+##### Block: Following Rows
+
 TODO
 
 
