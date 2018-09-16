@@ -170,16 +170,43 @@ important to double-check these values if the automatic analyzer is used.
 
 ###### CSV Column Name
 
-This field should correspond exactly to the column name in the original data CSV
+This cell should correspond exactly to the column name in the original data CSV
 which stores data for field being described.
 
 ###### Database Field Name
 
-TODO
+This cell contains the name of the field as it will appear in the database.
+It should only contain lowercase characters, numbers, and underscores.
 
 ###### Data Type
 
-TODO
+This cell contains the data type of the field in question. It can be one of the
+following values:
+
+```
+auto key
+manual key
+foreign key
+integer
+float
+decimal
+boolean
+text
+date
+time
+```
+
+This dictates what values can be stored in the field in the database. In
+general, databases are much more strict (as compared to spreadsheet programs
+such as Excel) with data typing, which prevents incorrect data values from
+being entered and allows additional operations on types that allow them (such
+as the addition of integers.)
+
+For a more comprehensive overview on why data types are benificial when it
+comes to data entry and integrity, see [tutorial.md](tutorial.md).
+
+For a description of which values are acceptable for each data type, see the
+"Data Type Descriptions" section below.
 
 ###### Nullable?
 
@@ -201,9 +228,9 @@ TODO
 
 TODO
 
-##### Data Tye Additional Field Options
+##### Data Type Descriptions
 
-TODO
+TODO: With additional field descriptions
 
 
 ### Step 3: Database Generator
