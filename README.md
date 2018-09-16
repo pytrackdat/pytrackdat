@@ -266,11 +266,43 @@ TODO: With additional field descriptions
 
 ##### `auto key`: Automatic Primary Key
 
-TODO
+Automatic primary key (identifier) for a database row; stored as an integer
+which starts at 1 and is increased by 1 for every row added to a table.
+
+Deletion of a row does not lead to re-assigning IDs above the now-deleted row's
+ID; IDs are fixed as long as the database is not completely re-created.
+
+###### Design File Information
+
+The following design file cells are **ignored** for `auto key`:
+
+```
+CSV Column Name, Nullable, Null Values, Default
+```
+
+Automatic primary keys are **never** nullable.
+
+###### Type-Specific Settings
+
+**No** type-specific settings are available for `auto key`.
 
 ##### `manual key`: Manually-Specified Primary Key
 
 TODO
+
+###### Design File Information
+
+The following design file cells are **ignored** for `manual key`:
+
+```
+Nullable, Null Values, Default
+```
+
+Manually-specified primary keys are **never** nullable.
+
+###### Type-Specific Settings
+
+**No** type-specific settings are available for `manual key`.
 
 ##### `integer`: Integer (Negative or Positive Whole Number)
 
