@@ -210,19 +210,50 @@ For a description of which values are acceptable for each data type, see the
 
 ###### Nullable?
 
-TODO
+This cell contains a boolean (true or false) value which specifies whether the
+value of the field in the database can be `NULL`. If the field contains any
+value other than "true", "false" is inferred. Null is a special value which has
+implications on data representation; for more information see
+[tutorial.md](tutorial.md).
 
 ###### Null Values
 
-TODO
+This cell contains a semicolon-separated list (`;`, optionally with surrounding
+spaces to make the cell contents more readable) of values in the data CSV file
+which will be converted to a `NULL` value in the database. 
+
+Note that if this cell contains multiple entries, **information is being
+lost**, since multiple values in the original data are mapped to a single value
+in the database, therefore preventing the original data from being recovered in
+identically.
+
+An example of where multiple values could be useful is the following:
+
+```NA; N/A```
+
+In this case, these two values mean the same thing to a human reader but are
+completely different to the computer. If `NA` is, for example, the only
+possible non-integer value in an integer field, it would make sense to map it
+to `NULL`.
 
 ###### Default
 
-TODO
+This cell contains a value, of the same type as would appear in the data CSV
+file, specifying the default value for the field in the database.
+
+The default value of a field will be used during data import if the field is
+not nullable and a non-valid or blank value is provided for the field.
+
+TODO: IS IT ALSO USED IN THE GUI????
 
 ###### Description
 
-TODO
+This cell should contain a succinct and comprehensive description of what the
+field means in the context of the dataset the database is to contain, including
+explanations of possible values if non-obvious. 
+
+It is also used to display help text below the fields in the database
+single-item entry GUI.
 
 ###### Additional Fields
 
