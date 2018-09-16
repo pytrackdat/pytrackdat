@@ -2,6 +2,8 @@
 
 ## Overview
 
+**PLEASE NOTE THAT CURRENTLY PYTRACKDAT ONLY RUNS ON MAC AND LINUX.**
+
 TODO
 
 
@@ -132,7 +134,10 @@ A block's first (header) row may look like this:
 
 <table>
 <tr>
-<td><strong>sample</strong></td><td>this is ignored</td><td>as is this</td><td>...</td>
+<td><strong>sample</strong></td>
+<td>this is ignored</td>
+<td>as is this</td>
+<td>...</td>
 </tr>
 </table>
 
@@ -288,7 +293,10 @@ Automatic primary keys are **never** nullable.
 
 ##### `manual key`: Manually-Specified Primary Key
 
-TODO
+Manually-specified primary key (identifier) for a database row; stored as text.
+The value must be specified by the user when adding data to the database.
+
+Manually-specified primary keys must be **unique** for a given row.
 
 ###### Design File Information
 
@@ -339,7 +347,23 @@ TODO
 
 ### Step 3: Database Generator
 
-TODO
+The core of PyTrackDat is a database generator script, which uses a provided
+CSV design file (see above for the format) to generate a database along with a
+web application which can be used to administer it. The generated software is
+powered by the [Django framework](https://www.djangoproject.com/).
+
+To run the database generator on a design file (ex. `design.csv`), run the
+following command:
+
+```bash
+python3 ./generate.py design.csv site_name
+```
+
+Where `design.csv` is a path to the design file and `site_name` is the name of
+the web application that will be generated.
+
+This will output a zip file, `site_name.zip`, in the PyTrackDat project
+directory. This package will be used to deploy the site.
 
 
 ### Step 4: Testing
