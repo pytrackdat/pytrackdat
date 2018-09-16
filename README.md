@@ -2,7 +2,7 @@
 
 ## Overview
 
-**PLEASE NOTE THAT CURRENTLY PYTRACKDAT ONLY RUNS ON MAC AND LINUX.**
+**PLEASE NOTE THAT CURRENTLY PYTRACKDAT ONLY RUNS ON MAC OS AND LINUX.**
 
 TODO
 
@@ -314,9 +314,19 @@ Manually-specified primary keys are **never** nullable.
 
 ##### `integer`: Integer (Negative or Positive Whole Number)
 
+Integers can be between -9 223 372 036 854 775 808 and
+9 223 372 036 854 775 807. If a bigger-capacity field is needed, use a
+`text`-type field instead.
+
+###### Type-Specific Settings
+
 TODO
 
 ##### `float`: Floating Point Number (Non-Fixed Precision Decimal)
+
+TODO
+
+###### Type-Specific Settings
 
 TODO
 
@@ -324,7 +334,15 @@ TODO
 
 TODO
 
+###### Type-Specific Settings
+
+TODO
+
 ##### `boolean`: Boolean (True or False) Value
+
+TODO
+
+###### Type-Specific Settings
 
 TODO
 
@@ -332,7 +350,15 @@ TODO
 
 TODO
 
+###### Type-Specific Settings
+
+TODO
+
 ##### `date`: Date (TODO: TIMEZONED??)
+
+TODO
+
+###### Type-Specific Settings
 
 TODO
 
@@ -340,7 +366,15 @@ TODO
 
 TODO
 
+###### Type-Specific Settings
+
+TODO
+
 ##### `foreign key`: Foreign Key (Cross-Relation)
+
+TODO
+
+###### Type-Specific Settings
 
 TODO
 
