@@ -140,7 +140,29 @@ What this means is that the block in the design file represents a "sample",
 i.e. one entry in the block's equivalent table in the database contains a
 single sample's data.
 
-##### Block: Following Rows
+The analyzer will include column headers in the first row in order to aid 
+understanding and possibly allow easier modification of the analyzer output.
+
+##### Block: Following Rows – Field Descriptions
+
+The following series of rows in a design file block contain a list of field
+descriptions, which are analogous to columns in a standard spreadsheet layout.
+One database field is described for every one of these rows in the design file.
+
+The generic format for a design file field description row is the following:
+
+<table>
+<tr>
+<td>CSV Column Name</td>
+<td>Database Field Name</td>
+<td>Data Type</td>
+<td>Nullable?</td>
+<td>Null Values</td>
+<td>Default</td>
+<td>Description</td>
+<td>Additional fields...</td>
+</tr>
+</table>
 
 TODO
 
