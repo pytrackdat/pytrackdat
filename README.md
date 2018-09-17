@@ -342,15 +342,27 @@ floating-point-specific errors (see [tutorial.md](tutorial.md).)
 
 ###### Type-Specific Settings
 
-TODO
+The `decimal` type requires two type-specific settings:
+
+  1. `max length`: The maximum length a number can be, in digits; includes the
+     decimal portion of the number.
+  1. `precision`: The number of digits after the decimal. Will be the same for
+     any value stored in the database, with the end 0-padded if necessary.
+
+For example, a `decimal` field with a `max length` of 10 and a `precision` of 4
+can store numbers such as `50.2300` or `-999999.9999` or `999999.9999` (as a 
+negative sign does not count as a digit) but **cannot** store `1000000.0000`.
 
 ##### `boolean`: Boolean (True or False) Value
 
-TODO
+Boolean values are either `true` or `false`. If the field is made nullable, an
+additional option is added, `NULL` (or unknown). If more than 3 values are
+needed (for example if there are two types of unknown values), a text field
+with the `choices` setting should be used.
 
 ###### Type-Specific Settings
 
-TODO
+**No** type-specific settings are available for `boolean`.
 
 ##### `text`: Fixed- or Unbounded-Length Text
 
@@ -366,15 +378,15 @@ TODO
 
 ###### Type-Specific Settings
 
-TODO
+**No** type-specific settings are available for `date`.
 
-##### `time`: Time (TODO: 24 hr probably)
+##### `time`: Time (TODO: 24 hr probably, TIMEZONED?)
 
 TODO
 
 ###### Type-Specific Settings
 
-TODO
+**No** type-specific settings are available for `time`.
 
 ##### `foreign key`: Foreign Key (Cross-Relation)
 
