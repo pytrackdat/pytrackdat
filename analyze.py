@@ -192,9 +192,6 @@ def main(args):
                     detected_type = "text"
                     nullable = False
 
-                # print(integer_values)
-                # print(list(other_values)[:100], other_values_seen)
-
                 design_writer.writerow([
                     f,  # Old field name
                     new_name,  # New field name (in database)
