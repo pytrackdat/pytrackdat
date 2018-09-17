@@ -370,11 +370,20 @@ TODO
 
 ###### Type-Specific Settings
 
-TODO
+The `text` type optionally can take up two type-specific settings:
+
+  1. `max length`: The maximum length of the contents in the field in terms of
+     number of characters.
+  1. `options`: A semicolon-separated list of possible values the text field
+     can take on. Limiting the domain of a field can be useful in order to
+     speed up data entry, prevent typos, and restrict the domain of a field to
+     exactly what is desired.
 
 ##### `date`: Date (TODO: TIMEZONED??)
 
 TODO
+
+Currently, PyTrackDat only accepts the `YYYY-MM-DD` format of 
 
 ###### Type-Specific Settings
 
