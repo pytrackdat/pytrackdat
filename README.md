@@ -390,11 +390,22 @@ TODO
 
 ##### `foreign key`: Foreign Key (Cross-Relation)
 
-TODO
+Foreign keys are one of the most powerful features of relational databases, and
+in fact are what make then "relational" at all. A foreign key is a field on one
+table which refers to the **primary key** of a row in *another* table (and in
+fact, can refer to another row in the *same* table as well.)
+
+This lets rows refer to one another, and can be used to prevent data
+duplication. Reducing data duplication is important in preventing contradictory
+information in a dataset. 
 
 ###### Type-Specific Settings
 
-TODO
+The `foreign key` type requires one type-specific setting:
+
+  1. `target`: The table which the foreign key field is pointing to. Remember
+     that table names are specified in the first column of the first row of
+     a block in the design file.
 
 
 ### Step 3: Database Generator
