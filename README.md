@@ -383,7 +383,7 @@ The `text` type optionally can take up two type-specific settings:
 
 TODO
 
-Currently, PyTrackDat only accepts the `YYYY-MM-DD` format of 
+Currently, PyTrackDat only accepts the `YYYY-MM-DD` format for dates.
 
 ###### Type-Specific Settings
 
@@ -392,6 +392,9 @@ Currently, PyTrackDat only accepts the `YYYY-MM-DD` format of
 ##### `time`: Time (TODO: 24 hr probably, TIMEZONED?)
 
 TODO
+
+Currently, PyTrackDat only accepts the `HH:MM` or `HH:MM:SS` 24 hour formats 
+for times.
 
 ###### Type-Specific Settings
 
