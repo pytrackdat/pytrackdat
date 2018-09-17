@@ -70,6 +70,7 @@ def main(args):
                 float_values = 0
                 all_values = set()
                 date_values = 0
+                time_values = 0
                 other_values = set()
                 other_values_seen = 0
                 choices = []
@@ -98,6 +99,9 @@ def main(args):
                     if re.match(r"^[1-2]\d{3}-\d{1,2}-\d{1,2}$", str_v) or \
                             re.match(r"^\d{1,2}-\d{1,2}-[1-2]\d{3}$", str_v):
                         date_values += 1
+
+                    if re.match(r"^\d{2}:\d{2}(:\d{2})?$", str_v):
+                        time_values += 1
 
                 # Keys:
 
@@ -142,9 +146,22 @@ def main(args):
                 elif date_values == len(data):
                     detected_type = "date"
                     nullable = False
+                    # TODO: Detect date format and make additional settings with date format
 
                 elif date_values > 0 and len(other_values) == 1:
                     detected_type = "date"
+                    nullable = True
+                    null_values = list(other_values)[0]
+
+                # Times:
+
+                elif time_values == len(data):
+                    detected_type = "time"
+                    nullable = False
+                    # TODO: Detect time format and make additional settings with time format
+
+                elif time_values > 0 and len(other_values) == 1:
+                    detected_type = "time"
                     nullable = True
                     null_values = list(other_values)[0]
 

@@ -181,7 +181,16 @@ def get_default_from_csv_with_type(dv, dt, nullable=False, null_values=()):
 
     if dt == "date":
         # TODO: adjust format based on heuristics
+        # TODO: Allow extra column setting with date format from python docs?
         return datetime.strptime(dv, "%Y-%m-%d")
+
+    if dt == "time":
+        # TODO: adjust format based on MORE heuristics
+        # TODO: Allow extra column setting with time format from python docs?
+        if len(dv.split(":")) == 1:
+            return datetime.strptime(dv, "%H:%M")
+        else:
+            return datetime.strptime(dv, "%H:%M:%S")
 
     if dt == "boolean":
         if nullable and ((len(null_values) != 0 and dv.strip() in null_values) or (dv.strip() == "")):

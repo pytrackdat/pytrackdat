@@ -125,6 +125,14 @@ class ImportCSVMixin:
                                     raise ValueError("Incorrect value for date field {} in model {}: "
                                                      "{}".format(f["name"], model_name, str_v))
 
+                            elif f["data_type"] == "time":
+                                # TODO: More time formats
+                                # TODO: Further validation
+                                if re.match(r"^\d{2}:\d{2}$", str_v):
+                                    object_data[f["name"]] = datetime.strptime(str_v, "%H:%M")
+                                elif re.match(r"^\d{2}:\d{2}:\d{2}$", str_v):
+                                    object_data[f["name"]] = datetime.strptime(str_v, "%H:%M:%S")
+
                             elif f["data_type"] == "foreign key":
                                 # TODO: TYPES PROPERLY
                                 rel_name = to_relation_name(f["additional_fields"][0])
