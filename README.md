@@ -431,7 +431,39 @@ directory. This package will be used to deploy the site.
 
 ### Step 4: Testing
 
-TODO
+To test the web application from the PyTrackDat directory, first move into the
+site directory within the temporary work directory, `tmp`, which PyTrackDat
+will create, replacing `site_name_here` with the site name from the previous
+(generator) step:
+
+```bash
+cd tmp/site_name_here
+```
+
+Then, activate the Python virtual environment with the following command:
+
+```bash
+source env/bin/activate
+```
+
+Before starting the debug server, a **superuser** (administrative user) must
+be created for the web application. This can be done by running the following
+command and following the prompts which will appear onscreen:
+
+```bash
+./manage.py createsuperuser
+```
+
+Finally, run the development server from the command line with the following
+command, and navigate to the application in your web browser at
+`127.0.0.1:8000`:
+
+```bash
+./manage.py runserver
+```
+
+To stop the server, press `Ctrl-C` in the terminal window where the server is
+running.
 
 
 ## Deploying the End Result
