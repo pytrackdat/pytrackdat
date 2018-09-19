@@ -21,6 +21,7 @@ from django.contrib import admin
 from core.models import *
 from .export_csv import ExportCSVMixin
 from .import_csv import ImportCSVMixin
+from .export_labels import ExportLabelsMixin
 
 """
 
@@ -281,10 +282,9 @@ def main(args):
                     mf.write("        return '{}'\n\n".format(id_type))
 
                     af.write("\n\n@admin.register({})\n".format(python_relation_name))
-                    af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, admin.ModelAdmin):\n".format(
-                        python_relation_name
-                    ))
-                    af.write("    actions = ['export_csv']\n")
+                    af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, "
+                             "admin.ModelAdmin):\n".format(python_relation_name))
+                    af.write("    actions = ['export_csv', 'export_labels']\n")
 
                     for f in relation_fields:
                         mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
