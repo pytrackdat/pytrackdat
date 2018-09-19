@@ -17,6 +17,8 @@ def csv_generator(writer, column_names, queryset):
 # noinspection PyProtectedMember
 class ExportCSVMixin:
     def export_csv(self, _request, queryset):
+        # TODO: replace null values with their encoded equivalents from the design file
+
         column_names = [c.name for c in self.model._meta.fields]
 
         pseudo_buffer = Echo()
@@ -25,7 +27,7 @@ class ExportCSVMixin:
         response = StreamingHttpResponse(csv_generator(writer, column_names, queryset),
                                          content_type="text/csv; charset=utf-8")
 
-        response["Content-Disposition"] = "attachment; filename={}.csv".format(self.model.__class__.__name__.lower())
+        response["Content-Disposition"] = "attachment; filename={}.csv".format(self.model.__name__.lower())
 
         return response
 
