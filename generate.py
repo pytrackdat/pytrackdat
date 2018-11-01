@@ -149,7 +149,7 @@ def text_formatter(f):
 
 
 def date_formatter(f):
-    # TODO: standardize date formatting...
+    # TODO: standardize date formatting... I think this might already be standardized?
     return "models.DateField(help_text='{}', null={}{})".format(
         f["description"].replace("'", "\\'"),
         str(f["nullable"]),
@@ -183,12 +183,19 @@ def get_default_from_csv_with_type(dv, dt, nullable=False, null_values=()):
     if dt == "date":
         # TODO: adjust format based on heuristics
         # TODO: Allow extra column setting with date format from python docs?
-        return datetime.strptime(dv, "%Y-%m-%d")
+        if re.match(RE_DATE_YMD_D, str_v):
+            return datetime.strptime(dv, "%Y-%m-%d")
+        elif re.match(RE_DATE_DMY_D, str_v):
+            # TODO: ambiguous d-m-Y or m-d-Y
+            return datetime.strptime(dv, "%d-%m-%Y", str_v)
+        else:
+            # TODO: Warning
+            return None
 
     if dt == "time":
         # TODO: adjust format based on MORE heuristics
         # TODO: Allow extra column setting with time format from python docs?
-        if len(dv.split(":")) == 1:
+        if len(dv.split(":")) == 2:
             return datetime.strptime(dv, "%H:%M")
         else:
             return datetime.strptime(dv, "%H:%M:%S")

@@ -8,8 +8,8 @@
 #    decimal with constant digits -> decimal (max: length plus 2)
 #    y/n, t/f, true/false -> boolean
 #    y/n/u, y/n/blank, etc. -> nullable boolean
-#    mm/dd/yyyy, dd/mm/yyyy, yyyy-mm-dd -> date (if ONE other value that doesn't match, nullable)
-#    HH:MM pm, HH:MMpm, HH:MM, etc -> time (if ONE other value that doesn't match, nullable)
+#    mm/dd/yyyy, dd/mm/yyyy, yyyy-mm-dd -> date (if ONE other value that doesn't match, nullable) TODO
+#    HH:MM pm, HH:MMpm, HH:MM, etc -> time (if ONE other value that doesn't match, nullable) TODO
 #    text where the choices are way less than the number of rows -> max length text choice field
 #    highly deviant text (excluding blanks) -> text field
 
@@ -96,11 +96,13 @@ def main(args):
                     max_seen_length = max(max_seen_length, len(str_v))
                     all_values.add(str_v)
 
-                    if re.match(r"^[1-2]\d{3}-\d{1,2}-\d{1,2}$", str_v) or \
-                            re.match(r"^\d{1,2}-\d{1,2}-[1-2]\d{3}$", str_v):
+                    if re.match(RE_DATE_YMD_D, str_v) or \
+                            re.match(RE_DATE_YMD_S, str_v) or \
+                            re.match(RE_DATE_DMY_D, str_v) or \
+                            re.match(RE_DATE_DMY_S, str_v):
                         date_values += 1
 
-                    if re.match(r"^\d{2}:\d{2}(:\d{2})?$", str_v):
+                    if re.match(r"^\d{1,2}:\d{2}(:\d{2})?$", str_v):
                         time_values += 1
 
                 # Keys:

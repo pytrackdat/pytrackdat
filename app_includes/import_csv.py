@@ -116,8 +116,18 @@ class ImportCSVMixin:
                             elif f["data_type"] == "date":
                                 # TODO: More date formats
                                 # TODO: Further validation
-                                if re.match(r"^[1-2]\d{3}-\d{1,2}-\d{1,2}$", str_v):
+                                # TODO: encode format somewhere?
+                                if re.match(RE_DATE_YMD_D, str_v):
                                     object_data[f["name"]] = datetime.strptime(str_v, "%Y-%m-%d")
+                                    break
+                                elif re.match(RE_DATE_YMD_S, str_v):
+                                    object_data[f["name"]] = datetime.strptime(str_v, "%Y/%m/%d")
+                                    break
+                                elif re.match(RE_DATE_DMY_D, str_v):
+                                    object_data[f["name"]] = datetime.strptime(str_v, "%d-%m-%Y")
+                                    break
+                                elif re.match(RE_DATE_DMY_S, str_v):
+                                    object_data[f["name"]] = datetime.strptime(str_v, "%d/%m/%Y")
                                     break
                                 elif f["nullable"]:
                                     object_data[f["name"]] = None
@@ -126,7 +136,7 @@ class ImportCSVMixin:
                                                      "{}".format(f["name"], model_name, str_v))
 
                             elif f["data_type"] == "time":
-                                # TODO: More time formats
+                                # TODO: More time formats (12-hour especially)
                                 # TODO: Further validation
                                 if re.match(r"^\d{2}:\d{2}$", str_v):
                                     object_data[f["name"]] = datetime.strptime(str_v, "%H:%M")
