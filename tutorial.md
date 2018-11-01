@@ -90,20 +90,19 @@ that can be modeled and stored in a database:
 </tr>
 </table>
 
-### Relation
-***Also known as:** Entity set, table*
+### Table
+***Also known as:** Relation, entity set*
 
-A relation is a collection of similar items, with a (mostly) consistent set of
+A table is a collection of similar items, with a (mostly) consistent set of
 **fields** (see below). Analogous to a **table** or **sheet** in a spreadsheet.
-For example, the Specimens and Sites tables described above, when translated
-into database definitions, will be called **relations**.
+For example, see the Specimens and Sites tables described above.
 
 ### Field
 ***Also known as:** Attribute, property*
 
-A field is some property of an item in the database. Consider the Specimens
-relation above, which has four fields: specimen number, date collected, species
-name, and site name.
+A field is some property of an item in a table. For example, the Specimens
+table above has four fields: specimen number, date collected, species name,
+and site name.
 
 In databases, fields **must** be associated with a specific **data type**.
 
@@ -112,15 +111,24 @@ In databases, fields **must** be associated with a specific **data type**.
 
 A **data type** describes what types of values a field can hold. For example,
 an *integer* field can only hold whole numbers (for example `-4324` or
-`10000002`).
+`10000002`). For a complete list of data types available in PyTrackDat, see
+[TODO: FILL THIS IN]().
 
 ### Null Value
-A **null** value is a database's way of representing a missing value of an
-item's field. For example, a blank cell or a "N/A" in anotherwise numeric column
-in a spreadsheet could be represented as `NULL` in the database.
+A **null** value is a database's way of representing a missing value for a
+field in a specific row. For example, a blank cell or a "N/A" in anotherwise
+numeric column in a spreadsheet could be represented as `NULL` in the database.
 
 These values are not always a good substitute for any missing value; there are
 associated usage issues that can pose problems for data integrity.
+
+    A concrete and common example of the problems cavalier usage of `NULL` can
+    pose is a case where there are *more than one* different "missing" values
+    which represent distinct concepts: for example, a value of "N/A" could mean
+    "not relevant to this row", whereas a value of "missing" could mean
+    "relevant to this row but not recorded". In this case, changing both of
+    these values to `NULL` in the database would result in a loss of
+    information.
 
 ### Primary Key
 A **primary key** is a field of a relation which serves as a **unique
@@ -132,11 +140,12 @@ Primary keys can be divided into two categories: natural keys and artificial
 keys.
 
 **Natural keys** are fields which describe some "real-world" property
-of whatever is being described by the tuple.
+of whatever is being described by the tuple, and are most likely already
+present in the data.
 
 **Artificial keys** are fields which are explicitly designed as an otherwise
 meaningless number or string of alphanumeric characters that uniquely identify
-the tuple (and often by extension the actual item) in question.
+the row (and often by extension the actual item) in question.
 
 For example, in the two tables described above, the "Specimen Number" field
 of Table 1 could be used as an artificial key and the "Site Name" field of
@@ -145,10 +154,15 @@ the same English name.
 
 ### Foreign Keys
 
-TODO
+A **foreign key** is a field of a table which allow rows in the table to refer
+to the primary key of a row in *another* table. These are useful for describing
+relationships between rows, thereby preventing duplication of information and
+enabling strict relationship rules to be enforced.
 
-### Tuple
-**Also known as:** Row, entity
+For example, TODO
+
+### Row
+**Also known as:** Tuple, entity
 
 TODO
 
