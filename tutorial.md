@@ -167,8 +167,13 @@ For example, TODO
 TODO
 
 
+## Step 0: Introduction to PyTrackDat
 
-## Preparing the Dataset
+TODO
+
+
+
+## Step 1: Preparing the Dataset
 
 Writing Notes:
 * Easier if the metadata is clearly defined
@@ -202,7 +207,7 @@ TODO
 > in a manner that is **indestingishable** from TODO
 
 
-### Step 1: Know Your Data
+### 1A: Know Your Data
 
 The most important consideration, when preparing to create a database for a
 specific dataset, is to know as much as possible about the data as possible.
@@ -396,7 +401,7 @@ The process of doing this interconversion is covered below in the
 "Importing the Dataset Automatically" section.
 
 
-### Step 2: Define a Consistent Data Format
+### 1B: Define a Consistent Data Format
 
 * Sane field names
 	* lowercase, underscore separated, describe the data, no redundant info
@@ -407,7 +412,7 @@ The process of doing this interconversion is covered below in the
 TODO
 
 
-### Step 3: Simplify and Deduplicate Data
+### 1C: Simplify and Deduplicate Data
 
 * Don't have anything except primary keys in more than one place
 	* Only use primary keys for referencing rows from other tables
@@ -418,7 +423,7 @@ TODO
 
 
 
-## Designing the Database Schema
+## Step 2: Generating and/or Designing the Database Schema
 
 Writing Notes:
 * Avoid data duplication at all times!
@@ -588,28 +593,23 @@ Writing Notes:
 TODO
 
 
-## Introduction to PyTrackDat
+
+### Automatically Analyzing a Dataset with PyTrackDat
 
 TODO
 
 
 
-## Automatically Analyzing a Dataset with PyTrackDat
+### Manually Modeling the Schema in PyTrackDat with a Design File
+
+TODO
+
+#### Running the Site (for Testing Purposes)
 
 TODO
 
 
-
-## Manually Modeling the Schema in PyTrackDat with a Design File
-
-TODO
-
-### Running the Site (for Testing Purposes)
-
-TODO
-
-
-### Importing the Dataset Automatically
+#### Importing the Dataset Automatically
 
 TODO
 
@@ -617,7 +617,7 @@ Writing Notes:
 * TODO: Figure out django's mechanism for timezone awareness with these
 	commands...
 
-#### Parsing Values with Regular Expressions
+##### Parsing Values with Regular Expressions
 
 Writing Notes:
 * units
@@ -626,7 +626,13 @@ TODO
 
 
 
-## Hosting the Database on a Linux Server
+## Step 3: Generating the Database Application
+
+TODO
+
+
+
+## Step 4: Hosting the Database on a Linux Server
 
 While the database can be ran and accessed locally, as has already been seen,
 a lot of the power of a web database is having any collaborator be able to
@@ -637,6 +643,6 @@ TODO
 
 
 
-## References
+## Appendix: References
 1. Django Framework Documentation: Time zones.
 	https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/
