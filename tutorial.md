@@ -181,13 +181,13 @@ numeric column in a spreadsheet could be represented as `NULL` in the database.
 These values are not always a good substitute for any missing value; there are
 associated usage issues that can pose problems for data integrity.
 
-    A concrete and common example of the problems cavalier usage of `NULL` can
-    pose is a case where there are *more than one* different "missing" values
-    which represent distinct concepts: for example, a value of "N/A" could mean
-    "not relevant to this row", whereas a value of "missing" could mean
-    "relevant to this row but not recorded". In this case, changing both of
-    these values to `NULL` in the database would result in a loss of
-    information.
+> A concrete and common example of the problems cavalier usage of `NULL` can
+> pose is a case where there are *more than one* different "missing" values
+> which represent distinct concepts: for example, a value of "N/A" could mean
+> "not relevant to this row", whereas a value of "missing" could mean
+> "relevant to this row but not recorded". In this case, changing both of
+> these values to `NULL` in the database would result in a loss of
+> information.
 
 ### Primary Key
 A **primary key** is a field of a relation which serves as a **unique
@@ -458,6 +458,8 @@ the downside of a more verbose and less readable field name.
 
 ##### Programmatically Cleaning Up Units
 
+TODO: THIS DOESN'T REALLY APPLY TO PYTRACKDAT
+
 If a dataset is particularly large, it may be difficult to fix unit
 consistency issues by hand. It is possible to programmatically detect and
 interconvert units during the data import process, assuming prefixes are
@@ -548,14 +550,16 @@ either artificial or natural keys. It should be noted which field is the
 primary key, and whether or not it is a natural key.
 
 When designing an artifical key, a simple integer field which auto-increments
-(database software will do this automatically with the correct setup) is the
-most popular choice. A downside to this, apart from the inherent downside of
-having an artifical key, is a tendency for human readers to assign more
-meaning to the key than it should contain. Despite typically being a seqential,
-increasing number, a numerical key of `42` **does not** necessarily represent
-the 42<sup>nd</sup> entry in the database chronologically. The order can be
-altered by deleting records, and in fact relations should not be considered as
-having any inherent order at all by default.
+(PyTrackDat will do this automatically with the correct setup) is the most
+popular choice.
+
+> A downside to this, apart from the inherent downsides of artifical keys, is
+> a tendency for human readers to assign more meaning to the key than it
+> should contain. Despite typically being a seqential, increasing number, a
+> numerical key of `42` **does not** necessarily represent the
+> 42<sup>nd</sup> entry in the database chronologically. The order can be
+> altered by deleting records, and in fact relations should not be considered
+> as having any inherent order at all by default.
 
 > ##### Aside: Ordering Tuples in a Relation
 > If chronological ordering of tuples is desired, an additional field can be
@@ -596,7 +600,7 @@ Writing Notes:
 
 TODO
 
-### Common Data Types for Fields
+### Field Data Types for PyTrackDat
 
 Writing Notes:
 * TODO: Discuss null values further???
