@@ -1,5 +1,64 @@
 # Building Python-Powered Web Databases for Biological Datasets with PyTrackDat
 
+## Table of Contents
+
+  * [Table of Contents](#table-of-contents)
+  * [Introduction](#introduction)
+     * [The Value of Structure](#the-value-of-structure)
+  * [Vocabulary and Concepts Used](#vocabulary-and-concepts-used)
+     * [Table 1: Specimens](#table-1-specimens)
+     * [Table 2: Sites](#table-2-sites)
+     * [Table](#table)
+     * [Field](#field)
+     * [Data Type](#data-type)
+     * [Null Value](#null-value)
+     * [Primary Key](#primary-key)
+     * [Foreign Key](#foreign-key)
+     * [Row](#row)
+  * [Introduction to PyTrackDat](#introduction-to-pytrackdat)
+  * [Step 1: Preparing the Dataset](#step-1-preparing-the-dataset)
+     * [Aside on Inconsistent Data](#aside-on-inconsistent-data)
+     * [1A: Know Your Data](#1a-know-your-data)
+        * [Problem: Date/Time Storage and Timezones](#problem-datetime-storage-and-timezones)
+           * [Solution – Using GMT Internally and Transforming as Needed](#solution--using-gmt-internally-and-transforming-as-needed)
+        * [Problem: Missing, Unknown, and Unknowable Values](#problem-missing-unknown-and-unknowable-values)
+           * [Stopgap Solution: A Second Status Field](#stopgap-solution-a-second-status-field)
+        * [Problem: Decimal Precision, Significant Figures, and Floating Points](#problem-decimal-precision-significant-figures-and-floating-points)
+           * [The Issue with Floating Points](#the-issue-with-floating-points)
+           * [Potential Solution to Multiple Precision Levels: A Second Field](#potential-solution-to-multiple-precision-levels-a-second-field)
+        * [Problem: Units](#problem-units)
+           * ["Solution": Consistent Units in Data Prior to Import, with Documentation](#solution-consistent-units-in-data-prior-to-import-with-documentation)
+           * [Programmatically Cleaning Up Units](#programmatically-cleaning-up-units)
+     * [1B: Define a Consistent Data Format](#1b-define-a-consistent-data-format)
+     * [1C: Simplify and Deduplicate Data](#1c-simplify-and-deduplicate-data)
+  * [Step 2: Generating and/or Designing the Database Schema](#step-2-generating-andor-designing-the-database-schema)
+     * [General Principles](#general-principles)
+        * [Avoid Data and Relationship Duplication](#avoid-data-and-relationship-duplication)
+        * [Use Consistent Relation and Field Names](#use-consistent-relation-and-field-names)
+        * [TODO: More...](#todo-more)
+     * [Defining Relations](#defining-relations)
+        * [Primary Keys](#primary-keys)
+           * [Aside: Ordering Tuples in a Relation](#aside-ordering-tuples-in-a-relation)
+        * [Fields](#fields)
+        * [Relationships](#relationships)
+     * [Common Data Types for Fields](#common-data-types-for-fields)
+        * [Integer Fields](#integer-fields)
+        * [Floating-Point Number Fields](#floating-point-number-fields)
+        * [Decimal Number Fields](#decimal-number-fields)
+        * [Variable Character Fields (So-Called VARCHARs)](#variable-character-fields-so-called-varchars)
+        * [Text Fields](#text-fields)
+     * [Further Restricting Possible Field Values](#further-restricting-possible-field-values)
+     * [Balancing Future Expandability and Restrictiveness](#balancing-future-expandability-and-restrictiveness)
+        * [When to Create Secondary Fields](#when-to-create-secondary-fields)
+     * [Automatically Analyzing a Dataset with PyTrackDat](#automatically-analyzing-a-dataset-with-pytrackdat)
+     * [Manually Modeling the Schema in PyTrackDat with a Design File](#manually-modeling-the-schema-in-pytrackdat-with-a-design-file)
+        * [Running the Site (for Testing Purposes)](#running-the-site-for-testing-purposes)
+        * [Importing the Dataset Automatically](#importing-the-dataset-automatically)
+           * [Parsing Values with Regular Expressions](#parsing-values-with-regular-expressions)
+  * [Step 3: Generating the Database Application](#step-3-generating-the-database-application)
+  * [Step 4: Hosting the Database on a Linux Server](#step-4-hosting-the-database-on-a-linux-server)
+
+
 
 ## Introduction
 
@@ -28,6 +87,7 @@ Notes:
 ### The Value of Structure
 
 TODO
+
 
 
 ## Vocabulary and Concepts Used
@@ -152,7 +212,7 @@ of Table 1 could be used as an artificial key and the "Site Name" field of
 Table 2 could be used as a natural key, assuming that no two sites will have
 the same English name.
 
-### Foreign Keys
+### Foreign Key
 
 A **foreign key** is a field of a table which allow rows in the table to refer
 to the primary key of a row in *another* table. These are useful for describing
@@ -167,7 +227,7 @@ For example, TODO
 TODO
 
 
-## Step 0: Introduction to PyTrackDat
+## Introduction to PyTrackDat
 
 TODO
 
