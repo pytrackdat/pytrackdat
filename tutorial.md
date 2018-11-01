@@ -2,7 +2,6 @@
 
 ## Table of Contents
 
-  * [Table of Contents](#table-of-contents)
   * [Introduction](#introduction)
      * [The Value of Structure](#the-value-of-structure)
   * [Vocabulary and Concepts Used](#vocabulary-and-concepts-used)
@@ -219,12 +218,21 @@ to the primary key of a row in *another* table. These are useful for describing
 relationships between rows, thereby preventing duplication of information and
 enabling strict relationship rules to be enforced.
 
-For example, TODO
+For example, the `Site Name` field in the specimens table above should be
+modeled as a foreign key referring to the primary key of the sites table. This
+helps enforce data consistency by making sure the site name in the specimens
+table corresponds with the name and description of the site in the sites table.
+This also means that additional information can be attached to a row in the
+sites table, and any specimen rows that refer to the site will be able to
+fetch that information without the data being entered in multiple places within
+the database.
 
 ### Row
 **Also known as:** Tuple, entity
 
-TODO
+A **row** is an entry in a particular table. Rows contain values for each of
+the fields specified in the description of the table, and usually represent
+a specific real-life object or idea (such as a specimen or a site).
 
 
 ## Introduction to PyTrackDat
