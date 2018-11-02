@@ -43,10 +43,10 @@ urlpatterns = [
 ]"""
 
 DEBUG_OLD = "DEBUG = True"
-DEBUG_NEW = "DEBUG = True"
+DEBUG_NEW = "DEBUG = not (os.getenv('DJANGO_ENV') == 'production')"
 
 ALLOWED_HOSTS_OLD = "ALLOWED_HOSTS = []"
-ALLOWED_HOSTS_NEW = "ALLOWED_HOSTS = ['127.0.0.1', 'localhost']"
+ALLOWED_HOSTS_NEW = "ALLOWED_HOSTS = ['127.0.0.1', 'localhost'] if (os.getenv('DJANGO_ENV') == 'production') else []"
 
 INSTALLED_APPS_OLD = """INSTALLED_APPS = [
     'django.contrib.admin',
