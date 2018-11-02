@@ -70,6 +70,10 @@ INSTALLED_APPS_NEW = """INSTALLED_APPS = [
     'advanced_filters',
 ]"""
 
+STATIC_OLD = "STATIC_URL = '/static/'"
+STATIC_NEW = """STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')"""
+
 BASIC_NUMBER_TYPES = {
     "integer": "IntegerField",
     "float": "FloatField",
@@ -311,7 +315,8 @@ def main(args):
         sf.seek(0)
         sf.write(old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW)
                  .replace(DEBUG_OLD, DEBUG_NEW)
-                 .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW))
+                 .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW)
+                 .replace(STATIC_OLD, STATIC_NEW))
         sf.truncate()
 
     with open(os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name, "urls.py"), "r+") as uf:
