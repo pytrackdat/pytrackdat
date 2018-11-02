@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import csv
+import getpass
 import json
 import os
 import shutil
@@ -319,7 +320,24 @@ def main(args):
         uf.write(old_contents.replace(URL_OLD, URL_NEW))
         uf.truncate()
 
-    subprocess.run(["./run_site_setup.bash", django_site_name, TEMP_DIRECTORY], check=True)
+    print("\n===== ADMINISTRATIVE USER SETUP =====")
+    admin_username = input("Admin Account Username: ")
+    admin_email = input("Admin Account Email (Optional): ")
+    admin_password = "1"
+    admin_password_2 = "2"
+    while admin_password != admin_password_2:
+        admin_password = getpass.getpass("Admin Account Password: ")
+        admin_password_2 = getpass.getpass("Admin Account Password Again: ")
+        if admin_password != admin_password_2:
+            print("Passwords do not match. Please try again.")
+    print("=====================================\n")
+
+    subprocess.run(["./run_site_setup.bash",
+                    django_site_name,
+                    TEMP_DIRECTORY,
+                    admin_username,
+                    admin_email,
+                    admin_password], check=True)
 
     shutil.make_archive(django_site_name, "zip", base_dir=os.path.join("tmp", django_site_name))
 
