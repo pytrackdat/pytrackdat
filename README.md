@@ -12,7 +12,19 @@ TODO
 
 ### Dependencies
 
-First, make sure Python 3, `pip`, and `virtualenv` are installed.
+First, make sure Python 3, `pip3`, and `virtualenv` are installed.
+
+For macOS, please go to the
+[official Python website](https://www.python.org/downloads/)
+and download the latest version of Python3 (as of the time of writing, 3.7.1).
+
+TODO: WINDOWS INSTRUCTIONS, WITH ADDING TO PATH
+
+To install `virtualenv`, run the following command in a terminal window:
+
+```bash
+pip3 install virtualenv
+```
 
 TODO: More instructions on installing requirements
 
