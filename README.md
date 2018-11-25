@@ -4,7 +4,12 @@
 
 **PLEASE NOTE THAT CURRENTLY PYTRACKDAT ONLY RUNS ON MAC OS AND LINUX.**
 
-TODO
+PyTrackDat comprises a series of three Python scripts that analyze and assist 
+in the conversion of data and relevant metadata from .csv files into an online
+database that can facilitate data management, manipulation, and quality
+control. What each of these does is outlined in the `README.md` file. Note that
+the care that is taken to assemble `.csv` files before using these scripts will
+help ensure that the database generated is maximally useful.
 
 
 
