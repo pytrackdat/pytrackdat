@@ -225,7 +225,7 @@ being entered and allows additional operations on types that allow them (such
 as the addition of integers.)
 
 For a more comprehensive overview on why data types are benificial when it
-comes to data entry and integrity, see [tutorial.md](tutorial.md).
+comes to data entry and integrity, see [manual.md](manual.md).
 
 For a description of which values are acceptable for each data type, see the
 "Data Type Descriptions" section below.
@@ -236,7 +236,7 @@ This cell contains a boolean (true or false) value which specifies whether the
 value of the field in the database can be `NULL`. If the field contains any
 value other than "true", "false" is inferred. Null is a special value which has
 implications on data representation; for more information see
-[tutorial.md](tutorial.md).
+[manual.md](manual.md).
 
 ###### Null Values
 
@@ -344,7 +344,7 @@ TODO
 Floating-point numbers can store a huge range of numbers, including numbers
 with decimal points. However, there are precision issues, and
 **whenever possible** the `decimal` type should be used instead to prevent
-floating-point-specific errors (see [tutorial.md](tutorial.md).) 
+floating-point-specific errors (see [manual.md](manual.md).) 
 
 ###### Type-Specific Settings
 
@@ -355,7 +355,7 @@ TODO
 Decimal-typed numbers can store fixed-precision decimal numbers. Both the
 overall maximum length and decimal precision must be specified, in number of
 digits. This type is useful for encoding significant figures and **avoiding**
-floating-point-specific errors (see [tutorial.md](tutorial.md).)
+floating-point-specific errors (see [manual.md](manual.md).)
 
 ###### Type-Specific Settings
 
