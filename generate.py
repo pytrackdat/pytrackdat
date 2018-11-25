@@ -244,7 +244,7 @@ def main(args):
             while True:
                 try:
                     current_field = next(design_reader)
-                    while current_field:
+                    while current_field and "".join(current_field).strip() != "":
                         # TODO: Process
 
                         if current_field[2].lower() not in DATA_TYPES:
@@ -301,7 +301,7 @@ def main(args):
                     for f in relation_fields:
                         mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
 
-                    while not current_field:
+                    while not current_field or "".join(current_field).strip() == "":
                         current_field = next(design_reader)
 
                     relation_name = next(design_reader)
