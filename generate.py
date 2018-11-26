@@ -337,12 +337,19 @@ def main(args):
             print("Passwords do not match. Please try again.")
     print("=====================================\n")
 
-    subprocess.run(["./run_site_setup.bash",
-                    django_site_name,
-                    TEMP_DIRECTORY,
-                    admin_username,
-                    admin_email,
-                    admin_password], check=True)
+    try:
+        subprocess.run(["./run_site_setup.bash",
+                        django_site_name,
+                        TEMP_DIRECTORY,
+                        admin_username,
+                        admin_email,
+                        admin_password], check=True)
+
+    except subprocess.CalledProcessError:
+        # Need to catch subprocess errors to prevent password from being shown onscreen.
+        print("An error occurred while running the site setup script.")
+        print("Terminating...")
+        exit(1)
 
     shutil.make_archive(django_site_name, "zip", base_dir=os.path.join("tmp", django_site_name))
 
