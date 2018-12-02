@@ -17,7 +17,7 @@ help ensure that the database generated is maximally useful.
 
 ### Dependencies
 
-First, make sure Python 3, `pip3`, and `virtualenv` are installed.
+Make sure Python 3, `pip3`, and `virtualenv` are installed.
 
 For macOS, please go to the
 [official Python website](https://www.python.org/downloads/)
