@@ -221,7 +221,13 @@ def main(args):
     if not os.path.exists(TEMP_DIRECTORY):
         os.makedirs(TEMP_DIRECTORY)
 
-    subprocess.run(["./create_django_site.bash", django_site_name, TEMP_DIRECTORY], check=True)
+    if os.platform == "nt":
+        subprocess.run(["create_django_site.bat", django_site_name, TEMP_DIRECTORY], check=True)
+    elif os.platform == "posix":
+        subprocess.run(["./create_django_site.bash", django_site_name, TEMP_DIRECTORY], check=True)
+    else:
+        print("Unsupported platform.")
+        exit(1)
 
     with open(design_file, "r") as df, \
             open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "models.py"), "w") as mf, \
@@ -338,12 +344,23 @@ def main(args):
     print("=====================================\n")
 
     try:
-        subprocess.run(["./run_site_setup.bash",
-                        django_site_name,
-                        TEMP_DIRECTORY,
-                        admin_username,
-                        admin_email,
-                        admin_password], check=True)
+        if os.platform == "nt":
+            subprocess.run(["run_site_setup.bat",
+                            django_site_name,
+                            TEMP_DIRECTORY,
+                            admin_username,
+                            admin_email,
+                            admin_password], check=True)
+        elif os.platform == "posix":
+            subprocess.run(["./run_site_setup.bash",
+                            django_site_name,
+                            TEMP_DIRECTORY,
+                            admin_username,
+                            admin_email,
+                            admin_password], check=True)
+        else:
+            print("Unsupported platform.")
+            exit(1)
 
     except subprocess.CalledProcessError:
         # Need to catch subprocess errors to prevent password from being shown onscreen.
