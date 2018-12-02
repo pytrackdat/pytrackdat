@@ -10,6 +10,6 @@ pip install -r ./requirements.txt
 ./manage.py makemigrations
 ./manage.py migrate
 if [ ! -z "$3" ]; then
-echo "from django.contrib.auth.models import User; User.objects.create_superuser('$3', '$4', '$5')" | ./manage.py shell > world
+echo "from django.contrib.auth.models import User; User.objects.create_superuser('$3', '$4', '$5')" | ./manage.py shell > /dev/null
 fi
 deactivate

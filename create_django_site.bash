@@ -18,5 +18,5 @@ sed -i '' -e "s/SITE_NAME/$1/g" ./Dockerfile
 chmod +x ./manage.py
 ./manage.py startapp core
 cp -r ../../app_includes/* ./core/
-cp -r ../../common.py ./core/
+cp ../../common.py ./core/
 deactivate
