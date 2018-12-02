@@ -17,6 +17,6 @@ copy /B ..\util_files\nginx.conf "%1\"
 cd "%1"
 powershell -Command "(gc Dockerfile) -replace 'SITE_NAME', '%1' | Out-File Dockerfile"
 python manage.py startapp core
-xcopy ..\..\app_includes "%1"
+xcopy ..\..\app_includes core /s /e
 copy /B ..\..\common.py "%1"
 deactivate
