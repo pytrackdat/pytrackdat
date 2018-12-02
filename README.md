@@ -495,6 +495,19 @@ To stop the server, press `Ctrl-C` in the terminal window where the server is
 running.
 
 
-## Deploying the End Result
+## Deploying the End Result on DigitalOcean
+
+DigitalOcean is a cost-effective VPS (virtual private server) hosting provider.
+For $5 USD per month, users can create a server on which the created web
+application and database can be hosted. For an additional $1 USD per month,
+automatic backups can be enabled.
+
+If you already have a web server on which the application can be deployed, see
+the section below.
+
+TODO
+
+
+## Deploy
 
 TODO
