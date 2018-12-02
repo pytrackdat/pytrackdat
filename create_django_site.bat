@@ -18,5 +18,5 @@ cd "%1"
 powershell -Command "(gc Dockerfile) -replace 'SITE_NAME', '%1' | Out-File Dockerfile"
 python manage.py startapp core
 xcopy ..\..\app_includes core /s /e
-copy /B ..\..\common.py "%1"
+copy /B ..\..\common.py core
 deactivate
