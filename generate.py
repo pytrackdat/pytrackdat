@@ -221,13 +221,13 @@ def main(args):
     if not os.path.exists(TEMP_DIRECTORY):
         os.makedirs(TEMP_DIRECTORY)
 
-    if os.platform == "nt":
-        subprocess.run(["create_django_site.bat", django_site_name, TEMP_DIRECTORY], check=True)
-    elif os.platform == "posix":
-        subprocess.run(["./create_django_site.bash", django_site_name, TEMP_DIRECTORY], check=True)
-    else:
+    if os.name not in ("nt", "posix"):
         print("Unsupported platform.")
         exit(1)
+
+    create_site_script = "create_django_site.bat" if os.name == "nt" else "./create_django_site.bash"
+    create_site_options = [create_site_script, django_site_name, TEMP_DIRECTORY]
+    subprocess.run(create_site_options, check=True)
 
     with open(design_file, "r") as df, \
             open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "models.py"), "w") as mf, \
@@ -344,23 +344,10 @@ def main(args):
     print("=====================================\n")
 
     try:
-        if os.platform == "nt":
-            subprocess.run(["run_site_setup.bat",
-                            django_site_name,
-                            TEMP_DIRECTORY,
-                            admin_username,
-                            admin_email,
-                            admin_password], check=True)
-        elif os.platform == "posix":
-            subprocess.run(["./run_site_setup.bash",
-                            django_site_name,
-                            TEMP_DIRECTORY,
-                            admin_username,
-                            admin_email,
-                            admin_password], check=True)
-        else:
-            print("Unsupported platform.")
-            exit(1)
+        site_setup_script = "run_site_setup.bat" if os.name == "nt" else "run_site_setup.bash"
+        site_setup_options = [site_setup_script, django_site_name, TEMP_DIRECTORY, admin_username, admin_email,
+                              admin_password]
+        subprocess.run(site_setup_options, check=True)
 
     except subprocess.CalledProcessError:
         # Need to catch subprocess errors to prevent password from being shown onscreen.
