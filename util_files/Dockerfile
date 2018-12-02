@@ -9,6 +9,7 @@ RUN set -ex && apk --update add --no-cache --virtual .build-deps \
                    gcc make libc-dev musl-dev linux-headers pcre pcre-dev \
             && pip install -U pip \
             && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir -r /requirements.txt" \
+            && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir uwsgi==2.0.17.1" \
             && apk del gcc make libc-dev musl-dev linux-headers pcre-dev
 
 RUN mkdir /code/
