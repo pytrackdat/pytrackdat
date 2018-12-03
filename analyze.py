@@ -30,6 +30,15 @@ def main(args):
     design_file = args[0]  # Name for output
     relations = zip(args[1::2], map(str.lower, args[2::2]))  # Split pairs of file name, relation name
 
+    if len(set(args[1::2])) < len(args[1::2]):
+        print("Error: You cannot use the same relation name(s) for more than one table:")
+
+        duplicates = set([r for r in args[1::2] if len([r2 for r2 in args[1::2] if r2 == r]) > 1])
+        for r in duplicates:
+            print("\t{}".format(r))
+
+        exit(1)
+
     with open(design_file, "w") as df:
         design_writer = csv.writer(df, delimiter=",")
         for rn, rf in relations:
