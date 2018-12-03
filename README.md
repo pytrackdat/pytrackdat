@@ -507,7 +507,37 @@ the section below.
 
 TODO
 
+TODO: SITE SETUP (ALLOWED_HOSTS)
 
-## Deploy
+
+
+## Deploying the End Result on an Existing Server
+
+TODO
+
+
+### Step 1: Install Docker and Docker Compose
+
+TODO
+
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+
+
+### Step 2: Upload the Application
+
+TODO
+
+
+### Step 3: Build and Start the Application
+
+TODO
+
+TODO: NOTE ABOUT PORTS AND CONFIGURATION
+TODO: SITE SETUP (ALLOWED_HOSTS)
+
+
+
+## Updating the Schema
 
 TODO
