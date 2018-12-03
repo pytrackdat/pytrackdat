@@ -344,7 +344,7 @@ def main(args):
     print("=====================================\n")
 
     try:
-        site_setup_script = "run_site_setup.bat" if os.name == "nt" else "run_site_setup.bash"
+        site_setup_script = "run_site_setup.bat" if os.name == "nt" else "./run_site_setup.bash"
         site_setup_options = [site_setup_script, django_site_name, TEMP_DIRECTORY, admin_username, admin_email,
                               admin_password]
         subprocess.run(site_setup_options, check=True)
