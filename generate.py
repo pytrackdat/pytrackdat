@@ -247,7 +247,9 @@ def main(args):
             relation_fields = []
             id_type = ""
 
-            while True:
+            end_inner_loop = False
+
+            while not end_inner_loop:
                 try:
                     current_field = next(design_reader)
                     while current_field and "".join(current_field).strip() != "":
@@ -299,6 +301,9 @@ def main(args):
                     mf.write("    def get_id_type(cls):\n")
                     mf.write("        return '{}'\n\n".format(id_type))
 
+                    mf.write("    class Meta:\n")
+                    mf.write("        verbose_name = '{}'\n\n".format(python_relation_name[len(PDT_RELATION_PREFIX):]))
+
                     af.write("\n\n@admin.register({})\n".format(python_relation_name))
                     af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, "
                              "admin.ModelAdmin):\n".format(python_relation_name))
@@ -307,10 +312,13 @@ def main(args):
                     for f in relation_fields:
                         mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
 
-                    while not current_field or "".join(current_field).strip() == "":
-                        current_field = next(design_reader)
+                    relation_name = ""
 
-                    relation_name = next(design_reader)
+                    while not relation_name or "".join(relation_name).strip() == "":
+                        rel = next(design_reader)
+                        if len(rel) > 0:
+                            relation_name = rel
+                            end_inner_loop = True
 
                 except StopIteration:
                     end_loop = True

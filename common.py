@@ -14,6 +14,8 @@ RE_DATE_DMY_S = re.compile("^\d{1,2}/\d{1,2}/[1-2]\d{3}$")
 
 RE_MULTIPLE_UNDERSCORES = re.compile("[_]{2,}")
 
+PDT_RELATION_PREFIX = "PyTrackDat"
+
 
 def field_to_py_code(field):
     field = field + "_field" if field in PYTHON_KEYWORDS else field
@@ -22,7 +24,7 @@ def field_to_py_code(field):
 
 
 def to_relation_name(name):
-    python_relation_name = "".join([n.capitalize() for n in name.split("_")])
+    python_relation_name = PDT_RELATION_PREFIX + "".join([n.capitalize() for n in name.split("_")])
 
     if python_relation_name in PYTHON_KEYWORDS:
         python_relation_name += "Class"
