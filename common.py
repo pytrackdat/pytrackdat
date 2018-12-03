@@ -12,10 +12,12 @@ RE_DATE_YMD_S = re.compile("^[1-2]\d{3}/\d{1,2}/\d{1,2}$")
 RE_DATE_DMY_D = re.compile("^\d{1,2}-\d{1,2}-[1-2]\d{3}$")
 RE_DATE_DMY_S = re.compile("^\d{1,2}/\d{1,2}/[1-2]\d{3}$")
 
+RE_MULTIPLE_UNDERSCORES = re.compile("[_]{2,}")
+
 
 def field_to_py_code(field):
-    if field in PYTHON_KEYWORDS:
-        return field + "_field"
+    field = field + "_field" if field in PYTHON_KEYWORDS else field
+    field = re.sub(RE_MULTIPLE_UNDERSCORES, "_", field)
     return field
 
 
