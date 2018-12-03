@@ -84,7 +84,9 @@ cd /path/to/pytrackdat
 PyTrackDat includes an automatic data analyzer which can read a series of CSV
 files in, as well as their desired relation names, and generate a PyTrackDat
 **design file**, which contains human-readable CSV-formatted instructions for
-the structure of the database.
+the structure of the database. This design file is not final, and should be
+checked over and filled out by a human. However, it provides a good starting
+point for generating a database for a particular dataset.
 
 To run the data analyzer on one or more CSV-formatted data files, run the
 following command:
@@ -102,7 +104,8 @@ stored in `samples1.csv` and `samples2.csv`, respectively.
 
 A PyTrackDat design file contains specifications for all tables in the database
 within a single CSV file. The file consists of 'blocks' which correspond to the
-specification for a single table. Blocks are separated by blank lines.
+specification for a single table, based on one of the CSV files passed to the
+script. Blocks are separated by blank lines.
 
 A single block may look like this:
 
@@ -153,7 +156,14 @@ A single block may look like this:
 <tr><td colspan="9">...</td></tr>
 </table>
 
-TODO
+Design files should **not** be left as-is after generation via `analyze.py`.
+The script does its best to infer data types from the columns, but is not
+guaranteed to do a perfect job. Additionally, it is best practice to add a
+**field description** (under the *description* header) in order to provide
+human users additional information about what type of data is stored in the
+field.
+
+TODO: CUSTOMIZATION
 
 #### Design File Specification
 
