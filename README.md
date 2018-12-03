@@ -15,7 +15,25 @@ help ensure that the database generated is maximally useful.
 
 ### Dependencies
 
-Make sure Python 3, `pip3`, and `virtualenv` are installed.
+Make sure Python 3, `pip3`, `virtualenv`, and `wheel` are installed. The latter
+two are Python packages, to be installed using `pip3`, the Python 3 package
+manager.
+
+If Python 3 is already installed, update `pip3` to the latest version with the
+following command, ran in a Terminal window (macOS/Linux) or in Command Prompt
+(Windows):
+
+**macOS/Linux**:
+
+```bash
+pip3 install --upgrade pip
+```
+
+**Windows**:
+
+```cmd
+pip install --upgrade pip
+```
 
 
 #### Installing Python 3
@@ -38,22 +56,22 @@ TODO: IMAGE
 This ensures that Python 3 and `pip` are available from the Command Prompt.
 
 
-#### Installing `virtualenv`
+#### Installing `virtualenv` and `wheel`
 
-To install `virtualenv`, a command must be ran in a Terminal window (macOS or
-Linux), or a Command Prompt (on Windows). To open a Command Prompt, press
-Windows Key + R or open the Start Menu, type in "cmd", and press enter.
+To install `virtualenv` and `wheel`, a command must be ran in a Terminal window
+(macOS or Linux), or a Command Prompt (on Windows). To open a Command Prompt,
+press Windows Key + R or open the Start Menu, type in "cmd", and press enter.
 
 Run the following command on **macOS** or **Linux**:
 
 ```bash
-pip3 install virtualenv
+pip3 install virtualenv wheel
 ```
 
 Run the following command on **Windows**:
 
 ```cmd
-pip install virtualenv
+pip install virtualenv wheel
 ```
 
 
@@ -514,7 +532,7 @@ cd tmp/site_name_here
 Then, activate the Python virtual environment with the following command:
 
 ```bash
-source env/bin/activate
+source site_env/bin/activate
 ```
 
 Before starting the debug server, a **superuser** (administrative user) must
@@ -535,6 +553,12 @@ command, and navigate to the application in your web browser at
 
 To stop the server, press `Ctrl-C` in the terminal window where the server is
 running.
+
+To deactivate the site's virtual environment, type in the following command:
+
+```bash
+deactivate
+```
 
 
 ## Deploying the End Result on DigitalOcean
