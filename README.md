@@ -2,8 +2,6 @@
 
 ## Overview
 
-**PLEASE NOTE THAT CURRENTLY PYTRACKDAT ONLY RUNS ON MAC OS AND LINUX.**
-
 PyTrackDat comprises a series of three Python scripts that analyze and assist 
 in the conversion of data and relevant metadata from .csv files into an online
 database that can facilitate data management, manipulation, and quality
