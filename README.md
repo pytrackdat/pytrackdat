@@ -19,19 +19,44 @@ help ensure that the database generated is maximally useful.
 
 Make sure Python 3, `pip3`, and `virtualenv` are installed.
 
-For macOS, please go to the
+
+#### Installing Python 3
+
+For most new Linux distributions, Python 3 should come pre-installed.
+
+For macOS or Windows, please go to the
 [official Python website](https://www.python.org/downloads/)
 and download the latest version of Python3 (as of the time of writing, 3.7.1).
+Run the installer downloaded from this site and follow the instructions
+on-screen.
 
-TODO: WINDOWS INSTRUCTIONS, WITH ADDING TO PATH
+##### Important: Special Windows Installation Instructions
 
-To install `virtualenv`, run the following command in a terminal window:
+When installing Python 3 on Windows, **make sure** to check the following
+checkbox, which will appear on step TODO of the installation process:
+
+TODO: IMAGE
+
+This ensures that Python 3 and `pip` are available from the Command Prompt.
+
+
+#### Installing `virtualenv`
+
+To install `virtualenv`, a command must be ran in a Terminal window (macOS or
+Linux), or a Command Prompt (on Windows). To open a Command Prompt, press
+Windows Key + R or open the Start Menu, type in "cmd", and press enter.
+
+Run the following command on **macOS** or **Linux**:
 
 ```bash
 pip3 install virtualenv
 ```
 
-TODO: More instructions on installing requirements
+Run the following command on **Windows**:
+
+```cmd
+pip install virtualenv
+```
 
 
 ### Getting the Code
