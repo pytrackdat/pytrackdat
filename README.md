@@ -84,14 +84,16 @@ or using the following `git` command:
 git clone https://github.com/ColauttiLab/PyTrackDat.git
 ```
 
-Once downloaded, un-archive it if needed. Then, open a terminal window and
-`cd` to the directory PyTrackDat is stored in:
+Once downloaded, un-archive it if needed. Then, open a Terminal window
+(macOS/Linux) or a Command Prompt (Windows) and `cd` to the directory
+PyTrackDat is stored in:
 
 ```bash
 cd /path/to/pytrackdat
 ```
 
 > **Beginner Tip**: TODO: Paths and stuff (using command line)
+> TODO
 
 
 
@@ -109,8 +111,16 @@ point for generating a database for a particular dataset.
 To run the data analyzer on one or more CSV-formatted data files, run the
 following command:
 
+**macOS/Linux:**
+
 ```bash
 python3 ./analyze.py design.csv sample_type_1 samples1.csv sample_type_2 samples2.csv [...]
+```
+
+**Windows**:
+
+```cmd
+python ./analyze.py design.csv sample_type_1 samples1.csv sample_type_2 samples2.csv [...]
 ```
 
 Where `design.csv` is the name of the design file to output, and
