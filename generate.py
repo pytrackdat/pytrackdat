@@ -292,28 +292,39 @@ def main(args):
 
                         current_field = next(design_reader)
 
-                    mf.write("\n\nclass {}(models.Model):\n".format(python_relation_name))
-                    mf.write("    @classmethod\n")
-                    mf.write("    def ptd_info(cls):\n")
-                    mf.write("        return json.loads(\"\"\"{}\"\"\")\n\n".format(json.dumps(relation_fields)))
+                except StopIteration:
+                    if len(relation_fields) == 0:
+                        end_loop = True
+                        break
 
-                    mf.write("    @classmethod\n")
-                    mf.write("    def get_id_type(cls):\n")
-                    mf.write("        return '{}'\n\n".format(id_type))
+                    # Otherwise, write data into the model and admin files
 
-                    mf.write("    class Meta:\n")
-                    mf.write("        verbose_name = '{}'\n\n".format(python_relation_name[len(PDT_RELATION_PREFIX):]))
+                mf.write("\n\nclass {}(models.Model):\n".format(python_relation_name))
+                mf.write("    @classmethod\n")
+                mf.write("    def ptd_info(cls):\n")
+                mf.write("        return json.loads(\"\"\"{}\"\"\")\n\n".format(json.dumps(relation_fields)))
 
-                    af.write("\n\n@admin.register({})\n".format(python_relation_name))
-                    af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, "
-                             "admin.ModelAdmin):\n".format(python_relation_name))
-                    af.write("    actions = ['export_csv', 'export_labels']\n")
+                mf.write("    @classmethod\n")
+                mf.write("    def get_id_type(cls):\n")
+                mf.write("        return '{}'\n\n".format(id_type))
 
-                    for f in relation_fields:
-                        mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
+                mf.write("    class Meta:\n")
+                mf.write("        verbose_name = '{}'\n\n".format(python_relation_name[len(PDT_RELATION_PREFIX):]))
 
-                    relation_name = ""
+                af.write("\n\n@admin.register({})\n".format(python_relation_name))
+                af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, "
+                         "admin.ModelAdmin):\n".format(python_relation_name))
+                af.write("    actions = ['export_csv', 'export_labels']\n")
 
+                for f in relation_fields:
+                    mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
+
+                mf.flush()
+                af.flush()
+
+                relation_name = ""
+
+                try:
                     while not relation_name or "".join(relation_name).strip() == "":
                         rel = next(design_reader)
                         if len(rel) > 0:
