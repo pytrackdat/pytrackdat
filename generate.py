@@ -46,7 +46,7 @@ DEBUG_OLD = "DEBUG = True"
 DEBUG_NEW = "DEBUG = not (os.getenv('DJANGO_ENV') == 'production')"
 
 ALLOWED_HOSTS_OLD = "ALLOWED_HOSTS = []"
-ALLOWED_HOSTS_NEW = "ALLOWED_HOSTS = ['127.0.0.1', 'localhost'] if (os.getenv('DJANGO_ENV') == 'production') else []"
+ALLOWED_HOSTS_NEW = "ALLOWED_HOSTS = ['127.0.0.1', '{}'] if (os.getenv('DJANGO_ENV') == 'production') else []"
 
 INSTALLED_APPS_OLD = """INSTALLED_APPS = [
     'django.contrib.admin',
@@ -225,6 +225,11 @@ def main(args):
         print("Unsupported platform.")
         exit(1)
 
+    site_url = "localhost"
+    prod_build = input("Is this a production build? (y/n): ")
+    if prod_build.lower() in ("y", "yes"):
+        site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
+
     create_site_script = "create_django_site.bat" if os.name == "nt" else "./create_django_site.bash"
     create_site_options = [create_site_script, django_site_name, TEMP_DIRECTORY]
     subprocess.run(create_site_options, check=True)
@@ -340,7 +345,7 @@ def main(args):
         sf.seek(0)
         sf.write(old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW)
                  .replace(DEBUG_OLD, DEBUG_NEW)
-                 .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW)
+                 .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url))
                  .replace(STATIC_OLD, STATIC_NEW))
         sf.truncate()
 
@@ -350,7 +355,7 @@ def main(args):
         uf.write(old_contents.replace(URL_OLD, URL_NEW))
         uf.truncate()
 
-    print("\n===== ADMINISTRATIVE USER SETUP =====")
+    print("\n===== ADMINISTRATIVE SETUP =====")
     admin_username = input("Admin Account Username: ")
     admin_email = input("Admin Account Email (Optional): ")
     admin_password = "1"
@@ -365,7 +370,7 @@ def main(args):
     try:
         site_setup_script = "run_site_setup.bat" if os.name == "nt" else "./run_site_setup.bash"
         site_setup_options = [site_setup_script, django_site_name, TEMP_DIRECTORY, admin_username, admin_email,
-                              admin_password]
+                              admin_password, site_url]
         subprocess.run(site_setup_options, check=True)
 
     except subprocess.CalledProcessError:
