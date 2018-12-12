@@ -333,8 +333,6 @@ to `NULL`.
 This cell contains a value, of the same type as would appear in the data CSV
 file, specifying the default value for the field in the database.
 
-TODO: WHERE IS THIS ACTUALLY USED???
-
 ###### Description
 
 This cell should contain a succinct and comprehensive description of what the
@@ -354,7 +352,14 @@ setting options, see the section below.
 
 #### Data Type Descriptions
 
-TODO: With additional field descriptions
+The following are all the data types currently supported by PyTrackDat.
+**Watch out** for additional type-specific settings for some data types.
+These often can restrict the possible values that can be stored by the field
+in the database, and are useful for data integrity purposes.
+
+Some of these type-specific settings may be **automatically detected** by the
+`analyze.py` script; these should be reviewed by hand to make sure they cover
+all possible values which can be stored in the field.
 
 ##### `auto key`: Automatic Primary Key
 
@@ -407,7 +412,7 @@ Integers can be between -9 223 372 036 854 775 808 and
 
 ###### Type-Specific Settings
 
-TODO
+**No** type-specific settings are available for `integer`.
 
 ##### `float`: Floating Point Number (Non-Fixed Precision Decimal)
 
@@ -418,7 +423,7 @@ floating-point-specific errors (see [manual.md](manual.md).)
 
 ###### Type-Specific Settings
 
-TODO
+**No** type-specific settings are available for `float`.
 
 ##### `decimal`: Fixed-Precision Decimal Number
 
@@ -453,7 +458,22 @@ with the `choices` setting should be used.
 
 ##### `text`: Fixed- or Unbounded-Length Text
 
-TODO
+Text fields can store almost any value, unless special restrictions are put in
+place to restrict their domain. These fields are often useful in situations
+where it does not make sense to restrict the column to certain values; for
+example in the case of a `description` field.
+
+Text fields can optionally be limited any combination of:
+
+  1. A certain maximum character length. Values extending beyond this maximum
+     length will not be accepted.
+     
+  1. A list of specific values (think of this as an internal representation of
+     a "dropdown"-type input, where only a limited range of values are
+     acceptable). For example, consider a specimen table's `sex` field, where
+     values should be limited to `male`, `female`, and possibly `unknown`.
+
+These limitations are controlled by the type-specific settings below.
 
 ###### Type-Specific Settings
 
@@ -466,9 +486,12 @@ The `text` type optionally can take up two type-specific settings:
      speed up data entry, prevent typos, and restrict the domain of a field to
      exactly what is desired.
 
-##### `date`: Date (TODO: TIMEZONED??)
+##### `date`: Date
 
-TODO
+Represents a date, including month and year. Does **not** include any time
+information; for times, use a second column with the `time` data type
+(described below). At the moment, no timezone information is stored, which
+should be tracked manually (or put in the field description.)
 
 Currently, PyTrackDat only accepts the `YYYY-MM-DD` format for dates.
 
@@ -476,9 +499,12 @@ Currently, PyTrackDat only accepts the `YYYY-MM-DD` format for dates.
 
 **No** type-specific settings are available for `date`.
 
-##### `time`: Time (TODO: 24 hr probably, TIMEZONED?)
+##### `time`: Time
 
-TODO
+Represents a time, including minutes and seconds. If seconds are left out in
+any passed values, the default seconds value is `0`. At the moment, no timezone
+information is stored, which should be tracked manually (or put in the field
+description.)
 
 Currently, PyTrackDat only accepts the `HH:MM` or `HH:MM:SS` 24 hour formats 
 for times.
