@@ -199,8 +199,22 @@ following checklist:
 3. Change desired **foreign keys** from their detected data type to the foreign
    key data type, following the foreign key documentation (TODO: LINK) to link
    them to the correct table.
+   
+#### Design File Customization
 
-TODO: CUSTOMIZATION
+In almost all cases, there are data types and settings that will be impossible
+for the `analyze.py` script to detect. For example, a **foreign key**, which is
+a data type that allows a row in a table to refer to a different row in either
+the same table or a different table, cannot be automatically detected. Foreign
+keys are very useful for reducing data duplication and encoding complex data
+relationships.
+
+In other cases, it may be desirable to limit a field to a range of data types.
+For example, if a specimen can be one of four species, it is desirable to make
+a text field which can only store any of these four species' names. The analyze
+script does its best to detect these instances, but it may not detect
+**all possible choices**. Thus, text fields with automatically-detected choice
+limitations should be examined by hand.
 
 #### Design File Specification
 
