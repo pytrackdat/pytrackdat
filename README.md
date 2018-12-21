@@ -561,6 +561,12 @@ python3 ./generate.py design.csv site_name
 Where `design.csv` is a path to the design file and `site_name` is the name of
 the web application that will be generated.
 
+The script will ask if the version being built is a 'production build'. Answer
+`n` (no) for now.
+
+It will also prompt for the details of an administrative user. Enter in a
+username and password for testing purposes. The 'email' field is optional.
+
 This will output a zip file, `site_name.zip`, in the PyTrackDat project
 directory. This package will be used to deploy the site.
 
@@ -610,7 +616,24 @@ deactivate
 
 ### Step 5: Building the 'Production' Version
 
-TODO
+To build the production version of the database application, the `generate.py`
+script must be run again, this time answering `y` (yes) to the question
+`Is this a production build?`:
+
+```bash
+python3 ./generate.py design.csv site_name
+```
+
+The script will prompt for a URL. This must match the URL that will be used to
+access the site. It can also be an IP address. Whatever value is specified
+should not contain `http://`, `https://`, or a trailing slash.
+
+```
+Please enter the production site URL, without 'www.' or 'http://': 
+```
+
+If deploying on a DigitalOcean VPS, following the instructions below, use the
+IP address assigned to the newly-created VPS when prompted.
 
 
 ### Step 6: Deploying the Application
