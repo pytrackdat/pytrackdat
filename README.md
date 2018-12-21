@@ -92,9 +92,6 @@ PyTrackDat is stored in:
 cd /path/to/pytrackdat
 ```
 
-> **Beginner Tip**: TODO: Paths and stuff (using command line)
-> TODO
-
 
 
 ## Running PyTrackDat
@@ -611,7 +608,29 @@ deactivate
 ```
 
 
-## Deploying the End Result on DigitalOcean
+### Step 5: Building the 'Production' Version
+
+TODO
+
+
+### Step 6: Deploying the Application
+
+Now that the final version of the application has been created, it is time to
+deploy it on a server. This allows the application to be accessed at all times,
+from anywhere connected to the internet. User accounts are still used to
+restrict access to the data. Just because the server is publically accessible
+doesn't mean the data is!
+
+There are multiple options for deployment. Below is a guide for deploying on
+a new "Virtual Private Server" (VPS) on the DigitalOcean service. For more
+advanced users, there is also a guide for deploying on an existing server
+(though many of the steps will be similar to DigitalOcean setup).
+
+Instructions are written for Ubuntu Server 18.04 or 16.04 LTS; other
+distributions may require slightly different procedures.
+
+
+#### Deploying the End Result on DigitalOcean
 
 DigitalOcean is a cost-effective VPS (virtual private server) hosting provider.
 For $5 USD per month, users can create a server on which the created web
@@ -627,7 +646,7 @@ TODO: SITE SETUP (ALLOWED_HOSTS)
 
 
 
-## Deploying the End Result on an Existing Server
+#### Deploying the End Result on an Existing Server
 
 TODO
 
