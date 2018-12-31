@@ -699,21 +699,44 @@ TODO: IP ADDRESS, LOGGING IN, SCREENSHOT
 
 ##### Step 3: Log into the new droplet and set it up
 
-https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04
+Follow DigitalOcean's [initial server setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
+guide to set up a new user account and a basic firewall on the new droplet.
+
+Disconnect from the `ssh` session by using the following command:
+
+```bash
+exit
+```
+
+Then re-connect to the droplet using the newly-created non-root user account:
 
 TODO
+
+Steps 3 and 6 will take place on the droplet, and steps 4 and 5 will take place
+mostly on the local machine (your own computer).
 
 
 ##### Step 3: Install Docker and Docker Compose
 
-TODO
+###### Docker
+
+Docker is a "container platform" which allows web applications to run inside
+their own sub-environments. The resulting PyTrackDat applications generated
+by the scripts are set up as Docker containers to make deploying them easier.
+
+Docker must be installed on any server being used to host a PyTrackDat
+application.
 
 Follow DigitalOcean's [instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04),
-following only **steps 1 and 2**. 
+following only **steps 1 and 2**, to install Docker on the newly-created droplet. 
 
-TODO
+###### Docker Compose
 
-Then, install Docker Compose by following DigitalOcean's [Docker Compose instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04),
+Docker Compose is a system for orchestrating multiple Docker containers at once
+in a way which makes it easy to put containers online or take them offline.
+
+Install Docker Compose on the droplet by following DigitalOcean's
+[Docker Compose instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04),
 following only **step 1**.
 
 TODO
