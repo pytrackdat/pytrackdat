@@ -673,7 +673,7 @@ For an additional $1 USD per month, automatic backups can be enabled to keep
 historical versions of the whole droplet. This may be useful for data integrity
 and restoring purposes.
 
-TODO: IMAGE
+<img src="images/backups.png" alt="Droplet Backups" width="500">
 
 Choose a data centre region closest to where most users will be accessing the
 database from for maximum performance.
