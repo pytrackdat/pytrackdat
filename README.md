@@ -642,7 +642,7 @@ If you already have a web server on which the application can be deployed, see
 the section below.
 
 
-##### Step 1: Create a DigitalOcean Account
+##### Step 1: Create a DigitalOcean account
 
 Create a DigitalOcean account on their
 [signup page](https://cloud.digitalocean.com/registrations/new). Confirm the
@@ -653,7 +653,7 @@ USD per month (as of the time of writing, the cheapest Droplet/VPS that one can
 create) for hosting the application. 
 
 
-##### Step 2: Create a new Droplet (Virtual Machine)
+##### Step 2: Create a new droplet (virtual machine)
 
 Once logged into the DigitalOcean dashboard, create a new virtual machine by
 clicking the "Create" button and selecting "Droplets".
@@ -684,12 +684,20 @@ Finally, choose a hostname, which can only contain alphanumeric characters,
 dashes, and periods. This uniquely identifies the droplet within the account,
 and press "Create".
 
-TODO
+TODO: IMAGE
 
-TODO: IP ADDRESS, LOGGING IN
+An email will be sent to the address used to register the account. It will
+contain the newly-created droplet's IP address (4 numbers, separated by
+periods) and root password. These are used for **logging in** to the droplet,
+and for creating the **production** (final) version of the PyTrackDat
+application, which will be uploaded to the server.
+
+TODO: IP ADDRESS, LOGGING IN, SCREENSHOT
 
 
-##### Step 3: Log Into the New Droplet
+##### Step 3: Log into the new droplet and set it up
+
+https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04
 
 TODO
 
@@ -709,7 +717,7 @@ following only **step 1**.
 TODO
 
 
-##### Step 4: Build the Application's Production Version (On Your Own Computer)
+##### Step 4: Build the application's production version (on your own computer)
 
 To build the production version of the database application, the `generate.py`
 script must be run again on your **local** computer (i.e. not the new droplet),
@@ -730,7 +738,7 @@ Please enter the production site URL, without 'www.' or 'http://':
 TODO: DO-SPECIFIC IP ADDRESS INSTRUCTIONS
 
 
-##### Step 5: Upload the Application
+##### Step 5: Upload the application
 
 TODO
 
@@ -738,7 +746,7 @@ TODO: MAC OS / LINUX: SCP
 TODO: WINDOWS: ????
 
 
-##### Step 6: Start the Application
+##### Step 6: Start the application
 
 TODO
 
