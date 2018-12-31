@@ -617,11 +617,10 @@ deactivate
 
 ### Step 5: Deploying the Application
 
-Now that the final version of the application has been created, it is time to
-deploy it on a server. This allows the application to be accessed at all times,
-from anywhere connected to the internet. User accounts are still used to
-restrict access to the data. Just because the server is publically accessible
-doesn't mean the data is!
+It is now time to deploy the final version of the application on a server. This
+allows the application to be accessed at all times, from anywhere connected to
+the internet. User accounts are still used to restrict access to the data. Just
+because the server is publically accessible doesn't mean the data is!
 
 There are multiple options for deployment. Below is a guide for deploying on
 a new "Virtual Private Server" (VPS) on the DigitalOcean service. For more
@@ -642,20 +641,37 @@ automatic backups can be enabled.
 If you already have a web server on which the application can be deployed, see
 the section below.
 
-TODO
-
 
 ##### Step 1: Create a DigitalOcean Account
 
-TODO
+Create a DigitalOcean account on their
+[signup page](https://cloud.digitalocean.com/registrations/new). Make sure to
+enter in payment details that will allow a recurring charge of $5 USD per month
+(as of the time of writing, the cheapest Droplet/VPS that one can create) for
+hosting the application. 
 
 
 ##### Step 2: Create a new Droplet (Virtual Machine)
 
-TODO
+Once logged into the DigitalOcean dashboard, create a new virtual machine by
+clicking the "Create" button and selecting "Droplets".
+
+TODO: IMAGE
+
+TODO: ADDITIONAL CREATION DETAILS, OS
 
 
 ##### Step 3: Install Docker and Docker Compose
+
+TODO
+
+Follow DigitalOcean's [instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04),
+following only **steps 1 and 2**. 
+
+TODO
+
+Then, install Docker Compose by following DigitalOcean's [Docker Compose instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04),
+following only **step 1**.
 
 TODO
 
@@ -685,6 +701,9 @@ TODO: DO-SPECIFIC IP ADDRESS INSTRUCTIONS
 
 TODO
 
+TODO: MAC OS / LINUX: SCP
+TODO: WINDOWS: ????
+
 
 ##### Step 6: Start the Application
 
@@ -697,12 +716,19 @@ TODO
 TODO
 
 
-##### Step 1: Install Docker and Docker Compose
+##### Step 1: Install Docker and Docker Compose (If Not Already Done)
 
 TODO
 
-https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04
-https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+Follow DigitalOcean's [instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04),
+following only **steps 1 and 2**. 
+
+TODO
+
+Then, install Docker Compose by following DigitalOcean's [Docker Compose instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04),
+following only **step 1**.
+
+TODO
 
 
 ##### Step 2: Build the Application's Production Version
