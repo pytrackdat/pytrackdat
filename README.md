@@ -645,10 +645,12 @@ the section below.
 ##### Step 1: Create a DigitalOcean Account
 
 Create a DigitalOcean account on their
-[signup page](https://cloud.digitalocean.com/registrations/new). Make sure to
-enter in payment details that will allow a recurring charge of $5 USD per month
-(as of the time of writing, the cheapest Droplet/VPS that one can create) for
-hosting the application. 
+[signup page](https://cloud.digitalocean.com/registrations/new). Confirm the
+email used to create the account.
+ 
+Make sure to enter in payment details that will allow a recurring charge of $5
+USD per month (as of the time of writing, the cheapest Droplet/VPS that one can
+create) for hosting the application. 
 
 
 ##### Step 2: Create a new Droplet (Virtual Machine)
@@ -658,7 +660,38 @@ clicking the "Create" button and selecting "Droplets".
 
 TODO: IMAGE
 
-TODO: ADDITIONAL CREATION DETAILS, OS
+Select "Ubuntu 18.04 x64" for the operating system.
+
+TODO: IMAGE
+
+For PyTrackDat, the smallest droplet size ($5 USD per month) is more than
+adequate, and the most cost effective solution:
+
+TODO: IMAGE
+
+For an additional $1 USD per month, automatic backups can be enabled to keep
+historical versions of the whole droplet. This may be useful for data integrity
+and restoring purposes.
+
+TODO: IMAGE
+
+Choose a data centre region closest to where most users will be accessing the
+database from for maximum performance.
+
+TODO: IMAGE
+
+Finally, choose a hostname, which can only contain alphanumeric characters,
+dashes, and periods. This uniquely identifies the droplet within the account,
+and press "Create".
+
+TODO
+
+TODO: IP ADDRESS, LOGGING IN
+
+
+##### Step 3: Log Into the New Droplet
+
+TODO
 
 
 ##### Step 3: Install Docker and Docker Compose
@@ -676,7 +709,7 @@ following only **step 1**.
 TODO
 
 
-##### Step 4: Build the Application's Production Version
+##### Step 4: Build the Application's Production Version (On Your Own Computer)
 
 To build the production version of the database application, the `generate.py`
 script must be run again on your **local** computer (i.e. not the new droplet),
