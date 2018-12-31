@@ -658,11 +658,11 @@ create) for hosting the application.
 Once logged into the DigitalOcean dashboard, create a new virtual machine by
 clicking the "Create" button and selecting "Droplets".
 
-TODO: IMAGE
+<img src="images/create_droplet.png" alt="Creating a Droplet" width="300">
 
 Select "Ubuntu 18.04 x64" for the operating system.
 
-TODO: IMAGE
+<img src="images/select_os.png" alt="Creating a Droplet" width="600">
 
 For PyTrackDat, the smallest droplet size ($5 USD per month) is more than
 adequate, and the most cost effective solution:
