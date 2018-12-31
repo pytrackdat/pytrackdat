@@ -692,6 +692,8 @@ periods) and root password. These are used for **logging in** to the droplet,
 and for creating the **production** (final) version of the PyTrackDat
 application, which will be uploaded to the server.
 
+<img src="images/email.png" alt="New Droplet Email" width="500">
+
 TODO: IP ADDRESS, LOGGING IN, SCREENSHOT
 
 
