@@ -52,7 +52,7 @@ When installing Python 3 on Windows, **make sure** to check the following
 checkbox ("Add Python 3 to PATH"), which will appear on the first step of the
 installation process:
 
-!["Add Python 3.7 to PATH" checkbox](images/path.png)
+!["Add Python 3.7 to PATH" checkbox](images/path.png | width=600)
 
 This ensures that Python 3 and `pip` are available from the Command Prompt.
 
