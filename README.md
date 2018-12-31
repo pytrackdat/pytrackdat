@@ -49,9 +49,10 @@ on-screen.
 ##### Important: Special Windows Installation Instructions
 
 When installing Python 3 on Windows, **make sure** to check the following
-checkbox, which will appear on step TODO of the installation process:
+checkbox ("Add Python 3 to PATH"), which will appear on the first step of the
+installation process:
 
-TODO: IMAGE
+!["Add Python 3.7 to PATH" checkbox](images/path.png)
 
 This ensures that Python 3 and `pip` are available from the Command Prompt.
 
@@ -692,7 +693,6 @@ TODO
 TODO
 
 TODO: NOTE ABOUT PORTS AND CONFIGURATION
-TODO: SITE SETUP (ALLOWED_HOSTS)
 
 
 
