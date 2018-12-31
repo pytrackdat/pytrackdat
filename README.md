@@ -658,16 +658,16 @@ create) for hosting the application.
 Once logged into the DigitalOcean dashboard, create a new virtual machine by
 clicking the "Create" button and selecting "Droplets".
 
-<img src="images/create_droplet.png" alt="Creating a Droplet" width="300">
+<img src="images/create_droplet.png" alt="Creating a Droplet" width="250">
 
 Select "Ubuntu 18.04 x64" for the operating system.
 
-<img src="images/select_os.png" alt="Creating a Droplet" width="600">
+<img src="images/select_os.png" alt="Droplet OS Selection" width="500">
 
 For PyTrackDat, the smallest droplet size ($5 USD per month) is more than
 adequate, and the most cost effective solution:
 
-TODO: IMAGE
+<img src="images/droplet_size.png" alt="Droplet Size" width="500">
 
 For an additional $1 USD per month, automatic backups can be enabled to keep
 historical versions of the whole droplet. This may be useful for data integrity
@@ -678,13 +678,13 @@ TODO: IMAGE
 Choose a data centre region closest to where most users will be accessing the
 database from for maximum performance.
 
-TODO: IMAGE
+<img src="images/datacentre.png" alt="Data Centre Location" width="500">
 
 Finally, choose a hostname, which can only contain alphanumeric characters,
 dashes, and periods. This uniquely identifies the droplet within the account,
 and press "Create".
 
-TODO: IMAGE
+<img src="images/choose_hostname.png" alt="Choose Droplet Hostname" width="500">
 
 An email will be sent to the address used to register the account. It will
 contain the newly-created droplet's IP address (4 numbers, separated by
