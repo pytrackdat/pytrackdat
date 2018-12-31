@@ -658,7 +658,7 @@ create) for hosting the application.
 Once logged into the DigitalOcean dashboard, create a new virtual machine by
 clicking the "Create" button and selecting "Droplets".
 
-<img src="images/create_droplet.png" alt="Creating a Droplet" width="250">
+<img src="images/create_droplet.png" alt="Creating a Droplet" width="400">
 
 Select "Ubuntu 18.04 x64" for the operating system.
 
