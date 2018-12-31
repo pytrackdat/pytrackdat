@@ -615,29 +615,7 @@ deactivate
 ```
 
 
-### Step 5: Building the 'Production' Version
-
-To build the production version of the database application, the `generate.py`
-script must be run again, this time answering `y` (yes) to the question
-`Is this a production build?`:
-
-```bash
-python3 ./generate.py design.csv site_name
-```
-
-The script will prompt for a URL. This must match the URL that will be used to
-access the site. It can also be an IP address. Whatever value is specified
-should not contain `http://`, `https://`, or a trailing slash.
-
-```
-Please enter the production site URL, without 'www.' or 'http://': 
-```
-
-If deploying on a DigitalOcean VPS, following the instructions below, use the
-IP address assigned to the newly-created VPS when prompted.
-
-
-### Step 6: Deploying the Application
+### Step 5: Deploying the Application
 
 Now that the final version of the application has been created, it is time to
 deploy it on a server. This allows the application to be accessed at all times,
@@ -666,7 +644,51 @@ the section below.
 
 TODO
 
-TODO: SITE SETUP (ALLOWED_HOSTS)
+
+##### Step 1: Create a DigitalOcean Account
+
+TODO
+
+
+##### Step 2: Create a new Droplet (Virtual Machine)
+
+TODO
+
+
+##### Step 3: Install Docker and Docker Compose
+
+TODO
+
+
+##### Step 4: Build the Application's Production Version
+
+To build the production version of the database application, the `generate.py`
+script must be run again on your **local** computer (i.e. not the new droplet),
+this time answering `y` (yes) to the question `Is this a production build?`:
+
+```bash
+python3 ./generate.py design.csv site_name
+```
+
+The script will prompt for a URL. This must match the URL that will be used to
+access the site. It can also be an IP address. Whatever value is specified
+should not contain `http://`, `https://`, or a trailing slash.
+
+```
+Please enter the production site URL, without 'www.' or 'http://': 
+```
+
+TODO: DO-SPECIFIC IP ADDRESS INSTRUCTIONS
+
+
+##### Step 5: Upload the Application
+
+TODO
+
+
+##### Step 6: Start the Application
+
+TODO
 
 
 
@@ -675,7 +697,7 @@ TODO: SITE SETUP (ALLOWED_HOSTS)
 TODO
 
 
-### Step 1: Install Docker and Docker Compose
+##### Step 1: Install Docker and Docker Compose
 
 TODO
 
@@ -683,12 +705,34 @@ https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-o
 https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
 
 
-### Step 2: Upload the Application
+##### Step 2: Build the Application's Production Version
+
+To build the production version of the database application, the `generate.py`
+script must be run again on your **local** computer (i.e. not the VM or
+server), this time answering `y` (yes) to the question
+`Is this a production build?`:
+
+```bash
+python3 ./generate.py design.csv site_name
+```
+
+The script will prompt for a URL. This must match the URL that will be used to
+access the site. It can also be an IP address. Whatever value is specified
+should not contain `http://`, `https://`, or a trailing slash.
+
+```
+Please enter the production site URL, without 'www.' or 'http://': 
+```
+
+If deploying without a domain name, use the IP address when prompted for a URL.
+
+
+##### Step 2: Upload the Application
 
 TODO
 
 
-### Step 3: Build and Start the Application
+##### Step 3: Start the Application
 
 TODO
 
