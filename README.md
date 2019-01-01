@@ -702,15 +702,22 @@ TODO: IP ADDRESS, LOGGING IN, SCREENSHOT
 Follow DigitalOcean's [initial server setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
 guide to set up a new user account and a basic firewall on the new droplet.
 
-Disconnect from the `ssh` session by using the following command:
+After creating a new account and following the other instructions in the guide,
+disconnect from the `ssh` session by using the following command:
 
 ```bash
 exit
 ```
 
-Then re-connect to the droplet using the newly-created non-root user account:
+Then re-connect to the droplet using the newly-created non-root user account,
+typing in the password entered for the new user:
 
-TODO
+```bash
+ssh your_username@your.ip.address.here
+```
+
+Now the virtual machine is ready for installing the software needed to host the
+PyTrackDat application.
 
 Steps 3 and 6 will take place on the droplet, and steps 4 and 5 will take place
 mostly on the local machine (your own computer).
@@ -777,24 +784,24 @@ TODO
 
 
 
-#### Deploying the End Result on an Existing Server
+#### Deploying the End Result on an Existing Linux Server
 
-TODO
+This guide assumes a moderate amount of prior knowlege about command-line Linux
+server administration, since the specifics depend on the operating system
+version and particular configuration of the server in question.
 
 
 ##### Step 1: Install Docker and Docker Compose (If Not Already Done)
 
-TODO
-
-Follow DigitalOcean's [instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04),
+Follow something similar to DigitalOcean's [instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04),
 following only **steps 1 and 2**. 
 
-TODO
-
-Then, install Docker Compose by following DigitalOcean's [Docker Compose instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04),
+Then, install Docker Compose by following steps similar to DigitalOcean's
+[Docker Compose instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04),
 following only **step 1**.
 
-TODO
+These guides are for Ubuntu 18.04 LTS and installation specifics likely differ
+with other Linux distributions.
 
 
 ##### Step 2: Build the Application's Production Version
