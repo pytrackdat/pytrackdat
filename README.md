@@ -694,10 +694,12 @@ application, which will be uploaded to the server.
 
 <img src="images/email.png" alt="New Droplet Email" width="500">
 
-TODO: IP ADDRESS, LOGGING IN, SCREENSHOT
+TODO: IP ADDRESS, LOGGING IN, SCREENSHOT ANNOTATIONS
 
 
 ##### Step 3: Log into the new droplet and set it up
+
+TODO: WINDOWS INSTRUCTIONS FOR SSH
 
 Follow DigitalOcean's [initial server setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
 guide to set up a new user account and a basic firewall on the new droplet.
@@ -746,8 +748,6 @@ Install Docker Compose on the droplet by following DigitalOcean's
 [Docker Compose instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04),
 following only **step 1**.
 
-TODO
-
 
 ##### Step 4: Build the application's production version (on your own computer)
 
@@ -767,18 +767,73 @@ should not contain `http://`, `https://`, or a trailing slash.
 Please enter the production site URL, without 'www.' or 'http://': 
 ```
 
-TODO: DO-SPECIFIC IP ADDRESS INSTRUCTIONS
+If a domain name has been purchased (which is outside the scope of this
+tutorial), additional steps will need to be taken to attach it to the
+droplet. Nonetheless, the domain name should be entered at this step.
+
+If an IP address is being used to access the droplet (a no-cost option and
+recommended if the droplet is just being used to host the database), enter that
+into this prompt. The IP address has already been used in this tutorial to log
+into the droplet. For example, one could enter the following:
+
+```
+Please enter the production site URL, without 'www.' or 'http://': 142.93.159.136
+```
 
 
 ##### Step 5: Upload the application
 
+Now that you have generated the production version of the site, it is time to
+upload it to the droplet and start it up.
+
+From the PyTrackDat directory, use the following instructions (depending on the
+operating system on your local computer) to upload the application.
+
+###### macOS or Linux
+
 TODO
 
-TODO: MAC OS / LINUX: SCP
-TODO: WINDOWS: ????
+```bash
+scp TODO.zip your_username@your.ip.address.here:~
+```
+
+TODO
+
+###### Windows
+
+TODO
 
 
 ##### Step 6: Start the application
+
+To start the application, log into the droplet again, using SSH:
+
+```bash
+ssh your_username@your.ip.address.here
+```
+
+Then, unzip the archive containing the application within your home folder
+on the server:
+
+```bash
+sudo apt install unzip
+unzip TODO.zip
+```
+
+Enter the app directory:
+
+```bash
+cd TODO
+```
+
+Use Docker Compose to start the application:
+
+```bash
+docker-compose up --build --detach 
+```
+
+And finally, allow the site to be accessed externally by adding a rule to the
+firewall:
 
 TODO
 
