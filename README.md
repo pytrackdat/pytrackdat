@@ -835,6 +835,8 @@ firewall:
 
 TODO
 
+TODO: NOTE ABOUT PORTS AND CONFIGURATION
+
 
 
 #### Deploying the End Result on an Existing Linux Server
@@ -881,12 +883,61 @@ If deploying without a domain name, use the IP address when prompted for a URL.
 
 ##### Step 2: Upload the Application
 
+Now that you have generated the production version of the site, it is time to
+upload it to the droplet and start it up.
+
+From the PyTrackDat directory, use the following instructions (depending on the
+operating system on your local computer) to upload the application.
+
+###### macOS or Linux
+
+TODO
+
+```bash
+scp TODO.zip your_username@your.ip.address.here:~
+```
+
+TODO
+
+###### Windows
+
 TODO
 
 
 ##### Step 3: Start the Application
 
+To start the application, log into the droplet again, using SSH:
+
+```bash
+ssh your_username@your.ip.address.here
+```
+
+Then, unzip the archive containing the application within your home folder
+on the server:
+
+```bash
+sudo apt install unzip
+unzip TODO.zip
+```
+
+Enter the app directory:
+
+```bash
+cd TODO
+```
+
+Use Docker Compose to start the application:
+
+```bash
+docker-compose up --build --detach 
+```
+
+And finally, allow the site to be accessed externally by adding a rule to the
+firewall:
+
 TODO
+
+TODO: NOTE ABOUT PORTS AND CONFIGURATION
 
 TODO: NOTE ABOUT PORTS AND CONFIGURATION
 
