@@ -694,8 +694,6 @@ application, which will be uploaded to the server.
 
 <img src="images/email.png" alt="New Droplet Email" width="500">
 
-TODO: IP ADDRESS, LOGGING IN, SCREENSHOT ANNOTATIONS
-
 
 ##### Step 3: Log into the new droplet and set it up
 
