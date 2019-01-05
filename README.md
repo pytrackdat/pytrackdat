@@ -76,6 +76,23 @@ pip install virtualenv wheel
 ```
 
 
+### (Windows Only) SSH Utility
+
+If you already have SSH and SCP utilities installed, or are not running
+Windows, this step can be skipped.
+
+Windows does not include any programs for accessing remote servers or copying
+files to them. Both of these actions are needed when deploying a PyTrackDat
+application to a remote server. However, there is a free utility called KiTTY
+available for download which can help with these tasks.
+
+To download the two utilities needed, visit
+[KiTTY's download page](http://www.9bis.net/kitty/?page=Download) and download
+the `kitty_portable.exe` and `kscp.exe` files. The first executable provides a
+way to access remote servers, and the second executable allows the copying of
+files to remote servers.
+
+
 ### Getting the Code
 
 First, download the repository, either by using a packaged version from GitHub
