@@ -787,17 +787,33 @@ upload it to the droplet and start it up.
 From the PyTrackDat directory, use the following instructions (depending on the
 operating system on your local computer) to upload the application.
 
+First, make sure you are in the main PyTrackDat directory using `cd`.
+
+When the `generate.py` script was used to generate the PyTrackDat application,
+it created a `.zip` file archive in the main PyTrackDat directory called
+`site_name.zip`, based on whatever name was entered for `site_name` when the
+script was run.
+
+This archive contains everything needed to run the application, but it must
+first be uploaded to the server.
+
 ###### macOS or Linux
 
-TODO
+On macOS and Linux, a built-in utility called SCP is provided, which can copy
+a file to a remote server. Run the following command, using the credentials
+used previously to access the server via `ssh`:
 
 ```bash
-scp TODO.zip your_username@your.ip.address.here:~
+scp site_name.zip your_username@your.ip.address.here:~
 ```
 
-TODO
+This will copy the site `.zip` archive to the home directory of your user
+account on the droplet.
 
 ###### Windows
+
+By default, Windows does not include a utility for copying files to remote
+servers.
 
 TODO
 
@@ -811,27 +827,33 @@ ssh your_username@your.ip.address.here
 ```
 
 Then, unzip the archive containing the application within your home folder
-on the server:
+on the server, substituting `site_name` with whatever the archive uploaded to
+the server (in the previous step) is called:
 
 ```bash
 sudo apt install unzip
-unzip TODO.zip
+unzip site_name.zip
 ```
 
-Enter the app directory:
+Enter the application directory:
 
 ```bash
-cd TODO
+cd site_name
 ```
 
-Use Docker Compose to start the application:
+Use Docker Compose to build and start the application:
 
 ```bash
-docker-compose up --build --detach 
+docker-compose up --build --detach
 ```
 
 And finally, allow the site to be accessed externally by adding a rule to the
 firewall:
+
+
+```bash
+sudo ufw allow http
+```
 
 TODO
 
