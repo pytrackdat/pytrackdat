@@ -52,7 +52,7 @@ When installing Python 3 on Windows, **make sure** to check the following
 checkbox ("Add Python 3 to PATH"), which will appear on the first step of the
 installation process:
 
-<img src="images/path.png" alt="'Add Python 3.7 to PATH' checkbox" width="600">
+<img src="images/path.png" alt="'Add Python 3.7 to PATH' checkbox" width="500">
 
 This ensures that Python 3 and `pip` are available from the Command Prompt.
 
@@ -95,13 +95,25 @@ running the executable `WinSCP.exe` inside. The first executable provides a way
 to access remote servers, and the second executable allows the copying of files
 to remote servers.
 
+
 #### Mini-Tutorial: Using KiTTY
 
-TODO
+KiTTY is a tool for logging into and remotely administering servers via a
+command-line interface. This remote administration is useful when deploying a
+PyTrackDat application to a remote server.
+
+We have prepared [a mini-tutorial](mini-tutorials/KiTTY.md)
+on using KiTTY on a Windows computer.
+
 
 #### Mini-Tutorial: Using WinSCP
 
-TODO
+WinSCP is a tool for copying files to a remote server using a Windows computer.
+A tool similar to this must be used to copy the PyTrackDat application onto a
+server for "production" (i.e. real) use.
+
+We have prepared [a mini-tutorial](mini-tutorials/WinSCP.md)
+on using WinSCP.
 
 
 ### Getting the Code
@@ -732,7 +744,8 @@ application, which will be uploaded to the server.
 > straightforward. However, by downloading the KiTTY utility mentioned in the
 > Dependencies section of this tutorial, SSH can be used on Windows as well.
 > Whenever a tutorial mentions a command involving `ssh username@server ...`,
-> KiTTY can be used instead. TODO: REST OF KITTY INSTRUCTIONS
+> KiTTY can be used instead. Follow our
+> [mini-tutorial](mini-tutorials/KiTTY.md) to learn how to sign into a droplet.
 
 Follow DigitalOcean's [initial server setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
 guide to set up a new user account and a basic firewall on the new droplet.
