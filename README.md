@@ -95,6 +95,14 @@ running the executable `WinSCP.exe` inside. The first executable provides a way
 to access remote servers, and the second executable allows the copying of files
 to remote servers.
 
+#### Mini-Tutorial: Using KiTTY
+
+TODO
+
+#### Mini-Tutorial: Using WinSCP
+
+TODO
+
 
 ### Getting the Code
 
