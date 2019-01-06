@@ -866,25 +866,8 @@ servers. However, in the Dependencies section earlier in the file, utilities
 are listed that can assist in this task. Download WinSCP in order to copy
 the zip file to the server.
 
-Once WinSCP has been downloaded, double click it to open it. It will show the
-following window:
-
-TODO: Image
-
-For the host name, enter the IP address. For the username and password, use
-the username and password used to remotely log into the droplet. Then, click
-TODO: WHAT IS BUTTON? This will show a listing of files on the remote server
-as well.
-
-TODO: IMAGE
-
-In the left-hand pane, locate the ZIP file containing your site
-(`site_name.zip`) and press the upload button.
-
-TODO: Image
-
-The file is now copied onto the server. Exit out of WinSCP and continue the
-tutorial.
+Follow our [mini-tutorial](mini-tutorials/WinSCP.md) for WinSCP to upload the
+`.zip` archive to the droplet.
 
 
 ##### Step 6: Start the application
