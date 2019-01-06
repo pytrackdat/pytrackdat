@@ -718,6 +718,7 @@ application, which will be uploaded to the server.
 ##### Step 3: Log into the new droplet and set it up
 
 > **Note for Windows Users**
+> 
 > The DigitalOcean tutorials assume the user has a Linux or macOS system, and
 > in general server administration with these operating systems is much more
 > straightforward. However, by downloading the KiTTY utility mentioned in the
