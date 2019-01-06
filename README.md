@@ -955,7 +955,7 @@ Please enter the production site URL, without 'www.' or 'http://':
 If deploying without a domain name, use the IP address when prompted for a URL.
 
 
-##### Step 2: Upload the Application
+##### Step 3: Upload the Application
 
 Now that you have generated the production version of the site, it is time to
 upload it to the server and start it up.
@@ -965,7 +965,7 @@ DigitalOcean tutorial to upload the application. Swap the droplet IP address
 mentioned for the IP address or domain name of the server in question.
 
 
-##### Step 3: Start the Application
+##### Step 4: Start the Application
 
 To start the application, log into the server again, using SSH:
 
@@ -1005,7 +1005,7 @@ Now, by going to the IP address or domain name attached to the server, the site
 should be visible. Log in using the username and password entered into the
 `generate.py` script in order to manage data and other users.
 
-NOTE ABOUT PORTS / CONFIGURATION ON OTHER SERVERS
+TODO: NOTE ABOUT PORTS / CONFIGURATION ON OTHER SERVERS
 
 
 
