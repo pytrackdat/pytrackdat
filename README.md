@@ -717,7 +717,13 @@ application, which will be uploaded to the server.
 
 ##### Step 3: Log into the new droplet and set it up
 
-TODO: WINDOWS INSTRUCTIONS FOR SSH
+> **Note for Windows Users**
+> The DigitalOcean tutorials assume the user has a Linux or macOS system, and
+> in general server administration with these operating systems is much more
+> straightforward. However, by downloading the KiTTY utility mentioned in the
+> Dependencies section of this tutorial, SSH can be used on Windows as well.
+> Whenever a tutorial mentions a command involving `ssh username@server ...`,
+> KiTTY can be used instead. TODO: REST OF KITTY INSTRUCTIONS
 
 Follow DigitalOcean's [initial server setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04)
 guide to set up a new user account and a basic firewall on the new droplet.
