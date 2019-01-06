@@ -83,14 +83,17 @@ Windows, this step can be skipped.
 
 Windows does not include any programs for accessing remote servers or copying
 files to them. Both of these actions are needed when deploying a PyTrackDat
-application to a remote server. However, there is a free utility called KiTTY
-available for download which can help with these tasks.
+application to a remote server. However, there are free utilities available
+for download which can help with these tasks.
 
 To download the two utilities needed, visit
 [KiTTY's download page](http://www.9bis.net/kitty/?page=Download) and download
-the `kitty_portable.exe` and `kscp.exe` files. The first executable provides a
-way to access remote servers, and the second executable allows the copying of
-files to remote servers.
+the `kitty_portable.exe`. Then, visit
+[WinSCP's download page](https://winscp.net/eng/downloads.php) and download
+the portable WinSCP version. Make sure to extract the WinSCP `.zip` file before
+running the executable `WinSCP.exe` inside. The first executable provides a way
+to access remote servers, and the second executable allows the copying of files
+to remote servers.
 
 
 ### Getting the Code
@@ -831,15 +834,28 @@ account on the droplet.
 
 By default, Windows does not include a utility for copying files to remote
 servers. However, in the Dependencies section earlier in the file, utilities
-are listed that can assist in this task. Download `kscp.exe` in order to copy
+are listed that can assist in this task. Download WinSCP in order to copy
 the zip file to the server.
 
-Once `kscp` has been downloaded, double click it to open it. It will show the
+Once WinSCP has been downloaded, double click it to open it. It will show the
 following window:
 
 TODO: Image
 
-TODO
+For the host name, enter the IP address. For the username and password, use
+the username and password used to remotely log into the droplet. Then, click
+TODO: WHAT IS BUTTON? This will show a listing of files on the remote server
+as well.
+
+TODO: IMAGE
+
+In the left-hand pane, locate the ZIP file containing your site
+(`site_name.zip`) and press the upload button.
+
+TODO: Image
+
+The file is now copied onto the server. Exit out of WinSCP and continue the
+tutorial.
 
 
 ##### Step 6: Start the application
@@ -932,40 +948,14 @@ If deploying without a domain name, use the IP address when prompted for a URL.
 Now that you have generated the production version of the site, it is time to
 upload it to the server and start it up.
 
-From the PyTrackDat directory, use the following instructions (depending on the
-operating system on your local computer) to upload the application.
-
-###### macOS or Linux
-
-On macOS and Linux, a built-in utility called SCP is provided, which can copy
-a file to a remote server. Run the following command, using the credentials
-used previously to access the server via `ssh`:
-
-```bash
-scp site_name.zip your_username@your.ip.address.here:~
-```
-
-This will copy the site `.zip` archive to the home directory of your user
-account on the server.
-
-###### Windows
-
-By default, Windows does not include a utility for copying files to remote
-servers. However, in the Dependencies section earlier in the file, utilities
-are listed that can assist in this task. Download `kscp.exe` in order to copy
-the zip file to the server.
-
-Once `kscp` has been downloaded, double click it to open it. It will show the
-following window:
-
-TODO: Image
-
-TODO
+From the PyTrackDat directory, follow the instructions in the above
+DigitalOcean tutorial to upload the application. Swap the droplet IP address
+mentioned for the IP address or domain name of the server in question.
 
 
 ##### Step 3: Start the Application
 
-To start the application, log into the droplet again, using SSH:
+To start the application, log into the server again, using SSH:
 
 ```bash
 ssh your_username@your.ip.address.here
