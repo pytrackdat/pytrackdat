@@ -1,6 +1,9 @@
 # WinSCP Mini Tutorial for PyTrackDat Setup
 
-TODO: DOWNLOAD
+Visit [WinSCP's download page](https://winscp.net/eng/downloads.php) and
+download the portable WinSCP version. Make sure to extract the WinSCP `.zip`
+file before running the executable `WinSCP.exe` inside. This executable allows
+for the copying of files to remote servers.
 
 Once WinSCP has been downloaded, double click it to open it. It will show a
 window for logging into a server.
