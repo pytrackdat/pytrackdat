@@ -11,7 +11,8 @@ remotely log into the droplet or server. Then, click Login.
 
 <img src="../images/winscp1.png" width="400">
 
-TODO
+You may get a popup menu warning you about signing into an unknown server. This
+occurs at the first login. It is safe to proceed by pressing "Yes".
 
 <img src="../images/winscp2.png" width="300">
 
@@ -26,17 +27,21 @@ button.
 
 <img src="../images/winscp3.png" width="600">
 
-TODO
+After the "Upload" button is pressed, a small window will appear with upload
+settings. The defaults are fine; press "OK" to continue.
 
 <img src="../images/winscp4.png" width="400">
 
-TODO
+After pressing "OK", a progress bar will appear showing the file transfer. When
+this is done, the file is uploaded!
 
 <img src="../images/winscp5.png" width="400">
 
-TODO
+Now that the file is uploaded, it should be visible on the remote server, i.e.
+the right-hand pane:
 
 <img src="../images/winscp6.png" width="600">
 
-The ZIP file is now on the server! You can exit out of WinSCP and proceed with
-unzipping and setting up the PyTrackDat application.
+If you see the file on the right, the ZIP file is now on the server! You can
+exit out of WinSCP and proceed with unzipping and setting up the PyTrackDat
+application.
