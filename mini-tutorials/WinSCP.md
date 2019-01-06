@@ -2,11 +2,11 @@
 
 TODO
 
-<img src="../images/winscp1.png" width="600">
+<img src="../images/winscp1.png" width="400">
 
 TODO
 
-<img src="../images/winscp2.png" width="600">
+<img src="../images/winscp2.png" width="300">
 
 TODO
 
@@ -14,11 +14,11 @@ TODO
 
 TODO
 
-<img src="../images/winscp4.png" width="600">
+<img src="../images/winscp4.png" width="400">
 
 TODO
 
-<img src="../images/winscp5.png" width="600">
+<img src="../images/winscp5.png" width="400">
 
 TODO
 
