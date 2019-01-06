@@ -2,7 +2,7 @@
 
 TODO
 
-<img src="../images/kitty1.png" width="600">
+<img src="../images/kitty1.png" width="300">
 
 TODO
 
@@ -10,10 +10,10 @@ TODO
 
 TODO
 
-<img src="../images/kitty3.png" width="600">
+<img src="../images/kitty3.png" width="500">
 
 TODO
 
-<img src="../images/kitty4.png" width="600">
+<img src="../images/kitty4.png" width="500">
 
 TODO
