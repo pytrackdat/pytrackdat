@@ -1005,6 +1005,10 @@ Now, by going to the IP address or domain name attached to the server, the site
 should be visible. Log in using the username and password entered into the
 `generate.py` script in order to manage data and other users.
 
+> **Note about Ports and Configuration**
+>
+> TODO
+
 TODO: NOTE ABOUT PORTS / CONFIGURATION ON OTHER SERVERS
 
 
@@ -1038,4 +1042,44 @@ schema (i.e. add or remove columns), the following procedure can be used:
 
 ### Updating the site on DigitalOcean
 
-TODO
+First, export the data currently stored in the web application (if any) via the
+online interface. Log into the PyTrackDat application, select all data for each
+data type, and export individual CSV files.
+
+The site can then be updated in a similar way to how it was initially uploaded.
+
+First, SSH into the server (see previous instructions on how to do this). How
+this is done depends on your operating system.
+
+While logged into the server, change directory into the site:
+
+```bash
+cd site_name
+```
+
+Then, stop the application using Docker Compose:
+
+```bash
+docker-compose down
+```
+
+Go to the parent directory and move the site folder to a backup:
+
+```bash
+cd ..
+mv site_name site_name_old_backup
+```
+
+At this point, you should create (or have created) the new version of the
+database. Either change the downloaded CSV files to have the same headers as
+the original data files, or re-build the design file using the headers from the
+downloaded CSV files. Make sure to re-generate the site using `generate.py`.
+
+Upload the new PyTrackDat application `.zip` archive, using methods described
+previously in this tutorial.
+
+Follow instructions from the "Deploying..." section above for unzipping the
+archive and bringing the application online using Docker Compose.
+
+Finally, re-import the data using the built-in import function in any
+PyTrackDat application using the web interface.
