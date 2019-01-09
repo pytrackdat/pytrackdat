@@ -171,9 +171,9 @@ stored in `samples1.csv` and `samples2.csv`, respectively.
 ### Step 2: Design File Layout and Customization
 
 A PyTrackDat design file contains specifications for all tables in the database
-within a single CSV file. The file consists of 'blocks' which correspond to the
-specification for a single table, based on one of the CSV files passed to the
-script. Blocks are separated by blank lines.
+within a single CSV file. The file consists of 'blocks', each of which
+corresponds to the specification for a single table, based on each of the CSV
+files passed to the script. Blocks are separated by blank lines.
 
 A single block may look like this:
 
@@ -226,10 +226,9 @@ A single block may look like this:
 
 Design files should **not** be left as-is after generation via `analyze.py`.
 The script does its best to infer data types from the columns, but is not
-guaranteed to do a perfect job. Additionally, it is best practice to add a
-**field description** (under the *description* header) in order to provide
-human users additional information about what type of data is stored in the
-field.
+guaranteed to do this perfectly. Additionally, it is best practice to add a
+**field description** (under the *description* header) to provide human users
+additional information about what type of data is stored in the field.
 
 For each generated design file, users should examine the file using the
 following checklist:
@@ -255,7 +254,7 @@ For example, if a specimen can be one of four species, it is desirable to make
 a text field which can only store any of these four species' names. The analyze
 script does its best to detect these instances, but it may not detect
 **all possible choices**. Thus, text fields with automatically-detected choice
-limitations should be examined by hand.
+limitations should be verified manually and if needed, edited.
 
 #### Design File Specification
 
@@ -272,7 +271,7 @@ contained in the first column. The other columns of the block's first row are
 ignored, but can be used as column headers to make the design file more
 human-readable.
 
-A block's first (header) row may look like this:
+Thus, a block's first (header) row may look like this:
 
 <table>
 <tr>
@@ -294,7 +293,7 @@ understanding and possibly allow easier modification of the analyzer output.
 
 The following series of rows in a design file block contain a list of field
 descriptions, which are analogous to columns in a standard spreadsheet layout.
-One database field is described for every one of these rows in the design file.
+Each database field corresponds to each one of these rows in the design file.
 
 The generic format for a design file field description row is the following:
 
@@ -322,13 +321,14 @@ which stores data for field being described.
 
 ###### Database Field Name
 
-This cell contains the name of the field as it will appear in the database.
-It should only contain lowercase characters, numbers, and underscores.
+This cell contains the name of the field as it will appear in the database (as
+decided by the `analyze.py` script). It should only contain lowercase
+characters, numbers, and underscores.
 
 ###### Data Type
 
-This cell contains the data type of the field in question. It can be one of the
-following values:
+This cell contains the data type of the field in question. It can assume one of
+the following values:
 
 ```
 auto key
@@ -344,13 +344,10 @@ time
 ```
 
 This dictates what values can be stored in the field in the database. In
-general, databases are much more strict (as compared to spreadsheet programs
-such as Excel) with data typing, which prevents incorrect data values from
-being entered and allows additional operations on types that allow them (such
-as the addition of integers.)
-
-For a more comprehensive overview on why data types are benificial when it
-comes to data entry and integrity, see [manual.md](manual.md).
+general, databases are much stricter (as compared to spreadsheet programs such
+as Excel) with data typing, which prevents incorrect data values from being
+entered and allows additional operations on types that allow them (such as the
+addition of integers).
 
 For a description of which values are acceptable for each data type, see the
 "Data Type Descriptions" section below.
@@ -360,8 +357,11 @@ For a description of which values are acceptable for each data type, see the
 This cell contains a boolean (true or false) value which specifies whether the
 value of the field in the database can be `NULL`. If the field contains any
 value other than "true", "false" is inferred. Null is a special value which has
-implications on data representation; for more information see
-[manual.md](manual.md).
+implications on data representation.
+
+A variable field is **nullable** if it can be assigned either a value or
+`null`, signifying that for a specific table row (e.g. an individual or
+observation) there is no value assignable.
 
 ###### Null Values
 
@@ -371,7 +371,7 @@ which will be converted to a `NULL` value in the database.
 
 Note that if this cell contains multiple entries, **information is being
 lost**, since multiple values in the original data are mapped to a single value
-in the database, therefore preventing the original data from being recovered in
+in the database, thus preventing the original data from being recovered
 identically.
 
 An example of where multiple values could be useful is the following:
@@ -403,7 +403,7 @@ Any cell after the description cell is type-specific and the valid values
 depend on what data type the field has. There can be more than one
 type-specific setting available, and the exact number also depends on the
 field's type. For a description of each data type, including type-specific
-setting options, see the section below.
+setting options, see below.
 
 #### Data Type Descriptions
 
@@ -413,7 +413,7 @@ These often can restrict the possible values that can be stored by the field
 in the database, and are useful for data integrity purposes.
 
 Some of these type-specific settings may be **automatically detected** by the
-`analyze.py` script; these should be reviewed by hand to make sure they cover
+`analyze.py` script; these should be reviewed manually to make sure they cover
 all possible values which can be stored in the field.
 
 ##### `auto key`: Automatic Primary Key
@@ -443,7 +443,8 @@ Automatic primary keys are **never** nullable.
 Manually-specified primary key (identifier) for a database row; stored as text.
 The value must be specified by the user when adding data to the database.
 
-Manually-specified primary keys must be **unique** for a given row.
+Manually-specified primary keys must be **unique** for a given row
+(/observation).
 
 ###### Design File Information
 
@@ -474,7 +475,7 @@ Integers can be between -9 223 372 036 854 775 808 and
 Floating-point numbers can store a huge range of numbers, including numbers
 with decimal points. However, there are precision issues, and
 **whenever possible** the `decimal` type should be used instead to prevent
-floating-point-specific errors (see [manual.md](manual.md).) 
+floating-point-specific errors. 
 
 ###### Type-Specific Settings
 
@@ -485,7 +486,7 @@ floating-point-specific errors (see [manual.md](manual.md).)
 Decimal-typed numbers can store fixed-precision decimal numbers. Both the
 overall maximum length and decimal precision must be specified, in number of
 digits. This type is useful for encoding significant figures and **avoiding**
-floating-point-specific errors (see [manual.md](manual.md).)
+floating-point-specific errors.
 
 ###### Type-Specific Settings
 
@@ -498,7 +499,8 @@ The `decimal` type requires two type-specific settings:
 
 For example, a `decimal` field with a `max length` of 10 and a `precision` of 4
 can store numbers such as `50.2300` or `-999999.9999` or `999999.9999` (as a 
-negative sign does not count as a digit) but **cannot** store `1000000.0000`.
+negative sign does not count as a digit) but **cannot** store `1000000.0000`
+because it is too long.
 
 ##### `boolean`: Boolean (True or False) Value
 
@@ -518,7 +520,7 @@ place to restrict their domain. These fields are often useful in situations
 where it does not make sense to restrict the column to certain values; for
 example in the case of a `description` field.
 
-Text fields can optionally be limited any combination of:
+Text fields can optionally be limited by any combination of:
 
   1. A certain maximum character length. Values extending beyond this maximum
      length will not be accepted.
@@ -537,9 +539,9 @@ The `text` type optionally can take up two type-specific settings:
   1. `max length`: The maximum length of the contents in the field in terms of
      number of characters.
   1. `options`: A semicolon-separated list of possible values the text field
-     can take on. Limiting the domain of a field can be useful in order to
-     speed up data entry, prevent typos, and restrict the domain of a field to
-     exactly what is desired.
+     can take on. Limiting the domain of a field can be useful to speed up data
+     entry, prevent typos, and restrict the domain of a field to exactly what
+     is desired.
 
 ##### `date`: Date
 
@@ -548,7 +550,7 @@ information; for times, use a second column with the `time` data type
 (described below). At the moment, no timezone information is stored, which
 should be tracked manually (or put in the field description.)
 
-Currently, PyTrackDat only accepts the `YYYY-MM-DD` format for dates.
+**Currently, PyTrackDat only accepts the `YYYY-MM-DD` format for dates.**
 
 ###### Type-Specific Settings
 
@@ -559,7 +561,7 @@ Currently, PyTrackDat only accepts the `YYYY-MM-DD` format for dates.
 Represents a time, including minutes and seconds. If seconds are left out in
 any passed values, the default seconds value is `0`. At the moment, no timezone
 information is stored, which should be tracked manually (or put in the field
-description.)
+description).
 
 Currently, PyTrackDat only accepts the `HH:MM` or `HH:MM:SS` 24 hour formats 
 for times.
@@ -617,10 +619,10 @@ directory. This package will be used to deploy the site.
 
 ### Step 4: Testing
 
-To test the web application from the PyTrackDat directory, first move into the
+To test the web application from the PyTrackDat directory, first change to the
 site directory within the temporary work directory, `tmp`, which PyTrackDat
-will create, replacing `site_name_here` with the site name from the previous
-(generator) step:
+will create, replacing `site_name_here` with the site name that you assigned in
+the previous (generator) step:
 
 ```bash
 cd tmp/site_name_here
@@ -628,8 +630,16 @@ cd tmp/site_name_here
 
 Then, activate the Python virtual environment with the following command:
 
+**macOS/Linux:**
+
 ```bash
 source site_env/bin/activate
+```
+
+**Windows:**
+
+```cmd
+\site_env\Scripts\activate.bat
 ```
 
 Before starting the debug server, a **superuser** (administrative user) must
@@ -663,7 +673,7 @@ deactivate
 It is now time to deploy the final version of the application on a server. This
 allows the application to be accessed at all times, from anywhere connected to
 the internet. User accounts are still used to restrict access to the data. Just
-because the server is publically accessible doesn't mean the data is!
+because the server is publically accessible doesn't mean the data are!
 
 There are multiple options for deployment. Below is a guide for deploying on
 a new "Virtual Private Server" (VPS) on the DigitalOcean service. For more
@@ -719,7 +729,7 @@ and restoring purposes.
 <img src="images/backups.png" alt="Droplet Backups" width="500">
 
 Choose a data centre region closest to where most users will be accessing the
-database from for maximum performance.
+database, for maximum performance.
 
 <img src="images/datacentre.png" alt="Data Centre Location" width="500">
 
@@ -774,7 +784,7 @@ Steps 3 and 6 will take place on the droplet, and steps 4 and 5 will take place
 mostly on the local machine (your own computer).
 
 
-##### Step 3: Install Docker and Docker Compose
+##### Step 4: Install Docker and Docker Compose
 
 ###### Docker
 
@@ -798,7 +808,7 @@ Install Docker Compose on the droplet by following DigitalOcean's
 following only **step 1**.
 
 
-##### Step 4: Build the application's production version (on your own computer)
+##### Step 5: Build the application's production version (on your own computer)
 
 To build the production version of the database application, the `generate.py`
 script must be run again on your **local** computer (i.e. not the new droplet),
@@ -830,7 +840,7 @@ Please enter the production site URL, without 'www.' or 'http://': 142.93.159.13
 ```
 
 
-##### Step 5: Upload the application
+##### Step 6: Upload the application
 
 Now that you have generated the production version of the site, it is time to
 upload it to the droplet and start it up.
@@ -872,7 +882,7 @@ Follow our [mini-tutorial](mini-tutorials/WinSCP.md) for WinSCP to upload the
 `.zip` archive to the droplet.
 
 
-##### Step 6: Start the application
+##### Step 7: Start the application
 
 To start the application, log into the droplet again, using SSH:
 
