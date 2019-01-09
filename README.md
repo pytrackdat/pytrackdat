@@ -2,12 +2,12 @@
 
 ## Overview
 
-PyTrackDat comprises a series of three Python scripts that analyze and assist 
-in the conversion of data and relevant metadata from .csv files into an online
-database that can facilitate data management, manipulation, and quality
-control. What each of these does is outlined in the `README.md` file. Note that
-the care that is taken to assemble `.csv` files before using these scripts will
-help ensure that the database generated is maximally useful.
+PyTrackDat comprises two Python scripts that analyze and assist in converting
+data and relevant metadata from .csv files into an online database that can
+facilitate data management, manipulation, and quality control. What each of
+these scripts does is outlined in this `README.md` file. Note that the care
+that is taken to assemble `.csv` files before using these scripts will help
+ensure that the database generated is maximally useful.
 
 
 
@@ -15,12 +15,12 @@ help ensure that the database generated is maximally useful.
 
 ### Dependencies
 
-Make sure Python 3, `pip3`, `virtualenv`, and `wheel` are installed. The latter
-two are Python packages, to be installed using `pip3`, the Python 3 package
-manager.
+Make sure that Python 3, `pip3`, `virtualenv`, and `wheel` are installed. The
+latter two are Python packages, to be installed using `pip3`, the Python 3
+package manager.
 
 If Python 3 is already installed, update `pip3` to the latest version with the
-following command, ran in a Terminal window (macOS/Linux) or in Command Prompt
+following command, run in a Terminal window (macOS/Linux) or in Command Prompt
 (Windows):
 
 **macOS/Linux**:
@@ -61,7 +61,8 @@ This ensures that Python 3 and `pip` are available from the Command Prompt.
 
 To install `virtualenv` and `wheel`, a command must be ran in a Terminal window
 (macOS or Linux), or a Command Prompt (on Windows). To open a Command Prompt,
-press Windows Key + R or open the Start Menu, type in "cmd", and press enter.
+press the Windows Key + R or open the Start Menu, type in "cmd", and press
+enter.
 
 Run the following command on **macOS** or **Linux**:
 
@@ -139,12 +140,13 @@ cd /path/to/pytrackdat
 
 ### (Optional) Step 1: Data Analyzer
 
-PyTrackDat includes an automatic data analyzer which can read a series of CSV
-files in, as well as their desired relation names, and generate a PyTrackDat
-**design file**, which contains human-readable CSV-formatted instructions for
-the structure of the database. This design file is not final, and should be
-checked over and filled out by a human. However, it provides a good starting
-point for generating a database for a particular dataset.
+PyTrackDat includes an automatic data analyzer which can read a one or a series
+of CSV files in (i.e. data files with variable names in the headers), as well
+as their desired relation names, and generate a PyTrackDat **design file**,
+which contains human-readable CSV-formatted instructions for the structure of
+the database. This design file is not final, and should be checked over and
+added to/edited by a human. However, it provides a good starting point for
+generating a database for a particular dataset.
 
 To run the data analyzer on one or more CSV-formatted data files, run the
 following command:
@@ -1007,9 +1009,10 @@ should be visible. Log in using the username and password entered into the
 
 > **Note about Ports and Configuration**
 >
-> TODO
-
-TODO: NOTE ABOUT PORTS / CONFIGURATION ON OTHER SERVERS
+> This tutorial gives instructions for serving the PyTrackDat application on
+> the main HTTP port, port 80. If you want to serve other content
+> concurrently with the PyTrackDat application, additional configuration will
+> be required.
 
 
 
