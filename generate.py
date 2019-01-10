@@ -1,5 +1,24 @@
 #!/usr/bin/env python3
 
+# PyTrackDat is a utility for assisting in online database creation.
+# Copyright (C) 2018 the PyTrackDat authors.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Contact information:
+#     David Lougheed (david.lougheed@gmail.com)
+
 import csv
 import getpass
 import json
@@ -355,7 +374,7 @@ def main(args):
         uf.write(old_contents.replace(URL_OLD, URL_NEW))
         uf.truncate()
 
-    print("\n===== ADMINISTRATIVE SETUP =====")
+    print("\n======== ADMINISTRATIVE SETUP ========")
     admin_username = input("Admin Account Username: ")
     admin_email = input("Admin Account Email (Optional): ")
     admin_password = "1"
@@ -365,7 +384,7 @@ def main(args):
         admin_password_2 = getpass.getpass("Admin Account Password Again: ")
         if admin_password != admin_password_2:
             print("Passwords do not match. Please try again.")
-    print("=====================================\n")
+    print("======================================\n")
 
     try:
         site_setup_script = "run_site_setup.bat" if os.name == "nt" else "./run_site_setup.bash"
@@ -387,4 +406,5 @@ if __name__ == "__main__":
         print_usage()
         exit(1)
 
+    print_license()
     main(sys.argv[1:])

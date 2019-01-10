@@ -1,5 +1,27 @@
 import re
 
+# PyTrackDat is a utility for assisting in online database creation.
+# Copyright (C) 2018 the PyTrackDat authors.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Contact information:
+#     David Lougheed (david.lougheed@gmail.com)
+
+VERSION = "0.1.0"
+COPYRIGHT_DATES = "2018"
+
 PYTHON_KEYWORDS = ["False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue",
                    "def", "del", "else", "elif", "except", "finally", "for", "from", "global", "if", "import", "in",
                    "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"]
@@ -30,3 +52,9 @@ def to_relation_name(name):
         python_relation_name += "Class"
 
     return python_relation_name
+
+
+def print_license():
+    print("""PyTrackDat v{}  Copyright (C) {} the PyTrackDat authors.
+This program comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
+""".format(VERSION, COPYRIGHT_DATES))
