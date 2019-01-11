@@ -1,4 +1,4 @@
-Django==2.1.3
+Django==2.1.5
 setuptools
 wheel
-https://github.com/modlinltd/django-advanced-filters/archive/develop.zip
+django-advanced-filters==1.1.0
