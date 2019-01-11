@@ -402,9 +402,10 @@ def main(args):
 
 
 if __name__ == "__main__":
+    print_license()
+
     if len(sys.argv) != 3:
         print_usage()
         exit(1)
 
-    print_license()
     main(sys.argv[1:])
