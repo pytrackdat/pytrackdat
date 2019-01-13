@@ -259,6 +259,8 @@ def main(args):
         af.write(ADMIN_FILE_HEADER)
         mf.write(MODELS_FILE_HEADER)
 
+        af.write("admin.site.site_header = 'PyTrackDat: {}'\n\n".format(django_site_name))
+
         design_reader = csv.reader(df)
 
         relation_name = next(design_reader)
@@ -327,6 +329,10 @@ def main(args):
                 mf.write("    @classmethod\n")
                 mf.write("    def ptd_info(cls):\n")
                 mf.write("        return json.loads(\"\"\"{}\"\"\")\n\n".format(json.dumps(relation_fields)))
+
+                mf.write("    @classmethod\n")
+                mf.write("    def get_label_name(cls):\n")
+                mf.write("        return    '{}'\n\n".format(python_relation_name[len(PDT_RELATION_PREFIX):]))
 
                 mf.write("    @classmethod\n")
                 mf.write("    def get_id_type(cls):\n")
