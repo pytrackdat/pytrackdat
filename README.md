@@ -610,6 +610,23 @@ the web application that will be generated.
 The script will ask if the version being built is a 'production build'. Answer
 `n` (no) for now.
 
+> **What is a production build?**
+>
+> A "production build" of an application (as opposed to a "development build")
+> is the version of the application that will be used by all the users of the
+> program, and is considered a *usable* version. The easiest way to understand
+> a production build is to consider the opposite, a development build. These
+> versions of the application are only used for making sure it works.
+> 
+> In the context of PyTrackDat, a production build is one that can be used by
+> any designated users and will store the "real" data. New data entered will be
+> considered part of the actual datset. A development build **will not** work
+> in production, and is simply used to make sure everything works first.
+> 
+> Additional information must be provided to a production PyTrackDat build,
+> specifically the URL of the server onto which the application will be
+> deployed (i.e. set up and ran).
+
 It will also prompt for the details of an administrative user. Enter in a
 username and password for testing purposes. The 'email' field is optional.
 
@@ -809,6 +826,9 @@ following only **step 1**.
 
 
 ##### Step 5: Build the application's production version (on your own computer)
+
+*See the above aside entitled "what is a production build?" for more
+information on why this process is needed.*
 
 To build the production version of the database application, the `generate.py`
 script must be run again on your **local** computer (i.e. not the new droplet),
