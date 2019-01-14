@@ -827,8 +827,8 @@ following only **step 1**.
 
 ##### Step 5: Build the application's production version (on your own computer)
 
-*See the above aside entitled "what is a production build?" for more
-information on why this process is needed.*
+*See the [above aside](#step-3-database-generator), entitled "what is a 
+production build?", for more information on why this process is needed.*
 
 To build the production version of the database application, the `generate.py`
 script must be run again on your **local** computer (i.e. not the new droplet),
