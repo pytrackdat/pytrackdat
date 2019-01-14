@@ -675,10 +675,29 @@ command, and navigate to the application in your web browser at
 ./manage.py runserver
 ```
 
-To stop the server, press `Ctrl-C` in the terminal window where the server is
-running.
+While the development server is running, you can explore the site the same way
+you will be able to once it is finalized and deployed on a server. This is the
+time to check and make sure the data format is correct, importing and exporting
+your data works, and everything is behaving as expected.
 
-To deactivate the site's virtual environment, type in the following command:
+Here is an overview checklist of what should be verified using this development
+version of the application
+
+ 1. The data format, including names, descriptions, and types appears correct
+    and corresponds with what will appear in the data file imported.
+ 1. All necessary tables are present.
+ 1. All foreign keys (inter/intra-table links) are correct and work as
+    expected.
+ 1. Data types with an enforced choice of values include all desired choices,
+    including ones for future data that **may not be used yet**.
+ 1. Data import works with data CSV files (if applicable).
+ 1. Data export works and appears as expected.
+
+Once you are done verifying, the server can be stopped. To do this, press
+`Ctrl-C` in the terminal window where the server is running.
+
+Afterwards, to deactivate the site's virtual environment, type in the following
+command:
 
 ```bash
 deactivate
