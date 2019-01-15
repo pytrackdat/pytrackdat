@@ -154,7 +154,9 @@ def boolean_formatter(f: Dict) -> str:
 def get_choices_from_text_field(f: Dict) -> Optional[Tuple[str]]:
     if len(f["additional_fields"]) == 2:
         # TODO: Choice human names
-        choice_names = [c.strip() for c in f["additional_fields"][1].split(";")]
+        choice_names = [str(c).strip() for c in f["additional_fields"][1].split(";") if str(c).strip() != ""]
+        if len(choice_names) == 0:
+            return None
         return tuple(choice_names)
     return None
 
@@ -172,7 +174,8 @@ def text_formatter(f: Dict) -> str:
     if len(f["additional_fields"]) == 2:
         # TODO: Choice human names
         choice_names = get_choices_from_text_field(f)
-        choices = tuple(zip(choice_names, choice_names))
+        if choice_names is not None:
+            choices = tuple(zip(choice_names, choice_names))
 
     return "models.{}(help_text='{}'{}{}{})".format(
         "TextField" if max_length is None else "CharField",
