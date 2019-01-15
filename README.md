@@ -648,6 +648,11 @@ The script will ask if the version being built is a 'production build'. Answer
 > specifically the URL of the server onto which the application will be
 > deployed (i.e. set up and ran).
 
+> **Note about PyTrackDat development builds**
+> PyTrackDat application development builds cannot export baRcodeR labels from
+> the web interface. This is a known issue and currently unfixable due to R
+> and Python compatibility issues.
+
 It will also prompt for the details of an administrative user. Enter in a
 username and password for testing purposes. The 'email' field is optional.
 
