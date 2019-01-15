@@ -405,12 +405,23 @@ def main(args):
 
     print("\n======== ADMINISTRATIVE SETUP ========")
     admin_username = input("Admin Account Username: ")
+    while admin_username.strip() == "":
+        print("Please enter a username.")
+        admin_username = input("Admin Account Username: ")
     admin_email = input("Admin Account Email (Optional): ")
     admin_password = "1"
     admin_password_2 = "2"
     while admin_password != admin_password_2:
         admin_password = getpass.getpass("Admin Account Password: ")
         admin_password_2 = getpass.getpass("Admin Account Password Again: ")
+
+        # TODO: Properly check password validity
+        if admin_password.strip() == "":
+            print("Please enter a secure password.")
+            admin_password = "1"
+            admin_password_2 = "2"
+            continue
+
         if admin_password != admin_password_2:
             print("Passwords do not match. Please try again.")
     print("======================================\n")
