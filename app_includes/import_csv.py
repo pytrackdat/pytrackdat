@@ -53,7 +53,14 @@ class ImportCSVMixin:
                 model_name = self.model.__name__
                 ptd_info = self.model.ptd_info()
                 headers = [h.strip() for h in reader.fieldnames if h != ""]
-                header_fields = {h: tuple([f for f in ptd_info if f["csv_name"] == h]) for h in headers}
+
+                header_fields_1 = {h: tuple([f for f in ptd_info if h == f["csv_name"]]) for h in headers
+                                   if len([f for f in ptd_info if h == f["csv_name"]]) > 0}
+                header_fields_2 = {h.lower(): tuple([f for f in ptd_info if h.lower() == f["name"]]) for h in headers
+                                   if len([f for f in ptd_info if h == f["name"]]) > 0}
+
+                # Option of using database field names as headers, but keep it consistent.
+                header_fields = header_fields_1 if len(header_fields_1) >= len(header_fields_2) else header_fields_2
 
                 models = {m.__name__: m for m in apps.get_app_config("core").get_models()}
 
