@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # PyTrackDat is a utility for assisting in online database creation.
-# Copyright (C) 2018 the PyTrackDat authors.
+# Copyright (C) 2018-2019 the PyTrackDat authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
