@@ -599,6 +599,16 @@ The `foreign key` type requires one type-specific setting:
   1. `target`: The table which the foreign key field is pointing to. Remember
      that table names are specified in the first column of the first row of
      a block in the design file.
+     
+For example, if a row in a table called `sample` refers to a row in a table
+called `site`, the `target` setting would be `site`. This could have the
+semantic meaning that, whenever a value is present in a row with the
+`foreign key` field set, that `sample` entry was collected at the specified
+`site` entry (representing an actual collection site).
+
+This allows rows to be linked together. `target` **does not** have to refer to
+a different table; the same table could be specified, allowing rows in a table
+to link to other rows in the same table.
 
 
 ### Step 3: Database Generator
