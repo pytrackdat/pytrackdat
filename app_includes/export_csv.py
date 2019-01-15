@@ -28,6 +28,7 @@ class Echo:
 
 
 def csv_generator(writer, column_names, queryset):
+    # TODO: replace null values with their encoded equivalents from the design file
     yield writer.writerow(column_names)
     for item in queryset:
         yield writer.writerow([getattr(item, c) for c in column_names])
