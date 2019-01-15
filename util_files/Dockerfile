@@ -1,8 +1,10 @@
-FROM python:3.6-alpine
+FROM python:3.6-alpine3.7
 
 ENV PYTHONUNBUFFERED 1
 
 ADD requirements.txt /requirements.txt
+ADD install_dependencies.R /install_dependencies.R
+# TODO: Is this needed:
 ADD db.sqlite3 /db.sqlite3
 
 RUN set -ex && apk --update add --no-cache --virtual .build-deps \
