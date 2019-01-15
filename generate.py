@@ -96,6 +96,8 @@ STATIC_OLD = "STATIC_URL = '/static/'"
 STATIC_NEW = """STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')"""
 
+DISABLE_MAX_FIELDS = "\nDATA_UPLOAD_MAX_NUMBER_FIELDS = None\n"
+
 BASIC_NUMBER_TYPES = {
     "integer": "IntegerField",
     "float": "FloatField",
@@ -401,7 +403,7 @@ def main(args):
         sf.write(old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW)
                  .replace(DEBUG_OLD, DEBUG_NEW)
                  .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url))
-                 .replace(STATIC_OLD, STATIC_NEW))
+                 .replace(STATIC_OLD, STATIC_NEW) + DISABLE_MAX_FIELDS)
         sf.truncate()
 
     with open(os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name, "urls.py"), "r+") as uf:
