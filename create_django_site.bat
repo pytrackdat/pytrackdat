@@ -14,6 +14,8 @@ copy /B ..\util_files\requirements.txt "%1\"
 copy /B ..\util_files\Dockerfile "%1\"
 copy /B ..\util_files\docker-compose.yml "%1\"
 copy /B ..\util_files\nginx.conf "%1\"
+copy /B ..\util_files\export_labels.R "%1\"
+copy /B ..\util_files\install_dependencies.R "%1\"
 cd "%1"
 powershell -Command "(gc Dockerfile) -replace 'SITE_NAME', '%1' | Out-File Dockerfile"
 python manage.py startapp core

@@ -13,6 +13,8 @@ cp ../util_files/requirements.txt $1/
 cp ../util_files/Dockerfile $1/
 cp ../util_files/docker-compose.yml $1/
 cp ../util_files/nginx.conf $1/
+cp ../util_files/export_labels.R $1/
+cp ../util_files/install_dependencies.R $1/
 cd $1
 sed -i '' -e "s/SITE_NAME/$1/g" ./Dockerfile
 chmod +x ./manage.py
