@@ -1,36 +1,50 @@
-# import rpy2.robjects.packages as rpackages
-# from rpy2.robjects.vectors import StrVector
+# PyTrackDat is a utility for assisting in online database creation.
+# Copyright (C) 2018 the PyTrackDat authors.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Contact information:
+#     David Lougheed (david.lougheed@gmail.com)
 
 import csv
+import os
+import shutil
+import subprocess
 
-from django.http import HttpResponse
+from django.http import FileResponse, HttpResponse
+
+have_r = shutil.which("Rscript") is not None
 
 
 class ExportLabelsMixin:
     def export_labels(self, _request, queryset):
-        id_vector = [o.pk for o in queryset]
+        model_name = self.model.get_label_name()
+        id_vector = ["{}\n{}".format(model_name, o.pk) for o in queryset]
 
-        # base = rpackages.importr("base")
-        #
-        # utils = rpackages.importr("utils")
-        # utils.chooseCRANmirror(ind=1)
-        # utils.install_packages(StrVector(("devtools",)))
-        #
-        # devtools = rpackages.importr("devtools")
-        # devtools.install_github("yihanwu/baRcodeR", build_vignettes=False)
-        #
-        # barcoder = rpackages.importr("baRcodeR")
-        # barcoder.create_PDF(Labels=StrVector(id_vector), name=base.file.path(base.tempdir(), "example"))
-        #
-        # print(base.tempdir())
+        response = HttpResponse(status=500)
 
-        response = HttpResponse(content_type="text/csv; charset=utf-8")
-        response["Content-Disposition"] = "attachment; filename=labels_{}.csv".format(self.model.__name__.lower())
+        for f in os.listdir("."):
+            if f.startswith("labels-"):
+                os.remove(os.path.join(".", f))
 
-        writer = csv.writer(response)
-        for o_id in id_vector:
-            writer.writerow([o_id])
+        if have_r:
+            # TODO: Prefix for IDs
+            result = subprocess.run(["Rscript", "./export_labels.R"] + id_vector, stdout=subprocess.PIPE, check=True)
+            path = result.stdout.decode("utf-8").split("\n")[-1] + ".pdf"
+            response = FileResponse(open(path, "rb"), as_attachment=True,
+                                    filename="labels_{}.pdf".format(self.model.__name__.lower()))
 
         return response
 
-    export_labels.short_description = "Export baRcodeR CSV ID list for selected"
+    export_labels.short_description = "Export baRcodeR labels (PDF) for selected"

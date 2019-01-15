@@ -7,13 +7,16 @@ ADD install_dependencies.R /install_dependencies.R
 # TODO: Is this needed:
 ADD db.sqlite3 /db.sqlite3
 
-RUN set -ex && apk --update add --no-cache --virtual .build-deps \
-                   gcc make libc-dev musl-dev linux-headers pcre pcre-dev \
-            && pip install -U pip \
-            && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir -r /requirements.txt" \
-            && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir uwsgi==2.0.17.1" \
-            && apk del gcc make libc-dev musl-dev linux-headers pcre-dev
-
+RUN set -ex \
+    && apk --update add --no-cache --virtual build-deps \
+        autoconf automake gcc g++ make libc-dev bzip2-dev file musl-dev linux-headers pcre pcre-dev \
+    && apk add --no-cache R R-dev \
+    && pip install -U pip \
+    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir -r /requirements.txt" \
+    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir uwsgi==2.0.17.1" \
+    && chmod -R a+w /usr/lib/R/library \
+    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "Rscript /install_dependencies.R" \
+    && apk del build-deps
 RUN mkdir /code/
 WORKDIR /code/
 ADD . /code/
