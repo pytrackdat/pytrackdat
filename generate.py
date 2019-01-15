@@ -148,6 +148,14 @@ def boolean_formatter(f):
     )
 
 
+def get_choices_from_text_field(f):
+    if len(f["additional_fields"]) == 2:
+        # TODO: Choice human names
+        choice_names = [c.strip() for c in f["additional_fields"][1].split(";")]
+        return tuple(choice_names)
+    return None
+
+
 def text_formatter(f):
     choices = ()
     max_length = None
@@ -160,13 +168,13 @@ def text_formatter(f):
 
     if len(f["additional_fields"]) == 2:
         # TODO: Choice human names
-        choice_names = [c.strip() for c in f["additional_fields"][1].split(";")]
+        choice_names = get_choices_from_text_field(f)
         choices = tuple(zip(choice_names, choice_names))
 
     return "models.{}(help_text='{}'{}{}{})".format(
         "TextField" if max_length is None else "CharField",
         f["description"].replace("'", "\\'"),
-        "" if f["default"] is None else ", default={}".format(f["default"]),
+        "" if f["default"] is None else ", default='{}'".format(f["default"]),
         "" if len(choices) == 0 else ", choices={}".format(str(choices)),
         "" if max_length is None else ", max_length={}".format(max_length)
     )
@@ -207,9 +215,9 @@ def get_default_from_csv_with_type(dv, dt, nullable=False, null_values=()):
     if dt == "date":
         # TODO: adjust format based on heuristics
         # TODO: Allow extra column setting with date format from python docs?
-        if re.match(RE_DATE_YMD_D, str_v):
+        if re.match(RE_DATE_YMD_D, dv):
             return datetime.strptime(dv, "%Y-%m-%d")
-        elif re.match(RE_DATE_DMY_D, str_v):
+        elif re.match(RE_DATE_DMY_D, dv):
             # TODO: ambiguous d-m-Y or m-d-Y
             return datetime.strptime(dv, "%d-%m-%Y", str_v)
         else:
@@ -248,6 +256,8 @@ def main(args):
     prod_build = input("Is this a production build? (y/n): ")
     if prod_build.lower() in ("y", "yes"):
         site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
+
+    print()
 
     create_site_script = "create_django_site.bat" if os.name == "nt" else "./create_django_site.bash"
     create_site_options = [create_site_script, django_site_name, TEMP_DIRECTORY]
@@ -293,8 +303,10 @@ def main(args):
                         null_values = tuple([n.strip() for n in current_field[4].split(";")])
 
                         if data_type in ("auto_key", "manual_key") and id_type != "":
+                            print()
                             print("Error: Primary key was already specified for relation "
                                   "'{}'. Please only specify one primary key.".format(python_relation_name))
+                            print()
                             exit(1)
 
                         if data_type == "auto key":
@@ -308,11 +320,22 @@ def main(args):
                             "data_type": data_type,
                             "nullable": nullable,
                             "null_values": null_values,
-                            "default": get_default_from_csv_with_type(current_field[5], data_type, nullable,
+                            "default": get_default_from_csv_with_type(current_field[5].strip(), data_type, nullable,
                                                                       null_values),
                             "description": current_field[6].strip(),
                             "additional_fields": current_field[7:]
                         }
+
+                        if data_type == "text":
+                            choices = get_choices_from_text_field(current_field_data)
+                            if choices is not None and current_field[5].strip() != "" and \
+                                    current_field[5].strip() not in choices:
+                                print()
+                                print("Error: Default value for field '{}' in relation '{}' does not match any "
+                                      "available choices for the field. Available choices: "
+                                      "{}".format(current_field[1], python_relation_name, ", ".join(choices)))
+                                print()
+                                exit(1)
 
                         relation_fields.append(current_field_data)
 
