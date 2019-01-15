@@ -388,6 +388,15 @@ to `NULL`.
 This cell contains a value, of the same type as would appear in the data CSV
 file, specifying the default value for the field in the database.
 
+Default values are used as the starting point when inputting a value into a
+field in the GUI.
+
+<img src="images/default.png" width="400" alt="Example of a default value">
+
+These values are also used when no value is provided for a field when importing
+a CSV file. Don't set a default if you want a blank CSV entry to stay blank (or
+`null`, depending on settings) in the database.
+
 ###### Description
 
 This cell should contain a succinct and comprehensive description of what the
