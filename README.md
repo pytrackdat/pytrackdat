@@ -853,7 +853,11 @@ Docker must be installed on any server being used to host a PyTrackDat
 application.
 
 Follow DigitalOcean's [instruction guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04),
-following only **steps 1 and 2**, to install Docker on the newly-created droplet. 
+following only **steps 1 and 2**, to install Docker on the newly-created
+droplet.
+
+> Further steps cover knowledge not needed for this tutorial, although it may
+> be helpful for further understanding the Docker platform.
 
 ###### Docker Compose
 
