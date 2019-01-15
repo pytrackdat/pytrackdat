@@ -39,13 +39,13 @@ RE_MULTIPLE_UNDERSCORES = re.compile("[_]{2,}")
 PDT_RELATION_PREFIX = "PyTrackDat"
 
 
-def field_to_py_code(field):
+def field_to_py_code(field: str) -> str:
     field = field + "_field" if field in PYTHON_KEYWORDS else field
     field = re.sub(RE_MULTIPLE_UNDERSCORES, "_", field)
     return field
 
 
-def to_relation_name(name):
+def to_relation_name(name: str) -> str:
     python_relation_name = PDT_RELATION_PREFIX + "".join([n.capitalize() for n in name.split("_")])
 
     if python_relation_name in PYTHON_KEYWORDS:
@@ -54,7 +54,7 @@ def to_relation_name(name):
     return python_relation_name
 
 
-def print_license():
+def print_license() -> None:
     print("""PyTrackDat v{}  Copyright (C) {} the PyTrackDat authors.
 This program comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
 """.format(VERSION, COPYRIGHT_DATES))

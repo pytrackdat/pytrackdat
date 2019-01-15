@@ -20,12 +20,15 @@
 #     David Lougheed (david.lougheed@gmail.com)
 
 import csv
+import datetime
 import getpass
 import json
 import os
 import shutil
 import subprocess
 import sys
+
+from typing import Dict, Optional, Tuple, Union
 
 from common import *
 
@@ -99,28 +102,28 @@ BASIC_NUMBER_TYPES = {
 }
 
 
-def print_usage():
+def print_usage() -> None:
     print("Usage: ./generate.py design.csv output_site_name")
 
 
-def auto_key_formatter(f):
+def auto_key_formatter(f: Dict) -> str:
     return "models.AutoField(primary_key=True, help_text='{}')".format(f["description"].replace("'", "\\'"))
 
 
-def manual_key_formatter(f):
+def manual_key_formatter(f: Dict) -> str:
     # TODO: Shouldn't be always text?
     return "models.TextField(primary_key=True, max_length=127, " \
            "help_text='{}')".format((f["description"].replace("'", "\\'")))
 
 
-def foreign_key_formatter(f):
+def foreign_key_formatter(f: Dict) -> str:
     return "models.ForeignKey('{}', help_text='{}', on_delete=models.CASCADE)".format(
         to_relation_name(f["additional_fields"][0]),
         f["description"].replace("'", "\\'")
     )
 
 
-def basic_number_formatter(f):
+def basic_number_formatter(f: Dict) -> str:
     t = BASIC_NUMBER_TYPES[f["data_type"]]
     return "models.{}(help_text='{}', null={}{})".format(
         t,
@@ -130,7 +133,7 @@ def basic_number_formatter(f):
     )
 
 
-def decimal_formatter(f):
+def decimal_formatter(f: Dict) -> str:
     return "models.DecimalField(help_text='{}', max_digits={}, decimal_places={}, null={}{})".format(
         f["description"].replace("'", "\\'"),
         f["additional_fields"][0],
@@ -140,7 +143,7 @@ def decimal_formatter(f):
     )
 
 
-def boolean_formatter(f):
+def boolean_formatter(f: Dict) -> str:
     return "models.BooleanField(help_text='{}', null={}{})".format(
         f["description"].replace("'", "\\'"),
         str(f["nullable"]),
@@ -148,7 +151,7 @@ def boolean_formatter(f):
     )
 
 
-def get_choices_from_text_field(f):
+def get_choices_from_text_field(f: Dict) -> Optional[Tuple[str]]:
     if len(f["additional_fields"]) == 2:
         # TODO: Choice human names
         choice_names = [c.strip() for c in f["additional_fields"][1].split(";")]
@@ -156,7 +159,7 @@ def get_choices_from_text_field(f):
     return None
 
 
-def text_formatter(f):
+def text_formatter(f: Dict) -> str:
     choices = ()
     max_length = None
 
@@ -180,7 +183,7 @@ def text_formatter(f):
     )
 
 
-def date_formatter(f):
+def date_formatter(f: Dict) -> str:
     # TODO: standardize date formatting... I think this might already be standardized?
     return "models.DateField(help_text='{}', null={}{})".format(
         f["description"].replace("'", "\\'"),
@@ -205,7 +208,8 @@ DJANGO_TYPE_FORMATTERS = {
 }
 
 
-def get_default_from_csv_with_type(dv, dt, nullable=False, null_values=()):
+def get_default_from_csv_with_type(dv: str, dt: str, nullable=False, null_values=()) \
+        -> Union[None, int, datetime.datetime, str, bool]:
     if dv.strip() == "" and dt != "boolean":
         return None
 
