@@ -449,8 +449,10 @@ Automatic primary keys are **never** nullable.
 
 ##### `manual key`: Manually-Specified Primary Key
 
-Manually-specified primary key (identifier) for a database row; stored as text.
-The value must be specified by the user when adding data to the database.
+Manually-specified primary key (identifier, e.g. a unique collection number, a
+sample numer in a tissue archive, or some other uniquely-identifying piece of
+information for each row in the table) for a database row; stored as text. The
+value must be specified by the user when adding data to the database.
 
 Manually-specified primary keys must be **unique** for a given row
 (/observation).
