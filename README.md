@@ -10,6 +10,7 @@ that is taken to assemble `.csv` files before using these scripts will help
 ensure that the database generated is maximally useful.
 
 
+
 ## Table of Contents
 
   * [Installation](#installation)
@@ -54,6 +55,7 @@ ensure that the database generated is maximally useful.
         * [Deploying the End Result on an Existing Linux Server](#deploying-the-end-result-on-an-existing-linux-server)
   * [Updating the Schema](#updating-the-schema)
      * [Updating the site on DigitalOcean](#updating-the-site-on-digitalocean)
+
 
 
 ## Installation
@@ -1264,3 +1266,31 @@ archive and bringing the application online using Docker Compose.
 
 Finally, re-import the data using the built-in import function in any
 PyTrackDat application using the web interface.
+
+
+
+## Using a PyTrackDat Application
+
+### Introduction
+
+PyTrackDat applications are built on top of the
+[Django framework](http://djangoproject.com), and specifically the built-in
+Django admin site.
+
+When a PyTrackDat application is running, it should be accessible via the
+configured URL (in the case of production builds) or the URL `localhost`
+during local testing.
+
+When this URL is first accessed, a log in page will appear:
+
+<img src="images/ptd_login.png" alt="PyTrackDat Dashboard" width="600">
+
+Enter the administrative credentials you provided to the `generate.py` script
+to access the main dashboard:
+
+<img src="images/ptd_dashboard.png" alt="PyTrackDat Dashboard" width="600">
+
+This dashboard provides access to all tables in the database via a web
+interface. Filtering, importing, and exporting options are also provided for
+each table.
+
