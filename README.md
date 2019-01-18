@@ -42,7 +42,7 @@ For most new Linux distributions, Python 3 should come pre-installed.
 
 For macOS or Windows, please go to the
 [official Python website](https://www.python.org/downloads/)
-and download the latest version of Python3 (as of the time of writing, 3.7.1).
+and download the latest version of Python 3 (as of the time of writing, 3.7.1).
 Run the installer downloaded from this site and follow the instructions
 on-screen.
 
@@ -119,12 +119,17 @@ on using WinSCP.
 
 ### Getting the Code
 
-First, download the repository, either by using a packaged version from GitHub
-or using the following `git` command:
+The easiest way to download the repository is by downloading the
+[latest release](https://github.com/ColauttiLab/PyTrackDat/archive/v0.1.0.zip)
+in ZIP archive format.
 
-```bash
-git clone https://github.com/ColauttiLab/PyTrackDat.git
-```
+> Getting Development Versions
+>
+> To get the latest development version of PyTrackDat, clone the repository
+> (provided Git is installed) using the following command in a Terminal or
+> Command Prompt window:
+> 
+> ```git clone https://github.com/ColauttiLab/PyTrackDat.git```
 
 Once downloaded, un-archive it if needed. Then, open a Terminal window
 (macOS/Linux) or a Command Prompt (Windows) and `cd` to the directory
