@@ -270,7 +270,8 @@ def main(args):
 
     print()
 
-    create_site_script = "create_django_site.bat" if os.name == "nt" else "./create_django_site.bash"
+    create_site_script = "os_scripts\\create_django_site.bat" if os.name == "nt" \
+        else "./os_scripts/create_django_site.bash"
     create_site_options = [create_site_script, django_site_name, TEMP_DIRECTORY]
     subprocess.run(create_site_options, check=True)
 
@@ -438,7 +439,7 @@ def main(args):
     print("======================================\n")
 
     try:
-        site_setup_script = "run_site_setup.bat" if os.name == "nt" else "./run_site_setup.bash"
+        site_setup_script = "os_scripts\\run_site_setup.bat" if os.name == "nt" \
         site_setup_options = [site_setup_script, django_site_name, TEMP_DIRECTORY, admin_username, admin_email,
                               admin_password, site_url]
         subprocess.run(site_setup_options, check=True)
