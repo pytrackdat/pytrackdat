@@ -23,13 +23,13 @@ If Python 3 is already installed, update `pip3` to the latest version with the
 following command, run in a Terminal window (macOS/Linux) or in Command Prompt
 (Windows):
 
-**macOS/Linux**:
+**macOS/Linux:**
 
 ```bash
 pip3 install --upgrade pip
 ```
 
-**Windows**:
+**Windows:**
 
 ```cmd
 pip install --upgrade pip
@@ -715,8 +715,16 @@ Finally, run the development server from the command line with the following
 command, and navigate to the application in your web browser at
 `127.0.0.1:8000`:
 
+**macOS/Linux:**
+
 ```bash
-./manage.py runserver
+python3 ./manage.py runserver
+```
+
+**Windows:**
+
+```cmd
+python manage.py runserver
 ```
 
 While the development server is running, you can explore the site the same way
@@ -857,6 +865,10 @@ typing in the password entered for the new user:
 ssh your_username@your.ip.address.here
 ```
 
+> **Note for Windows users:** Use the same, alternate method of accessing the
+> remote server as before, using the [mini-tutorial](mini-tutorials/KiTTY.md)
+> provided and described above.
+
 Now the virtual machine is ready for installing the software needed to host the
 PyTrackDat application.
 
@@ -901,8 +913,16 @@ To build the production version of the database application, the `generate.py`
 script must be run again on your **local** computer (i.e. not the new droplet),
 this time answering `y` (yes) to the question `Is this a production build?`:
 
+**macOS/Linux:**
+
 ```bash
 python3 ./generate.py design.csv site_name
+```
+
+**Windows:**
+
+```cmd
+python generate.py design.csv site_name
 ```
 
 The script will prompt for a URL. This must match the URL that will be used to
@@ -977,6 +997,10 @@ To start the application, log into the droplet again, using SSH:
 ssh your_username@your.ip.address.here
 ```
 
+> **Note for Windows users:** Use the same, alternate method of accessing the
+> remote server as before, using the [mini-tutorial](mini-tutorials/KiTTY.md)
+> provided and described above.
+
 Then, unzip the archive containing the application within your home folder
 on the server, substituting `site_name` with whatever the archive uploaded to
 the server (in the previous step) is called:
@@ -1039,8 +1063,16 @@ script must be run again on your **local** computer (i.e. not the VM or
 server), this time answering `y` (yes) to the question
 `Is this a production build?`:
 
+**macOS/Linux:**
+
 ```bash
 python3 ./generate.py design.csv site_name
+```
+
+**Windows:**
+
+```cmd
+python generate.py design.csv site_name
 ```
 
 The script will prompt for a URL. This must match the URL that will be used to
@@ -1071,6 +1103,10 @@ To start the application, log into the server again, using SSH:
 ```bash
 ssh your_username@your.ip.address.here
 ```
+
+> **Note for Windows users:** Use the same, alternate method of accessing the
+> remote server as before, using the [mini-tutorial](mini-tutorials/KiTTY.md)
+> provided and described above.
 
 Then, unzip the archive containing the application within your home folder
 on the server:
