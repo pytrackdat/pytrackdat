@@ -1283,7 +1283,7 @@ during local testing.
 
 When this URL is first accessed, a log in page will appear:
 
-<img src="images/ptd_login.png" alt="PyTrackDat Dashboard" width="600">
+<img src="images/ptd_login.png" alt="PyTrackDat Dashboard" width="300">
 
 Enter the administrative credentials you provided to the `generate.py` script
 to access the main dashboard:
