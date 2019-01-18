@@ -165,7 +165,7 @@ python3 ./analyze.py design.csv sample_type_1 samples1.csv sample_type_2 samples
 **Windows**:
 
 ```cmd
-python ./analyze.py design.csv sample_type_1 samples1.csv sample_type_2 samples2.csv [...]
+python analyze.py design.csv sample_type_1 samples1.csv sample_type_2 samples2.csv [...]
 ```
 
 Where `design.csv` is the name of the design file to output, and
@@ -626,8 +626,16 @@ powered by the [Django framework](https://www.djangoproject.com/).
 To run the database generator on a design file (ex. `design.csv`), run the
 following command:
 
+**macOS/Linux:**
+
 ```bash
 python3 ./generate.py design.csv site_name
+```
+
+**Windows:**
+
+```cmd
+python generate.py design.csv site_name
 ```
 
 Where `design.csv` is a path to the design file and `site_name` is the name of
@@ -670,23 +678,20 @@ directory. This package will be used to deploy the site.
 To test the web application from the PyTrackDat directory, first change to the
 site directory within the temporary work directory, `tmp`, which PyTrackDat
 will create, replacing `site_name_here` with the site name that you assigned in
-the previous (generator) step:
-
-```bash
-cd tmp/site_name_here
-```
-
-Then, activate the Python virtual environment with the following command:
+the previous (generator) step. Then, activate the Python virtual environment.
+These actions can be done with the following commands:
 
 **macOS/Linux:**
 
 ```bash
+cd tmp/site_name_here
 source site_env/bin/activate
 ```
 
 **Windows:**
 
 ```cmd
+cd tmp\site_name_here
 \site_env\Scripts\activate.bat
 ```
 
@@ -694,8 +699,16 @@ Before starting the debug server, a **superuser** (administrative user) must
 be created for the web application. This can be done by running the following
 command and following the prompts which will appear onscreen:
 
+**macOS/Linux:**
+
 ```bash
-./manage.py createsuperuser
+python3 ./manage.py createsuperuser
+```
+
+**Windows:**
+
+```cmd
+python manage.py createsuperuser
 ```
 
 Finally, run the development server from the command line with the following
