@@ -447,7 +447,7 @@ def main(args):
         print("Terminating...")
         exit(1)
 
-    shutil.make_archive(django_site_name, "zip", base_dir=os.path.join("tmp", django_site_name))
+    shutil.make_archive(django_site_name, "zip", root_dir="tmp", base_dir=django_site_name)
 
 
 if __name__ == "__main__":
