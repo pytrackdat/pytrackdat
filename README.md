@@ -1283,7 +1283,7 @@ during local testing.
 
 When this URL is first accessed, a log in page will appear:
 
-<img src="images/ptd_login.png" alt="PyTrackDat Dashboard" width="300">
+<img src="images/ptd_login.png" alt="PyTrackDat Log In" width="300">
 
 Enter the administrative credentials you provided to the `generate.py` script
 to access the main dashboard:
@@ -1293,4 +1293,17 @@ to access the main dashboard:
 This dashboard provides access to all tables in the database via a web
 interface. Filtering, importing, and exporting options are also provided for
 each table.
+
+
+### Importing Data
+
+To import data into a particular table, first click on the dashboard entry for
+the table to access the table-specific management page. An "Import CSV" button
+will be present in the upper left corner.
+
+<img src="images/ptd_import_btn.png" alt="PyTrackDat Import" width="600">
+
+Clicking on this button will bring you to the upload page, where a
+CSV-formatted page can be uploaded. Rows in the CSV file will be added to the
+database, assuming the CSV file is **formatted correctly**.
 
