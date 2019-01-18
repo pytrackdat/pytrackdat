@@ -10,6 +10,51 @@ that is taken to assemble `.csv` files before using these scripts will help
 ensure that the database generated is maximally useful.
 
 
+## Table of Contents
+
+  * [Installation](#installation)
+     * [Dependencies](#dependencies)
+        * [Installing Python 3](#installing-python-3)
+        * [Installing virtualenv and <code>wheel</code>](#installing-virtualenv-and-wheel)
+     * [(Windows Only) SSH Utilities](#windows-only-ssh-utilities)
+        * [Using KiTTY](#mini-tutorial-using-kitty)
+        * [Using WinSCP](#mini-tutorial-using-winscp)
+     * [Getting the Code](#getting-the-code)
+  * [Running PyTrackDat](#running-pytrackdat)
+     * [(Optional) Step 1: Data Analyzer](#optional-step-1-data-analyzer)
+     * [Step 2: Design File Layout and Customization](#step-2-design-file-layout-and-customization)
+        * [Design File Customization](#design-file-customization)
+        * [Design File Specification](#design-file-specification)
+        * [Blocks](#blocks)
+           * [Block: Row 1](#block-row-1)
+           * [Block: Following Rows – Field Descriptions](#block-following-rows--field-descriptions)
+              * [CSV Column Name](#csv-column-name)
+              * [Database Field Name](#database-field-name)
+              * [Data Type](#data-type)
+              * [Nullable?](#nullable)
+              * [Null Values](#null-values)
+              * [Default](#default)
+              * [Description](#description)
+              * [Type-Specific Settings](#type-specific-settings)
+        * [Data Type Descriptions](#data-type-descriptions)
+           * [auto key: Automatic Primary Key](#auto-key-automatic-primary-key)
+           * [manual key: Manually-Specified Primary Key](#manual-key-manually-specified-primary-key)
+           * [integer: Integer (Negative or Positive Whole Number)](#integer-integer-negative-or-positive-whole-number)
+           * [float: Floating Point Number (Non-Fixed Precision Decimal)](#float-floating-point-number-non-fixed-precision-decimal)
+           * [decimal: Fixed-Precision Decimal Number](#decimal-fixed-precision-decimal-number)
+           * [boolean: Boolean (True or False) Value](#boolean-boolean-true-or-false-value)
+           * [text: Fixed- or Unbounded-Length Text](#text-fixed--or-unbounded-length-text)
+           * [date: Date](#date-date)
+           * [time: Time](#time-time)
+           * [foreign key: Foreign Key (Cross-Relation)](#foreign-key-foreign-key-cross-relation)
+     * [Step 3: Database Generator](#step-3-database-generator)
+     * [Step 4: Testing](#step-4-testing)
+     * [Step 5: Deploying the Application](#step-5-deploying-the-application)
+        * [Deploying the End Result on DigitalOcean](#deploying-the-end-result-on-digitalocean)
+        * [Deploying the End Result on an Existing Linux Server](#deploying-the-end-result-on-an-existing-linux-server)
+  * [Updating the Schema](#updating-the-schema)
+     * [Updating the site on DigitalOcean](#updating-the-site-on-digitalocean)
+
 
 ## Installation
 
@@ -77,7 +122,7 @@ pip install virtualenv wheel
 ```
 
 
-### (Windows Only) SSH Utility
+### (Windows Only) SSH Utilities
 
 If you already have SSH and SCP utilities installed, or are not running
 Windows, this step can be skipped.
