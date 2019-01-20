@@ -427,14 +427,15 @@ def main(args):
     admin_password_2 = "2"
     while admin_password != admin_password_2:
         admin_password = getpass.getpass("Admin Account Password: ")
-        admin_password_2 = getpass.getpass("Admin Account Password Again: ")
 
         # TODO: Properly check password validity
-        if admin_password.strip() == "":
-            print("Please enter a secure password.")
+        if len(admin_password.strip()) < 8:
+            print("Please enter a secure password (8 or more characters).")
             admin_password = "1"
             admin_password_2 = "2"
             continue
+
+        admin_password_2 = getpass.getpass("Admin Account Password Again: ")
 
         if admin_password != admin_password_2:
             print("Passwords do not match. Please try again.")
