@@ -267,6 +267,8 @@ def main(args):
         site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
         while "http:" in site_url or "https:" in site_url or "/www." in site_url:
             site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
+    elif prod_build.lower() not in ("n", "no"):
+        print("Invalid answer '{}', assuming 'n'...".format(prod_build))
 
     print()
 
