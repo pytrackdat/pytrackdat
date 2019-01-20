@@ -59,6 +59,7 @@ ensure that the database generated is maximally useful.
      * [Introduction](#introduction)
      * [Importing Data](#importing-data)
      * [Exporting Data](#exporting-data)
+     * [Exporting Labels with baRcodeR](#exporting-labels-with-barcoder)
 
 
 
@@ -1326,3 +1327,24 @@ computer.
 
 <img src="images/ptd_download_csv.png" alt="PyTrackDat Download" width="600">
 
+
+### Exporting Labels with baRcodeR
+
+[baRcodeR](https://github.com/yihanwu/baRcodeR) is an R package for labeling,
+tracking, and organizing samples based on 2D barcodes (QR codes). In
+production, a PyTrackDat application allows users to export labels for database
+table entries based on values of the table's **primary key**. This allows for
+the unique identification of physical objects (e.g. samples), linking them to
+their corresponding database entries.
+
+To export baRcodeR labels from a PyTrackDat application, first click on the
+dashboard entry for the table you wish to export labels for. Select all data
+that you wish to label using the checkboxes available.
+
+<img src="images/ptd_export.png" alt="PyTrackDat Export" width="600">
+
+Then, use the dropdown action menu to select the "Export baRcodeR labels (PDF)
+for selected" action and click "Go". This will download a PDF file onto your
+local computer with the QR code labels.
+
+<img src="images/ptd_barcodes.png" alt="PyTrackDat Barcodes" width="600">
