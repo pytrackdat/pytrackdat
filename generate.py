@@ -415,7 +415,7 @@ def main(args):
         uf.write(old_contents.replace(URL_OLD, URL_NEW))
         uf.truncate()
 
-    print("\n======== ADMINISTRATIVE SETUP ========")
+    print("\n================ ADMINISTRATIVE SETUP ================")
     admin_username = input("Admin Account Username: ")
     while admin_username.strip() == "":
         print("Please enter a username.")
@@ -436,7 +436,7 @@ def main(args):
 
         if admin_password != admin_password_2:
             print("Passwords do not match. Please try again.")
-    print("======================================\n")
+    print("======================================================\n")
 
     try:
         site_setup_script = "os_scripts\\run_site_setup.bat" if os.name == "nt" \
