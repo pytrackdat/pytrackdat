@@ -443,6 +443,7 @@ def main(args):
 
     try:
         site_setup_script = "os_scripts\\run_site_setup.bat" if os.name == "nt" \
+            else "./os_scripts/run_site_setup.bash"
         site_setup_options = [site_setup_script, django_site_name, TEMP_DIRECTORY, admin_username, admin_email,
                               admin_password, site_url]
         subprocess.run(site_setup_options, check=True)
