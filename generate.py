@@ -250,6 +250,14 @@ def get_default_from_csv_with_type(dv: str, dt: str, nullable=False, null_values
     return dv
 
 
+def exit_with_error(message):
+    print()
+    print(message)
+    print()
+    # TODO: HANDLE CLEANUP
+    exit(1)
+
+
 def main(args):
     design_file = args[0]  # File name for design file input
     django_site_name = args[1]
@@ -306,22 +314,20 @@ def main(args):
                         # TODO: Process
 
                         if current_field[2].lower() not in DATA_TYPES:
-                            print("Error: Unknown data type specified for field '{}': '{}'".format(
+                            exit_with_error("Error: Unknown data type specified for field '{}': '{}'".format(
                                 current_field[1],
                                 current_field[2].lower()
                             ))
-                            exit(1)
 
                         data_type = current_field[2].lower()
                         nullable = current_field[3].lower() in ("true", "t", "yes", "y", "1")
                         null_values = tuple([n.strip() for n in current_field[4].split(";")])
 
-                        if data_type in ("auto_key", "manual_key") and id_type != "":
-                            print()
-                            print("Error: Primary key was already specified for relation "
-                                  "'{}'. Please only specify one primary key.".format(python_relation_name))
-                            print()
-                            exit(1)
+                        if data_type in ("auto key", "manual key") and id_type != "":
+                            exit_with_error(
+                                "Error: More than one primary key (auto/manual key) was specified for relation '{}'. "
+                                "Please only specify one primary key.".format(python_relation_name)
+                            )
 
                         if data_type == "auto key":
                             id_type = "integer"
@@ -344,12 +350,13 @@ def main(args):
                             choices = get_choices_from_text_field(current_field_data)
                             if choices is not None and current_field[5].strip() != "" and \
                                     current_field[5].strip() not in choices:
-                                print()
-                                print("Error: Default value for field '{}' in relation '{}' does not match any "
-                                      "available choices for the field. Available choices: "
-                                      "{}".format(current_field[1], python_relation_name, ", ".join(choices)))
-                                print()
-                                exit(1)
+                                exit_with_error(
+                                    "Error: Default value for field '{}' in relation '{}' does not match any available "
+                                    "choices for the field. Available choices: {}".format(
+                                        current_field[1],
+                                        python_relation_name,
+                                        ", ".join(choices)
+                                    ))
 
                         relation_fields.append(current_field_data)
 
@@ -450,9 +457,7 @@ def main(args):
 
     except subprocess.CalledProcessError:
         # Need to catch subprocess errors to prevent password from being shown onscreen.
-        print("An error occurred while running the site setup script.")
-        print("Terminating...")
-        exit(1)
+        exit_with_error("An error occurred while running the site setup script.\nTerminating...")
 
     shutil.make_archive(django_site_name, "zip", root_dir="tmp", base_dir=django_site_name)
 
