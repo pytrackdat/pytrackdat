@@ -2,6 +2,6 @@ __pycache__
 .idea
 env
 tmp/
-*.csv
+/*.csv
 *.xls*
 *.zip
