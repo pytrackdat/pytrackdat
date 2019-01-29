@@ -39,20 +39,22 @@ from common import *
 
 TEMP_DIRECTORY = "tmp"
 
-ADMIN_FILE_HEADER = """
+ADMIN_FILE_HEADER = """# Generated using PyTrackDat v{}
 from django.contrib import admin
+from advanced_filters.admin import AdminAdvancedFiltersMixin
+
 from core.models import *
 from .export_csv import ExportCSVMixin
 from .import_csv import ImportCSVMixin
 from .export_labels import ExportLabelsMixin
 
-"""
+""".format(VERSION)
 
-MODELS_FILE_HEADER = """
+MODELS_FILE_HEADER = """# Generated using PyTrackDat v{}
 import json
 from django.db import models
 
-"""
+""".format(VERSION)
 
 URL_OLD = """urlpatterns = [
     path('admin/', admin.site.urls),
