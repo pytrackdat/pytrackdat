@@ -358,6 +358,9 @@ def main(args):
                                         ", ".join(choices)
                                     ))
 
+                            if choices is not None and len(choices) > 1:
+                                current_field_data["choices"] = choices
+
                         relation_fields.append(current_field_data)
 
                         current_field = next(design_reader)
@@ -389,6 +392,14 @@ def main(args):
                 af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, "
                          "admin.ModelAdmin):\n".format(python_relation_name))
                 af.write("    actions = ['export_csv', 'export_labels']\n")
+
+                list_display_fields = [r["name"] for r in relation_fields
+                                       if r["data_type"] not in ("text", "auto key", "manual key") or "choices" in r]
+                key = [r["name"] for r in relation_fields if r["data_type"] in ("auto key", "manual key")]
+                list_display_fields = key + list_display_fields
+
+                if len(list_display_fields) > 1:
+                    af.write("    list_display = ['{}']\n".format("', '".join(list_display_fields)))
 
                 for f in relation_fields:
                     mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
