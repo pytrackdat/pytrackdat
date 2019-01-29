@@ -631,8 +631,8 @@ any passed values, the default seconds value is `0`. At the moment, no timezone
 information is stored, which should be tracked manually (or put in the field
 description).
 
-Currently, PyTrackDat only accepts the `HH:MM` or `HH:MM:SS` 24 hour formats 
-for times.
+Currently, PyTrackDat **only accepts** the `HH:MM` or `HH:MM:SS` **24 hour**
+formats for times.
 
 ###### Type-Specific Settings
 
