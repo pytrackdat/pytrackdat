@@ -389,8 +389,9 @@ def main(args):
                 mf.write("        verbose_name = '{}'\n\n".format(python_relation_name[len(PDT_RELATION_PREFIX):]))
 
                 af.write("\n\n@admin.register({})\n".format(python_relation_name))
-                af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, "
+                af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, AdminAdvancedFiltersMixin, "
                          "admin.ModelAdmin):\n".format(python_relation_name))
+                af.write("    change_list_template = 'admin/core/change_list.html'\n")
                 af.write("    actions = ['export_csv', 'export_labels']\n")
 
                 list_display_fields = [r["name"] for r in relation_fields
@@ -401,11 +402,16 @@ def main(args):
                 list_filter_fields = [r["name"] for r in relation_fields
                                       if r["data_type"] in ("boolean",) or "choices" in r]
 
+                advanced_filter_fields = [r["name"] for r in relation_fields]
+
                 if len(list_display_fields) > 1:
                     af.write("    list_display = ('{}',)\n".format("', '".join(list_display_fields)))
 
                 if len(list_filter_fields) > 0:
-                    af.write("    list_filter = ('{}',)".format("', '".join(list_filter_fields)))
+                    af.write("    list_filter = ('{}',)\n".format("', '".join(list_filter_fields)))
+
+                if len(advanced_filter_fields) > 0:
+                    af.write("    advanced_filter_fields = ('{}',)\n".format("', '".join(advanced_filter_fields)))
 
                 for f in relation_fields:
                     mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
