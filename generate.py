@@ -398,8 +398,14 @@ def main(args):
                 key = [r["name"] for r in relation_fields if r["data_type"] in ("auto key", "manual key")]
                 list_display_fields = key + list_display_fields
 
+                list_filter_fields = [r["name"] for r in relation_fields
+                                      if r["data_type"] in ("boolean",) or "choices" in r]
+
                 if len(list_display_fields) > 1:
-                    af.write("    list_display = ['{}']\n".format("', '".join(list_display_fields)))
+                    af.write("    list_display = ('{}',)\n".format("', '".join(list_display_fields)))
+
+                if len(list_filter_fields) > 0:
+                    af.write("    list_filter = ('{}',)".format("', '".join(list_filter_fields)))
 
                 for f in relation_fields:
                     mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
