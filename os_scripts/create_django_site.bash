@@ -21,7 +21,7 @@ python ./tmp_env/bin/django-admin startproject $1
 
 # Copy pre-built files to the site folder
 cp ../util_files/requirements.txt $1/
-cp ../util_files/Dockerfile $1/
+cp ../util_files/Dockerfile.template $1/
 cp ../util_files/docker-compose.yml $1/
 cp ../util_files/nginx.conf $1/
 cp ../util_files/export_labels.R $1/
@@ -29,7 +29,10 @@ cp ../util_files/install_dependencies.R $1/
 
 # Enter the Django site directory
 cd $1
-sed -i '' -e "s/SITE_NAME/$1/g" ./Dockerfile
+
+# Add site name to Dockerfile template
+sed -e "s/SITE_NAME/$1/g" ./Dockerfile.template > ./Dockerfile
+rm ./Dockerfile.template
 
 # Make Django site manager script executable
 chmod +x ./manage.py

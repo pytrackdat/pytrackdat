@@ -22,7 +22,7 @@ python .\tmp_env\Scripts\django-admin startproject "%1"
 
 rem Copy pre-built files to the site folder
 copy /B ..\util_files\requirements.txt "%1\"
-copy /B ..\util_files\Dockerfile "%1\"
+copy /B ..\util_files\Dockerfile.template "%1\"
 copy /B ..\util_files\docker-compose.yml "%1\"
 copy /B ..\util_files\nginx.conf "%1\"
 copy /B ..\util_files\export_labels.R "%1\"
@@ -30,7 +30,10 @@ copy /B ..\util_files\install_dependencies.R "%1\"
 
 rem Enter the Django site directory
 cd "%1"
-powershell -Command "(gc Dockerfile) -replace 'SITE_NAME', '%1' | Out-File Dockerfile"
+
+rem Add site name to Dockerfile template
+powershell -Command "(gc Dockerfile.template) -replace 'SITE_NAME', '%1' | Out-File Dockerfile"
+del Dockerfile.template
 
 rem Create the Django application for the models
 python manage.py startapp core
