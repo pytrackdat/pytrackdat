@@ -466,6 +466,7 @@ def main(args):
 
         with a_buf, m_buf:
             # Run site creation script
+            # TODO: Make path more robust
             create_site_script = "os_scripts\\create_django_site.bat" if os.name == "nt" \
                 else "./os_scripts/create_django_site.bash"
             create_site_options = [create_site_script, django_site_name, TEMP_DIRECTORY]
@@ -536,6 +537,7 @@ def main(args):
     print("======================================================\n")
 
     try:
+        # TODO: Make path more robust
         site_setup_script = "os_scripts\\run_site_setup.bat" if os.name == "nt" \
             else "./os_scripts/run_site_setup.bash"
         site_setup_options = [site_setup_script, django_site_name, TEMP_DIRECTORY, admin_username, admin_email,
