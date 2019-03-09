@@ -23,6 +23,7 @@ import csv
 import datetime
 import getpass
 import gzip
+import io
 import json
 import os
 import shutil
@@ -261,40 +262,20 @@ def exit_with_error(message):
     exit(1)
 
 
-def main(args):
-    design_file = args[0]  # File name for design file input
-    django_site_name = args[1]
+def create_admin_and_models(design_file, site_name):
+    """
+    Validates the design file and creates the contents of the admin and models
+    files for the Django data application.
+    """
 
-    if not os.path.exists(TEMP_DIRECTORY):
-        os.makedirs(TEMP_DIRECTORY)
+    af = io.StringIO()
+    mf = io.StringIO()
 
-    if os.name not in ("nt", "posix"):
-        print("Unsupported platform.")
-        exit(1)
-
-    site_url = "localhost"
-    prod_build = input("Is this a production build? (y/n): ")
-    if prod_build.lower() in ("y", "yes"):
-        site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
-        while "http:" in site_url or "https:" in site_url or "/www." in site_url:
-            site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
-    elif prod_build.lower() not in ("n", "no"):
-        print("Invalid answer '{}', assuming 'n'...".format(prod_build))
-
-    print()
-
-    create_site_script = "os_scripts\\create_django_site.bat" if os.name == "nt" \
-        else "./os_scripts/create_django_site.bash"
-    create_site_options = [create_site_script, django_site_name, TEMP_DIRECTORY]
-    subprocess.run(create_site_options, check=True)
-
-    with open(design_file, "r") as df, \
-            open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "models.py"), "w") as mf, \
-            open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "admin.py"), "w") as af:
+    with open(design_file, "r") as df:
         af.write(ADMIN_FILE_HEADER)
         mf.write(MODELS_FILE_HEADER)
 
-        af.write("admin.site.site_header = 'PyTrackDat: {}'\n\n".format(django_site_name))
+        af.write("admin.site.site_header = 'PyTrackDat: {}'\n\n".format(site_name))
 
         design_reader = csv.reader(df)
 
@@ -434,6 +415,56 @@ def main(args):
                 except StopIteration:
                     end_loop = True
                     break
+
+    af.seek(0)
+    mf.seek(0)
+
+    return af, mf
+
+
+def main(args):
+    design_file = args[0]  # File name for design file input
+    django_site_name = args[1]
+
+    if not os.path.exists(TEMP_DIRECTORY):
+        os.makedirs(TEMP_DIRECTORY)
+
+    if os.name not in ("nt", "posix"):
+        print("Unsupported platform.")
+        exit(1)
+
+    # Process and validate design file, get contents of admin and models files
+    try:
+        print("Validating design file '{}'...".format(design_file))
+        a_buf, m_buf = create_admin_and_models(design_file, django_site_name)
+        print("done.\n")
+
+        site_url = "localhost"
+        prod_build = input("Is this a production build? (y/n): ")
+        if prod_build.lower() in ("y", "yes"):
+            site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
+            while "http:" in site_url or "https:" in site_url or "/www." in site_url:
+                site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
+        elif prod_build.lower() not in ("n", "no"):
+            print("Invalid answer '{}', assuming 'n'...".format(prod_build))
+
+        print()
+
+        with a_buf, m_buf:
+            # Run site creation script
+            create_site_script = "os_scripts\\create_django_site.bat" if os.name == "nt" \
+                else "./os_scripts/create_django_site.bash"
+            create_site_options = [create_site_script, django_site_name, TEMP_DIRECTORY]
+            subprocess.run(create_site_options, check=True)
+
+            # Write admin and models file contents to disk
+            with open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "models.py"), "w") as mf, \
+                    open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "admin.py"), "w") as af:
+                shutil.copyfileobj(a_buf, af)
+                shutil.copyfileobj(m_buf, mf)
+
+    except FileNotFoundError:
+        exit_with_error("Design file not found.")
 
     with open(os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name, "settings.py"), "r+") as sf:
         old_contents = sf.read()
