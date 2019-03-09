@@ -58,6 +58,22 @@ from django.db import models
 
 """.format(VERSION)
 
+MODEL_TEMPLATE = """class {name}(models.Model):
+    @classmethod
+    def ptd_info(cls):
+        return json.loads(\"\"\"{fields}\"\"\")
+
+    @classmethod
+    def get_label_name(cls):
+        return '{label_name}'
+
+    @classmethod
+    def get_id_type(cls):
+        return '{id_type}'
+
+    class Meta:
+        verbose_name = '{verbose_name}'"""
+
 URL_OLD = """urlpatterns = [
     path('admin/', admin.site.urls),
 ]"""
@@ -356,21 +372,19 @@ def create_admin_and_models(design_file, site_name):
 
                     # Otherwise, write data into the model and admin files
 
-                mf.write("\n\nclass {}(models.Model):\n".format(python_relation_name))
-                mf.write("    @classmethod\n")
-                mf.write("    def ptd_info(cls):\n")
-                mf.write("        return json.loads(\"\"\"{}\"\"\")\n\n".format(json.dumps(relation_fields)))
+                # Write model information
 
-                mf.write("    @classmethod\n")
-                mf.write("    def get_label_name(cls):\n")
-                mf.write("        return    '{}'\n\n".format(python_relation_name[len(PDT_RELATION_PREFIX):]))
+                mf.write("\n\n")
+                mf.write(MODEL_TEMPLATE.format(
+                    name=python_relation_name,
+                    fields=json.dumps(relation_fields),  # TODO: use pretty-printer instead of JSON
+                    label_name=python_relation_name[len(PDT_RELATION_PREFIX):],
+                    id_type=id_type,
+                    verbose_name=python_relation_name[len(PDT_RELATION_PREFIX):]
+                ))
+                mf.write("\n\n")
 
-                mf.write("    @classmethod\n")
-                mf.write("    def get_id_type(cls):\n")
-                mf.write("        return '{}'\n\n".format(id_type))
-
-                mf.write("    class Meta:\n")
-                mf.write("        verbose_name = '{}'\n\n".format(python_relation_name[len(PDT_RELATION_PREFIX):]))
+                # Write admin information
 
                 af.write("\n\n@admin.register({})\n".format(python_relation_name))
                 af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, AdminAdvancedFiltersMixin, "
