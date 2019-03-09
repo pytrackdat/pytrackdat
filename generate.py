@@ -22,6 +22,7 @@
 import csv
 import datetime
 import getpass
+import gzip
 import json
 import os
 import shutil
@@ -449,6 +450,16 @@ def main(args):
         uf.write(old_contents.replace(URL_OLD, URL_NEW))
         uf.truncate()
 
+    # Try to use password list created by Royce Williams and adapted for the Django project:
+    # https://gist.github.com/roycewilliams/281ce539915a947a23db17137d91aeb7
+    common_passwords = ["password", "123456", "12345678"]  # Fallbacks if file not present
+    try:
+        with gzip.open(os.path.join(os.path.dirname(__file__), "common-passwords.txt.gz")) as f:
+            common_passwords = {p.strip() for p in f.read().decode().splitlines()
+                                if len(p.strip()) >= 8}  # Don't bother including too-short passwords
+    except OSError:
+        pass
+
     print("\n================ ADMINISTRATIVE SETUP ================")
     admin_username = input("Admin Account Username: ")
     while admin_username.strip() == "":
@@ -463,6 +474,12 @@ def main(args):
         # TODO: Properly check password validity
         if len(admin_password.strip()) < 8:
             print("Please enter a secure password (8 or more characters).")
+            admin_password = "1"
+            admin_password_2 = "2"
+            continue
+
+        if admin_password.lower().strip() in common_passwords:
+            print("Please enter in a less commonly-used password (8 or more characters).")
             admin_password = "1"
             admin_password_2 = "2"
             continue
