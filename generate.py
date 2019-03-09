@@ -446,13 +446,14 @@ def main(args):
         print("Unsupported platform.")
         exit(1)
 
+    site_url = "localhost"
+
     # Process and validate design file, get contents of admin and models files
     try:
         print("Validating design file '{}'...".format(design_file))
         a_buf, m_buf = create_admin_and_models(design_file, django_site_name)
         print("done.\n")
 
-        site_url = "localhost"
         prod_build = input("Is this a production build? (y/n): ")
         if prod_build.lower() in ("y", "yes"):
             site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
