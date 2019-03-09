@@ -123,7 +123,7 @@ BASIC_NUMBER_TYPES = {
 }
 
 
-def print_usage() -> None:
+def print_usage():
     print("Usage: ./generate.py design.csv output_site_name")
 
 
@@ -269,7 +269,7 @@ def get_default_from_csv_with_type(dv: str, dt: str, nullable=False, null_values
     return dv
 
 
-def exit_with_error(message):
+def exit_with_error(message: str):
     print()
     print(message)
     print()
@@ -277,7 +277,7 @@ def exit_with_error(message):
     exit(1)
 
 
-def create_admin_and_models(design_file, site_name):
+def create_admin_and_models(design_file: str, site_name: str) -> Tuple[io.StringIO, io.StringIO]:
     """
     Validates the design file and creates the contents of the admin and models
     files for the Django data application.
