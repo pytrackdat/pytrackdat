@@ -24,8 +24,8 @@ import datetime
 import getpass
 import gzip
 import io
-import json
 import os
+import pprint
 import shutil
 import subprocess
 import sys
@@ -53,7 +53,6 @@ from .export_labels import ExportLabelsMixin
 """.format(VERSION)
 
 MODELS_FILE_HEADER = """# Generated using PyTrackDat v{}
-import json
 from django.db import models
 
 """.format(VERSION)
@@ -61,7 +60,7 @@ from django.db import models
 MODEL_TEMPLATE = """class {name}(models.Model):
     @classmethod
     def ptd_info(cls):
-        return json.loads(\"\"\"{fields}\"\"\")
+        return {fields}
 
     @classmethod
     def get_label_name(cls):
@@ -377,7 +376,7 @@ def create_admin_and_models(design_file, site_name):
                 mf.write("\n\n")
                 mf.write(MODEL_TEMPLATE.format(
                     name=python_relation_name,
-                    fields=json.dumps(relation_fields),  # TODO: use pretty-printer instead of JSON
+                    fields=pprint.pformat(relation_fields, indent=12, width=120, compact=True),
                     label_name=python_relation_name[len(PDT_RELATION_PREFIX):],
                     id_type=id_type,
                     verbose_name=python_relation_name[len(PDT_RELATION_PREFIX):]
