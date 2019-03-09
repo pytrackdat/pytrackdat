@@ -1,4 +1,4 @@
-# PyTrackDat -- A pipeline for online data collection and management
+# PyTrackDat – A pipeline for online data collection and management
 
 ## Overview
 
