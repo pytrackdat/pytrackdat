@@ -38,7 +38,7 @@ import csv
 import re
 import sys
 
-from common import *
+from pytrackdat.common import *
 
 
 def main(args):

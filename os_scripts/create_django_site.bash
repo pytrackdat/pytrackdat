@@ -48,7 +48,7 @@ chmod +x ./manage.py
 
 # Copy pre-built application scripts to the application
 cp -r ../../app_includes/* ./core/
-cp ../../common.py ./core/
+cp ../../pytrackdat/common.py ./core/
 
 # Deactivate the temporary setup virtual environment
 deactivate

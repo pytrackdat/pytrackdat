@@ -46,7 +46,7 @@ python manage.py startapp snapshot_manager
 
 rem Copy pre-built application scripts to the application
 xcopy ..\..\app_includes core /s /e
-copy /B ..\..\common.py core
+copy /B ..\..\pytrackdat\common.py core
 
 rem Deactivate the temporary setup virtual environment
 deactivate

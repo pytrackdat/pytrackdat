@@ -58,3 +58,11 @@ def print_license():
     print("""PyTrackDat v{}  Copyright (C) {} the PyTrackDat authors.
 This program comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
 """.format(VERSION, COPYRIGHT_DATES))
+
+
+def exit_with_error(message: str):
+    print()
+    print(message)
+    print()
+    # TODO: HANDLE CLEANUP
+    exit(1)
