@@ -54,11 +54,17 @@ def main(args):
 
     site_url = "localhost"
 
+    a_buf = None
+    m_buf = None
+
     # Process and validate design file, get contents of admin and models files
     try:
         print("Validating design file '{}'...".format(design_file))
         with open(design_file, "r") as df:
-            a_buf, m_buf = create_admin_and_models(df, django_site_name)
+            try:
+                a_buf, m_buf = create_admin_and_models(df, django_site_name)
+            except GenerationError as e:
+                exit_with_error(str(e))
         print("done.\n")
 
         prod_build = input("Is this a production build? (y/n): ")

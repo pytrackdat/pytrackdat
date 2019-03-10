@@ -168,6 +168,10 @@ BASIC_NUMBER_TYPES = {
 }
 
 
+class GenerationError(Exception):
+    pass
+
+
 def auto_key_formatter(f: Dict) -> str:
     return "models.AutoField(primary_key=True, help_text='{}')".format(f["description"].replace("'", "\\'"))
 
@@ -345,7 +349,7 @@ def create_admin_and_models(df: IO, site_name: str) -> Tuple[io.StringIO, io.Str
                     # TODO: Process
 
                     if current_field[2].lower() not in DATA_TYPES:
-                        exit_with_error("Error: Unknown data type specified for field '{}': '{}'".format(
+                        raise GenerationError("Error: Unknown data type specified for field '{}': '{}'".format(
                             current_field[1],
                             current_field[2].lower()
                         ))
@@ -355,7 +359,7 @@ def create_admin_and_models(df: IO, site_name: str) -> Tuple[io.StringIO, io.Str
                     null_values = tuple([n.strip() for n in current_field[4].split(";")])
 
                     if data_type in ("auto key", "manual key") and id_type != "":
-                        exit_with_error(
+                        raise GenerationError(
                             "Error: More than one primary key (auto/manual key) was specified for relation '{}'. "
                             "Please only specify one primary key.".format(python_relation_name)
                         )
@@ -381,7 +385,7 @@ def create_admin_and_models(df: IO, site_name: str) -> Tuple[io.StringIO, io.Str
                         choices = get_choices_from_text_field(current_field_data)
                         if choices is not None and current_field[5].strip() != "" and \
                                 current_field[5].strip() not in choices:
-                            exit_with_error(
+                            raise GenerationError(
                                 "Error: Default value for field '{}' in relation '{}' does not match any available "
                                 "choices for the field. Available choices: {}".format(
                                     current_field[1],
