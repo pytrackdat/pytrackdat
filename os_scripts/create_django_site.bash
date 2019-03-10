@@ -30,6 +30,9 @@ cp ../util_files/install_dependencies.R $1/
 # Enter the Django site directory
 cd $1
 
+# Create the storage directory for snapshots
+mkdir snapshots
+
 # Add site name to Dockerfile template
 sed -e "s/SITE_NAME/$1/g" ./Dockerfile.template > ./Dockerfile
 rm ./Dockerfile.template
@@ -39,6 +42,9 @@ chmod +x ./manage.py
 
 # Create the Django application for the models
 ./manage.py startapp core
+
+# Create the Django application for database snapshots
+./manage.py startapp snapshot_manager
 
 # Copy pre-built application scripts to the application
 cp -r ../../app_includes/* ./core/

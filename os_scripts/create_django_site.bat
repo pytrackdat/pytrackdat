@@ -31,12 +31,18 @@ copy /B ..\util_files\install_dependencies.R "%1\"
 rem Enter the Django site directory
 cd "%1"
 
+rem Create the storage directory for snapshots
+mkdir snapshots
+
 rem Add site name to Dockerfile template
 powershell -Command "(gc Dockerfile.template) -replace 'SITE_NAME', '%1' | Out-File Dockerfile"
 del Dockerfile.template
 
 rem Create the Django application for the models
 python manage.py startapp core
+
+rem Create the Django application for database snapshots
+python manage.py startapp snapshot_manager
 
 rem Copy pre-built application scripts to the application
 xcopy ..\..\app_includes core /s /e

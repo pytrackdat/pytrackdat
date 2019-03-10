@@ -52,6 +52,14 @@ from .export_labels import ExportLabelsMixin
 
 """.format(VERSION)
 
+SNAPSHOT_ADMIN_FILE_HEADER = """# Generated using PyTrackDat v{}
+from django.contrib import admin
+from advanced_filters.admin import AdminAdvancedFiltersMixin
+
+from snapshot_manager.models import *
+
+""".format(VERSION)
+
 MODELS_FILE_HEADER = """# Generated using PyTrackDat v{}
 from django.db import models
 
@@ -71,7 +79,58 @@ MODEL_TEMPLATE = """class {name}(models.Model):
         return '{id_type}'
 
     class Meta:
-        verbose_name = '{verbose_name}'"""
+        verbose_name = '{verbose_name}'
+
+    pdt_created_at = models.DateTimeField(auto_now_add=True, null=False)
+    pdt_modified_at = models.DateTimeField(auto_now=True, null=False)"""
+
+SNAPSHOT_MODEL = """import os
+import shutil
+from datetime import datetime
+
+import {}.settings as settings
+
+from django.db import transaction
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+
+
+class Snapshot(models.Model):
+    pdt_created_at = models.DateTimeField(auto_now_add=True, null=False)
+    pdt_modified_at = models.DateTimeField(auto_now=True, null=False)
+    snapshot_type = models.TextField(help_text='Created by whom?', max_length=6, default='manual',
+                                     choices=(('auto', 'Automatic'), ('manual', 'Manual')), null=False, blank=False)
+    name = models.TextField(help_text='Name of snapshot file', max_length=127, null=False, blank=False)
+    size = models.IntegerField(help_text='Size of database (in bytes)', null=False)
+
+    def __str__(self):
+        return self.snapshot_type + " snapshot (" + str(self.name) + "; size: " + str(self.size) + " bytes)"
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            with transaction.atomic():
+                # TODO: THIS ONLY WORKS WITH SQLITE
+                # Newly-created snapshot
+    
+                name = "snapshot-" + str(datetime.utcnow()).replace(" ", "_").replace(":", "-") + ".sqlite3"
+    
+                shutil.copyfile(settings.DATABASES['default']['NAME'],
+                                os.path.join(settings.BASE_DIR, "snapshots", name))
+    
+                self.name = name
+                self.size = os.path.getsize(os.path.join(settings.BASE_DIR, "snapshots", name))
+
+        super(Snapshot, self).save(*args, **kwargs)
+
+
+@receiver(pre_delete, sender=Snapshot)
+def delete_snapshot_file(sender, instance, **kwargs):
+    try:
+        os.remove(os.path.join(settings.BASE_DIR, "snapshots", instance.name))
+    except OSError:
+        print("Error deleting snapshot")
+        # TODO: prevent deletion in some way?
+"""
 
 URL_OLD = """urlpatterns = [
     path('admin/', admin.site.urls),
@@ -100,6 +159,7 @@ INSTALLED_APPS_OLD = """INSTALLED_APPS = [
 
 INSTALLED_APPS_NEW = """INSTALLED_APPS = [
     'core.apps.CoreConfig',
+    'snapshot_manager.apps.SnapshotManagerConfig',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -477,6 +537,16 @@ def main(args):
                     open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "admin.py"), "w") as af:
                 shutil.copyfileobj(a_buf, af)
                 shutil.copyfileobj(m_buf, mf)
+
+        with open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager", "models.py"), "w") as smf, \
+                open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager", "admin.py"), "w") as saf:
+            smf.write(MODELS_FILE_HEADER)
+            smf.write("\n")
+            smf.write(SNAPSHOT_MODEL.format(django_site_name))
+            saf.write(SNAPSHOT_ADMIN_FILE_HEADER)
+            saf.write("\n@admin.register(Snapshot)\n\n")
+            saf.write("class SnapshotAdmin(admin.ModelAdmin):\n")
+            saf.write("    exclude = ('snapshot_type', 'size', 'name')\n")
 
     except FileNotFoundError:
         exit_with_error("Design file not found.")
