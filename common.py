@@ -19,7 +19,7 @@
 
 import re
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 COPYRIGHT_DATES = "2018-2019"
 
 PYTHON_KEYWORDS = ["False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue",
@@ -54,7 +54,7 @@ def to_relation_name(name: str) -> str:
     return python_relation_name
 
 
-def print_license() -> None:
+def print_license():
     print("""PyTrackDat v{}  Copyright (C) {} the PyTrackDat authors.
 This program comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
 """.format(VERSION, COPYRIGHT_DATES))
