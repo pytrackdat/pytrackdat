@@ -478,7 +478,7 @@ def create_admin_and_models(df: IO, site_name: str) -> Tuple[io.StringIO, io.Str
     return af, mf
 
 
-TEMP_DIRECTORY = "tmp"
+TEMP_DIRECTORY = os.path.join(os.getcwd(), "tmp")
 
 
 def print_usage():
@@ -500,6 +500,8 @@ def main():
 
     args = sys.argv[1:]
 
+    package_dir = os.path.dirname(__file__)
+
     design_file = args[0]  # File name for design file input
     django_site_name = args[1]
 
@@ -518,7 +520,7 @@ def main():
     # Process and validate design file, get contents of admin and models files
     try:
         print("Validating design file '{}'...".format(design_file))
-        with open(design_file, "r") as df:
+        with open(os.path.join(os.getcwd(), design_file), "r") as df:
             try:
                 a_buf, m_buf = create_admin_and_models(df, django_site_name)
             except GenerationError as e:
@@ -538,9 +540,12 @@ def main():
         with a_buf, m_buf:
             # Run site creation script
             # TODO: Make path more robust
-            create_site_script = "os_scripts\\create_django_site.bat" if os.name == "nt" \
-                else "./os_scripts/create_django_site.bash"
-            create_site_options = [create_site_script, django_site_name, TEMP_DIRECTORY]
+            create_site_script = os.path.join(
+                os.path.dirname(__file__),
+                "os_scripts",
+                "create_django_site.bat" if os.name == "nt" else "create_django_site.bash"
+            )
+            create_site_options = [create_site_script, package_dir, django_site_name, TEMP_DIRECTORY]
             subprocess.run(create_site_options, check=True)
 
             # Write admin and models file contents to disk
@@ -549,8 +554,9 @@ def main():
                 shutil.copyfileobj(a_buf, af)
                 shutil.copyfileobj(m_buf, mf)
 
-        with open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager", "models.py"), "w") as smf, \
-                open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager", "admin.py"), "w") as saf:
+        with open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager", "models.py"), "w") \
+                as smf, open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager",
+                                          "admin.py"), "w") as saf:
             smf.write(MODELS_FILE_HEADER)
             smf.write("\n")
             smf.write(SNAPSHOT_MODEL.format(django_site_name))
@@ -559,7 +565,8 @@ def main():
             saf.write("class SnapshotAdmin(admin.ModelAdmin):\n")
             saf.write("    exclude = ('snapshot_type', 'size', 'name')\n")
 
-    except FileNotFoundError:
+    except FileNotFoundError as e:
+        print(str(e))
         exit_with_error("Design file not found.")
 
     with open(os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name, "settings.py"), "r+") as sf:
@@ -581,7 +588,7 @@ def main():
     # https://gist.github.com/roycewilliams/281ce539915a947a23db17137d91aeb7
     common_passwords = ["password", "123456", "12345678"]  # Fallbacks if file not present
     try:
-        with gzip.open(os.path.join(os.path.dirname(__file__), "common-passwords.txt.gz")) as f:
+        with gzip.open(os.path.join(package_dir, "common-passwords.txt.gz")) as f:
             common_passwords = {p.strip() for p in f.read().decode().splitlines()
                                 if len(p.strip()) >= 8}  # Don't bother including too-short passwords
     except OSError:
@@ -619,17 +626,20 @@ def main():
 
     try:
         # TODO: Make path more robust
-        site_setup_script = "os_scripts\\run_site_setup.bat" if os.name == "nt" \
-            else "./os_scripts/run_site_setup.bash"
-        site_setup_options = [site_setup_script, django_site_name, TEMP_DIRECTORY, admin_username, admin_email,
-                              admin_password, site_url]
+        site_setup_script = os.path.join(
+            package_dir,
+            "os_scripts",
+            "run_site_setup.bat" if os.name == "nt" else "run_site_setup.bash"
+        )
+        site_setup_options = [site_setup_script, os.path.dirname(__file__), django_site_name, TEMP_DIRECTORY,
+                              admin_username, admin_email, admin_password, site_url]
         subprocess.run(site_setup_options, check=True)
 
     except subprocess.CalledProcessError:
         # Need to catch subprocess errors to prevent password from being shown onscreen.
         exit_with_error("An error occurred while running the site setup script.\nTerminating...")
 
-    shutil.make_archive(django_site_name, "zip", root_dir="tmp", base_dir=django_site_name)
+    shutil.make_archive(django_site_name, "zip", root_dir=os.path.join(os.getcwd(), "tmp"), base_dir=django_site_name)
 
 
 if __name__ == "__main__":
