@@ -48,6 +48,20 @@ def field_to_py_code(field: str) -> str:
 def to_relation_name(name: str) -> str:
     python_relation_name = PDT_RELATION_PREFIX + "".join([n.capitalize() for n in name.split("_")])
 
+    # Take care of plurals so they do not look dumb.
+
+    if python_relation_name[-3:] == "ies":
+        old_name = python_relation_name
+        python_relation_name = python_relation_name[:-3] + "y"
+        print("Warning: Auto-detected incorrect plural relation name.\n"
+              "         Changing {} to {}.\n"
+              "         To avoid this, specify singular names.".format(old_name, python_relation_name))
+    elif python_relation_name[-1] == "s":
+        old_name = python_relation_name
+        python_relation_name = python_relation_name[:-1]
+        print("Warning: Auto-detected incorrect plural relation name.\n         Altering from "
+              "{} to {}.\n         To avoid this, specify singular names.".format(old_name, python_relation_name))
+
     if python_relation_name in PYTHON_KEYWORDS:
         python_relation_name += "Class"
 
