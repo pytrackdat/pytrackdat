@@ -5,3 +5,4 @@ tmp/
 /*.csv
 *.xls*
 *.zip
+*.egg-info/
