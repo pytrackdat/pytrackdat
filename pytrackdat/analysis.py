@@ -42,11 +42,10 @@ from .common import *
 def main():
     print_license()
 
-    runner = sys.argv[0]
     args = sys.argv[1:]
 
     if len(args) % 2 != 1 or len(args) < 3:
-        print("Usage: {} design_out.csv relation_1_name file1.csv [relation_2_name file2.csv] ...".format(runner))
+        print("Usage: ptd-analyze design_out.csv relation_1_name file1.csv [relation_2_name file2.csv] ...")
         exit(1)
 
     design_file = args[0]  # Name for output

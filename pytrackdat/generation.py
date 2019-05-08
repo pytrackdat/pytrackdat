@@ -482,7 +482,7 @@ TEMP_DIRECTORY = os.path.join(os.getcwd(), "tmp")
 
 
 def print_usage():
-    print("Usage: {} design.csv output_site_name".format(sys.argv[0]))
+    print("Usage: ptd-generate design.csv output_site_name")
 
 
 # TODO: TIMEZONES
