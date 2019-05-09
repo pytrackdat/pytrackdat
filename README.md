@@ -837,8 +837,9 @@ For $5 USD per month, users can create a server on which the created web
 application and database can be hosted. For an additional $1 USD per month,
 automatic backups can be enabled.
 
-If you already have a web server on which the application can be deployed, see
-the section below.
+If you already have a server on which the application can be deployed, see the
+section below. The DigitalOcean service provider is not specifically required
+to run the application.
 
 
 ##### Step 1: Create a DigitalOcean account
