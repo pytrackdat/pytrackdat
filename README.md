@@ -820,6 +820,12 @@ a new "Virtual Private Server" (VPS) on the DigitalOcean service. For more
 advanced users, there is also a guide for deploying on an existing server
 (though many of the steps will be similar to DigitalOcean setup).
 
+> **Important Note:** DigitalOcean is **NOT** required to deploy PyTrackDat.
+> Any server running an operating system which can host Docker containers is
+> sufficient. DigitalOcean is a paid service; this may be restrictive to some.
+> Free options include adapting an existing computer with a world-accessible
+> IP address or using Amazon AWS' free tier (which only lasts 12 months.)
+
 Instructions are written for Ubuntu Server 18.04 or 16.04 LTS; other
 distributions may require slightly different procedures.
 
