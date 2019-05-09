@@ -21,6 +21,7 @@ import csv
 import datetime
 import getpass
 import gzip
+import importlib
 import io
 import os
 import pprint
@@ -503,7 +504,14 @@ def main():
     package_dir = os.path.dirname(__file__)
 
     design_file = args[0]  # File name for design file input
-    django_site_name = args[1]
+    django_site_name = args[1].strip()
+
+    try:
+        importlib.import_module(django_site_name)
+        exit_with_error("Error: Site name '{}' conflicts with a Python package name. \n"
+                        "       Please choose a different name.".format(django_site_name))
+    except ImportError:
+        pass
 
     if not os.path.exists(TEMP_DIRECTORY):
         os.makedirs(TEMP_DIRECTORY)
