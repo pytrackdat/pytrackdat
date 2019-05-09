@@ -2,7 +2,7 @@
 
 ## Version 0.2.0 (TBD)
 
- * Add PyTrackDat to PyPI (#2)
+ * Add PyTrackDat to PyPI (#1, #2)
  * Avoid overwriting files if no relations are specified during analysis
  * **Add snapshot system** for database revisions (#9)
    * Enables users to keep versions of their database and restore if they
