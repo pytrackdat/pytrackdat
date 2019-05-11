@@ -18,7 +18,7 @@ rem Install the dependencies required for setup
 pip install -r "%1\util_files\requirements_setup.txt"
 
 rem Start the Django site
-python .\tmp_env\Scripts\django-admin startproject "%2"
+.\tmp_env\Scripts\django-admin startproject "%2"
 
 rem Copy pre-built files to the site folder
 copy /B "%1\util_files\requirements.txt" "%2\"
