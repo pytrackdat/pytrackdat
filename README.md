@@ -3,7 +3,7 @@
 ## Overview
 
 PyTrackDat comprises two Python scripts that analyze and assist in converting
-data and relevant metadata from .csv files into an online database that can
+data and relevant metadata from `.csv` files into an online database that can
 facilitate data management, manipulation, and quality control. What each of
 these scripts does is outlined in this `README.md` file. Note that the care
 that is taken to assemble `.csv` files before using these scripts will help
@@ -16,11 +16,10 @@ ensure that the database generated is maximally useful.
   * [Installation](#installation)
      * [Dependencies](#dependencies)
         * [Installing Python 3](#installing-python-3)
-        * [Installing virtualenv and <code>wheel</code>](#installing-virtualenv-and-wheel)
      * [(Windows Only) SSH Utilities](#windows-only-ssh-utilities)
         * [Using KiTTY](#mini-tutorial-using-kitty)
         * [Using WinSCP](#mini-tutorial-using-winscp)
-     * [Getting the Code](#getting-the-code)
+     * [Getting PyTrackDat](#getting-pytrackdat)
   * [Running PyTrackDat](#running-pytrackdat)
      * [(Optional) Step 1: Data Analyzer](#optional-step-1-data-analyzer)
      * [Step 2: Design File Layout and Customization](#step-2-design-file-layout-and-customization)
@@ -67,9 +66,7 @@ ensure that the database generated is maximally useful.
 
 ### Dependencies
 
-Make sure that Python 3, `pip3`, `virtualenv`, and `wheel` are installed. The
-latter two are Python packages, to be installed using `pip3`, the Python 3
-package manager.
+Make sure that Python 3 and `pip3` are installed.
 
 If Python 3 is already installed, update `pip3` to the latest version with the
 following command, run in a Terminal window (macOS/Linux) or in Command Prompt
@@ -107,26 +104,6 @@ installation process:
 <img src="images/path.png" alt="'Add Python 3.7 to PATH' checkbox" width="500">
 
 This ensures that Python 3 and `pip` are available from the Command Prompt.
-
-
-#### Installing `virtualenv` and `wheel`
-
-To install `virtualenv` and `wheel`, a command must be ran in a Terminal window
-(macOS or Linux), or a Command Prompt (on Windows). To open a Command Prompt,
-press the Windows Key + R or open the Start Menu, type in "cmd", and press
-enter.
-
-Run the following command on **macOS** or **Linux**:
-
-```bash
-pip3 install virtualenv wheel
-```
-
-Run the following command on **Windows**:
-
-```cmd
-pip install virtualenv wheel
-```
 
 
 ### (Windows Only) SSH Utilities
@@ -169,27 +146,40 @@ We have prepared [a mini-tutorial](mini-tutorials/WinSCP.md)
 on using WinSCP.
 
 
-### Getting the Code
+### Getting PyTrackDat
 
-The easiest way to download the repository is by downloading the
-[latest release](https://github.com/ColauttiLab/PyTrackDat/archive/v0.1.0.zip)
-in ZIP archive format.
+The easiest way to download PyTrackDat is through PyPI (the Python Package
+Index) using `pip`.
 
-> Getting Development Versions
+To download the latest stable release, run the following command:
+ 
+**macOS/Linux:**
+
+```bash
+pip3 install pytrackdat
+```
+
+**Windows:**
+
+```cmd
+pip install pytrackdat
+```
+
+Once downloaded, open a Terminal window (macOS/Linux) or a Command Prompt
+(Windows) and `cd` to a working directory where you want your PyTrackDat files
+to live:
+
+```bash
+cd /path/to/pytrackdat
+```
+
+> Getting Development Versions (Advanced Users Only)
 >
 > To get the latest development version of PyTrackDat, clone the repository
 > (provided Git is installed) using the following command in a Terminal or
 > Command Prompt window:
 > 
 > ```git clone https://github.com/ColauttiLab/PyTrackDat.git```
-
-Once downloaded, un-archive it if needed. Then, open a Terminal window
-(macOS/Linux) or a Command Prompt (Windows) and `cd` to the directory
-PyTrackDat is stored in:
-
-```bash
-cd /path/to/pytrackdat
-```
 
 
 
@@ -208,21 +198,16 @@ generating a database for a particular dataset.
 To run the data analyzer on one or more CSV-formatted data files, run the
 following command:
 
-**macOS/Linux:**
-
 ```bash
-python3 ./analyze.py design.csv sample_type_1 samples1.csv sample_type_2 samples2.csv [...]
-```
-
-**Windows**:
-
-```cmd
-python analyze.py design.csv sample_type_1 samples1.csv sample_type_2 samples2.csv [...]
+ptd-analyze design.csv sample_type_1 samples1.csv sample_type_2 samples2.csv [...]
 ```
 
 Where `design.csv` is the name of the design file to output, and
 `sample_type_1` and `sample_type_2` are singular terms for the types of entries
-stored in `samples1.csv` and `samples2.csv`, respectively. 
+stored in `samples1.csv` and `samples2.csv`, respectively.  Feel free to add
+more sample types (with corresponding data files) as necessary for your
+dataset, or leave out `sample_type_2` and `samples2.csv` if only one data type
+is necessary for the database.
 
 
 ### Step 2: Design File Layout and Customization
@@ -281,7 +266,7 @@ A single block may look like this:
 <tr><td colspan="9">...</td></tr>
 </table>
 
-Design files should **not** be left as-is after generation via `analyze.py`.
+Design files should **not** be left as-is after generation via `ptd-analyze`.
 The script does its best to infer data types from the columns, but is not
 guaranteed to do this perfectly. Additionally, it is best practice to add a
 **field description** (under the *description* header) to provide human users
@@ -479,7 +464,7 @@ These often can restrict the possible values that can be stored by the field
 in the database, and are useful for data integrity purposes.
 
 Some of these type-specific settings may be **automatically detected** by the
-`analyze.py` script; these should be reviewed manually to make sure they cover
+`ptd-analyze` script; these should be reviewed manually to make sure they cover
 all possible values which can be stored in the field.
 
 ##### `auto key`: Automatic Primary Key
@@ -678,16 +663,8 @@ powered by the [Django framework](https://www.djangoproject.com/).
 To run the database generator on a design file (ex. `design.csv`), run the
 following command:
 
-**macOS/Linux:**
-
 ```bash
-python3 ./generate.py design.csv site_name
-```
-
-**Windows:**
-
-```cmd
-python generate.py design.csv site_name
+ptd-generate design.csv site_name
 ```
 
 Where `design.csv` is a path to the design file and `site_name` is the name of
@@ -968,20 +945,12 @@ following only **step 1**.
 *See the [above aside](#step-3-database-generator), entitled "what is a 
 production build?", for more information on why this process is needed.*
 
-To build the production version of the database application, the `generate.py`
+To build the production version of the database application, the `ptd-generate`
 script must be run again on your **local** computer (i.e. not the new droplet),
 this time answering `y` (yes) to the question `Is this a production build?`:
 
-**macOS/Linux:**
-
 ```bash
-python3 ./generate.py design.csv site_name
-```
-
-**Windows:**
-
-```cmd
-python generate.py design.csv site_name
+ptd-generate design.csv site_name
 ```
 
 The script will prompt for a URL. This must match the URL that will be used to
@@ -1016,7 +985,7 @@ operating system on your local computer) to upload the application.
 
 First, make sure you are in the main PyTrackDat directory using `cd`.
 
-When the `generate.py` script was used to generate the PyTrackDat application,
+When the `ptd-generate` script was used to generate the PyTrackDat application,
 it created a `.zip` file archive in the main PyTrackDat directory called
 `site_name.zip`, based on whatever name was entered for `site_name` when the
 script was run.
@@ -1090,7 +1059,7 @@ sudo ufw allow http
 ```
 
 Now, by going to the IP address attached to the droplet, the site should be
-visible. Log in using the username and password entered into the `generate.py`
+visible. Log in using the username and password entered into the `ptd-generate`
 script in order to manage data and other users.
 
 
@@ -1117,21 +1086,13 @@ with other Linux distributions.
 
 ##### Step 2: Build the Application's Production Version
 
-To build the production version of the database application, the `generate.py`
+To build the production version of the database application, the `ptd-generate`
 script must be run again on your **local** computer (i.e. not the VM or
 server), this time answering `y` (yes) to the question
 `Is this a production build?`:
 
-**macOS/Linux:**
-
 ```bash
-python3 ./generate.py design.csv site_name
-```
-
-**Windows:**
-
-```cmd
-python generate.py design.csv site_name
+ptd-generate design.csv site_name
 ```
 
 The script will prompt for a URL. This must match the URL that will be used to
@@ -1197,7 +1158,7 @@ sudo ufw allow http
 
 Now, by going to the IP address or domain name attached to the server, the site
 should be visible. Log in using the username and password entered into the
-`generate.py` script in order to manage data and other users.
+`ptd-generate` script in order to manage data and other users.
 
 > **Note about Ports and Configuration**
 >
@@ -1217,9 +1178,9 @@ schema (i.e. add or remove columns), the following procedure can be used:
   1. Export all tables as CSV files using the PyTrackDat-supplied action in the
      web interface.
   
-  2. Either use the downloaded CSV files in the `analyze.py` script to generate
-     a new design file or use your original design file. Make sure to restore
-     any foreign keys (and other changes) from before if starting anew.
+  2. Either use the downloaded CSV files in the `ptd-analyze` script to
+     generate a new design file or use your original design file. Make sure to
+     restore any foreign keys (and other changes) from before if starting anew.
      
   3. Modify the design file to include any desired modifications, such as new
      or altered columns. If needed, modify the CSV files to reflect renamed
@@ -1268,7 +1229,7 @@ mv site_name site_name_old_backup
 At this point, you should create (or have created) the new version of the
 database. Either change the downloaded CSV files to have the same headers as
 the original data files, or re-build the design file using the headers from the
-downloaded CSV files. Make sure to re-generate the site using `generate.py`.
+downloaded CSV files. Make sure to re-generate the site using `ptd-generate`.
 
 Upload the new PyTrackDat application `.zip` archive, using methods described
 previously in this tutorial.
@@ -1297,7 +1258,7 @@ When this URL is first accessed, a log in page will appear:
 
 <img src="images/ptd_login.png" alt="PyTrackDat Log In" width="300">
 
-Enter the administrative credentials you provided to the `generate.py` script
+Enter the administrative credentials you provided to the `ptd-generate` script
 to access the main dashboard:
 
 <img src="images/ptd_dashboard.png" alt="PyTrackDat Dashboard" width="600">

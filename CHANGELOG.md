@@ -1,6 +1,6 @@
 # PyTrackDat Changelog
 
-## Version 0.2.0 (TBD)
+## Version 0.2.0 (2019-05-13)
 
  * Add PyTrackDat to PyPI (#1, #2)
  * Avoid overwriting files if no relations are specified during analysis
