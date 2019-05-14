@@ -19,7 +19,7 @@
 
 import re
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 COPYRIGHT_DATES = "2018-2019"
 
 PYTHON_KEYWORDS = ["False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue",

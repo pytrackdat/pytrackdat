@@ -7,7 +7,7 @@ with open("README_short.md", "r") as fh:
 
 setup(
     name="pytrackdat",
-    version="0.2.0",
+    version="0.2.1",
 
     python_requires="~=3.6",
     install_requires=["wheel", "virtualenv"],

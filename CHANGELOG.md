@@ -1,5 +1,9 @@
 # PyTrackDat Changelog
 
+## Version 0.2.1 (2019-05-13)
+
+ * Sync PyPI and GitHub versions
+
 ## Version 0.2.0 (2019-05-13)
 
  * Add PyTrackDat to PyPI (#1, #2)
