@@ -45,11 +45,24 @@ from .export_labels import ExportLabelsMixin
 
 """.format(VERSION)
 
-SNAPSHOT_ADMIN_FILE_HEADER = """# Generated using PyTrackDat v{}
+SNAPSHOT_ADMIN_FILE = """# Generated using PyTrackDat v{}
 from django.contrib import admin
+from django.utils.html import format_html
 from advanced_filters.admin import AdminAdvancedFiltersMixin
 
 from snapshot_manager.models import *
+
+
+@admin.register(Snapshot)
+class SnapshotAdmin(admin.ModelAdmin):
+    exclude = ('snapshot_type', 'size', 'name')
+    list_display = ('__str__', 'download_link')
+
+    def download_link(self, obj):
+        return format_html('<a href="{{url}}">Download Database Snapshot</a>',
+                           url='/snapshots/' + str(obj.pk) + '/download/')
+        
+    download_link.short_description = 'Download Link'
 
 """.format(VERSION)
 
@@ -83,9 +96,11 @@ from datetime import datetime
 
 import {}.settings as settings
 
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from django.http import HttpResponse, Http404
 
 
 class Snapshot(models.Model):
@@ -123,6 +138,25 @@ def delete_snapshot_file(sender, instance, **kwargs):
     except OSError:
         print("Error deleting snapshot")
         # TODO: prevent deletion in some way?
+
+
+@login_required
+def download_view(request, id):
+    try:
+        snapshot = Snapshot.objects.get(pk=id)
+        path = os.path.join(settings.BASE_DIR, 'snapshots', snapshot.name)
+        if os.path.exists(path):
+            # TODO
+            with open(path, 'rb') as f:
+                response = HttpResponse(f.read(), content_type='application/x-sqlite3')
+                response['Content-Disposition'] = 'inline; filename=' + snapshot.name
+                return response
+        else:
+            raise Http404('Snapshot file does not exist (database inconsistency!)')
+        
+    except Snapshot.DoesNotExist:
+        raise Http404('Snapshot does not exist')
+
 """
 
 URL_OLD = """urlpatterns = [
@@ -130,8 +164,11 @@ URL_OLD = """urlpatterns = [
 ]"""
 URL_NEW = """from django.urls import include
 
+from snapshot_manager.models import download_view
+
 urlpatterns = [
     path('', admin.site.urls),
+    path('snapshots/<int:id>/download/', download_view, name='snapshot-download'),
     path('advanced_filters/', include('advanced_filters.urls')),
 ]"""
 
@@ -568,10 +605,7 @@ def main():
             smf.write(MODELS_FILE_HEADER)
             smf.write("\n")
             smf.write(SNAPSHOT_MODEL.format(django_site_name))
-            saf.write(SNAPSHOT_ADMIN_FILE_HEADER)
-            saf.write("\n@admin.register(Snapshot)\n\n")
-            saf.write("class SnapshotAdmin(admin.ModelAdmin):\n")
-            saf.write("    exclude = ('snapshot_type', 'size', 'name')\n")
+            saf.write(SNAPSHOT_ADMIN_FILE)
 
     except FileNotFoundError as e:
         print(str(e))
