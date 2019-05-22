@@ -1334,4 +1334,4 @@ Make sure to **name** the filter before saving it. After adding any filters you
 may want, click "Save" to store the filter. This filter will now be accessible
 under the chosen name for future use, in the table-specific management page.
 
-<img src="images/advanced_filter_2.png" alt="PyTrackDat Advanced Filtering 2" width="300">
+<img src="images/advanced_filter_2.png" alt="PyTrackDat Advanced Filtering 2" width="400">
