@@ -1316,3 +1316,22 @@ for selected" action and click "Go". This will download a PDF file onto your
 local computer with the QR code labels.
 
 <img src="images/ptd_barcodes.png" alt="PyTrackDat Barcodes" width="600">
+
+
+### Advanced Filtering with [Django Advanced Filters](https://github.com/modlinltd/django-advanced-filters)
+
+PyTrackDat applications include the [Django Advanced Filters](https://github.com/modlinltd/django-advanced-filters)
+module, which allows for creating and saving custom filters for data in the
+database.
+
+To create a filter for a particular table, first click on the dashboard entry
+for the table to access the table-specific management page. Then, click the
+"Advanced Filter" button to create a new advanced filter.
+
+<img src="images/advanced_filter_1.png" alt="PyTrackDat Advanced Filtering 1" width="600">
+
+Make sure to **name** the filter before saving it. After adding any filters you
+may want, click "Save" to store the filter. This filter will now be accessible
+under the chosen name for future use, in the table-specific management page.
+
+<img src="images/advanced_filter_2.png" alt="PyTrackDat Advanced Filtering 2" width="300">
