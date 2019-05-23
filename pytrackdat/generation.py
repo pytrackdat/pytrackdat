@@ -55,8 +55,8 @@ from snapshot_manager.models import *
 
 @admin.register(Snapshot)
 class SnapshotAdmin(admin.ModelAdmin):
-    exclude = ('snapshot_type', 'size', 'name')
-    list_display = ('__str__', 'download_link')
+    exclude = ('snapshot_type', 'size', 'name', 'reason')
+    list_display = ('__str__', 'download_link', 'reason')
 
     def download_link(self, obj):
         return format_html('<a href="{{url}}">Download Database Snapshot</a>',
@@ -109,6 +109,8 @@ class Snapshot(models.Model):
     snapshot_type = models.TextField(help_text='Created by whom?', max_length=6, default='manual',
                                      choices=(('auto', 'Automatic'), ('manual', 'Manual')), null=False, blank=False)
     name = models.TextField(help_text='Name of snapshot file', max_length=127, null=False, blank=False)
+    reason = models.TextField(help_text='Reason for snapshot creation', max_length=127, null=False, blank=True,
+                              default='Manually created')
     size = models.IntegerField(help_text='Size of database (in bytes)', null=False)
 
     def __str__(self):
