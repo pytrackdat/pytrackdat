@@ -33,6 +33,8 @@ from io import TextIOWrapper
 
 from .common import *
 
+from snapshot_manager.models import Snapshot
+
 
 class ImportCSVForm(forms.Form):
     csv_file = forms.FileField()
@@ -63,6 +65,9 @@ class ImportCSVMixin:
                 header_fields = header_fields_1 if len(header_fields_1) >= len(header_fields_2) else header_fields_2
 
                 models = {m.__name__: m for m in apps.get_app_config("core").get_models()}
+
+                snapshot = Snapshot(snapshot_type='auto', reason='Pre-import snapshot')
+                snapshot.save()
 
                 for row in reader:
                     object_data = {}
