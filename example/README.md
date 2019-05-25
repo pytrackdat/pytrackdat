@@ -1,6 +1,15 @@
 # Example PyTrackDat Site, Start to Finish
 
+## Preamble
+
+Make sure you have PyTrackDat installed before trying this example. For
+instructions, see the
+[installation guide](https://github.com/ColauttiLab/PyTrackDat#installation).
+
 **Note:** The dataset used here does not contain not real data.
+
+
+## Generating the Initial Design File
 
 The example dataset here includes two files,
 [`specimens.csv`](data/specimens.csv) and [`sites.csv`](data/sites.csv).
@@ -87,6 +96,9 @@ some details are not handled automatically and are thus not quite right:
      that a detailed description should be added for each field, to better
      inform database users and ideally eliminate the chances of inconsistencies
      being introduced into the database in the future.
+     
+
+## Improving the Design File
 
 TODO
 
@@ -98,6 +110,9 @@ EDIT
 
 TODO
 
+
+## Generating the Test Site
+
 ```bash
 ptd-generate design/design_final.csv test_site
 ```
@@ -105,5 +120,8 @@ ptd-generate design/design_final.csv test_site
 TODO: IMPORT DATA (ORDER MATTERS)
 
 TODO: TEST (LINK TO INSTRUCTIONS)
+
+
+## Deploying the Final "Production" Site
 
 TODO: DEPLOY
