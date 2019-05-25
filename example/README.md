@@ -100,15 +100,20 @@ some details are not handled automatically and are thus not quite right:
 
 ## Improving the Design File
 
-TODO
+To correct for the issues mentioned above, we can make the following fixes in
+the design file. These are visible in the
+[`design_final.csv`](design/design_final.csv) file.
 
-...
+  1. Change the type of the 'Site Name' field to `foreign key`, and delete the
+     old additional settings. In their place, as per the
+     [foreign key data type](https://github.com/ColauttiLab/PyTrackDat#foreign-key-foreign-key-cross-relation)
+     description, we add a single additional setting with the target table (in
+     this case `site`) as the value.
+     
+  2. Add descriptions for each field.
 
-EDIT
-
-...
-
-TODO
+Now that the design file is finalized, we can generate the PyTrackDat site from
+the design file and test it, with help from our pre-existing data.
 
 
 ## Generating the Test Site
