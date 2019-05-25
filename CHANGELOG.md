@@ -2,9 +2,10 @@
 
 ## Version 0.3.0 (TBD)
 
-* Add snapshot downloads
-* Add automatic pre-import snapshots
-* Revise documentation
+ * Add snapshot downloads
+ * Add automatic pre-import snapshots
+ * Improve output style for `ptd-analyze`
+ * Revise documentation
 
 ## Version 0.2.1 (2019-05-13)
 

@@ -49,7 +49,7 @@ def main():
         exit(1)
 
     design_file = args[0]  # Name for output
-    relations = zip(args[1::2], map(str.lower, args[2::2]))  # Split pairs of file name, relation name
+    relations = list(zip(args[1::2], map(str.lower, args[2::2])))  # Split pairs of file name, relation name
 
     if len(set(args[1::2])) < len(args[1::2]):
         print("Error: You cannot use the same relation name(s) for more than one table:")
@@ -63,6 +63,8 @@ def main():
     with open(design_file, "w") as df:
         design_writer = csv.writer(df, delimiter=",")
         for rn, rf in relations:
+            print("Detecting types for fields in relation '{}'...".format(rn))
+
             data = []
             with open(rf, "r", encoding="utf-8-sig") as ff:
                 data_reader = csv.reader(ff, delimiter=",")
@@ -249,15 +251,18 @@ def main():
                         "!fill me in!"
                     ])
 
-                print("Detected type for field '{}': '{}' (nullable: {}{}{})".format(
+                print("    Field '{}':\n        Type: '{}'\n        Nullable: {}{}{}".format(
                     f,
                     detected_type,
                     nullable,
-                    ", choices: {}".format(choices) if len(choices) > 0 else "",
-                    ", with alternate" if include_alternate else ""
+                    "\n        Choices: {}".format(choices) if len(choices) > 0 else "",
+                    "\n        With alternate" if include_alternate else ""
                 ))
 
             design_writer.writerow([])
+            print()
+
+        print("Analyzed {} relations.".format(len(relations)))
 
 
 if __name__ == "__main__":
