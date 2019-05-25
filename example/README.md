@@ -2,7 +2,8 @@
 
 **Note:** The dataset used here does not contain not real data.
 
-The example dataset here includes two files, `specimens.csv` and `sites.csv`.
+The example dataset here includes two files,
+[`specimens.csv`](data/specimens.csv) and [`sites.csv`](data/sites.csv).
 
 The first contains a list of specimens collected from different sites, along
 with information about the specimens' species, sex, and collectors, as well as
@@ -17,7 +18,7 @@ a starting design file, which will be improved upon and used to produce the
 final database.
 
 The following command can be ran to produce this "first draft" design file,
-`design_first.csv`:
+[`design_first.csv`](design/design_first.csv):
 
 ```bash
 ptd-analyze design/design_first.csv specimen data/specimens.csv site data/sites.csv
