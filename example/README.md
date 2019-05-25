@@ -72,6 +72,22 @@ Detecting types for fields in relation 'site'...
 Analyzed 2 relations.
 ```
 
+This is a good start! `ptd-analyze` successfully detected the types and choices
+for most fields, including nullability, as well as manual keys. Unfortunately,
+some details are not handled automatically and are thus not quite right:
+
+  1. The 'Site Name' field in the `specimen` table should be a foreign key,
+     since it refers to rows in the `site` table. Therefore, the type for this
+     field needs to change and the choices must be deleted (since this is
+     handled automatically, by definition of a foreign key.)
+     
+  2. In the [`design_first.csv`](design/design_first.csv) file itself,
+     descriptions are visible for each field. After analysis, each of these is
+     set to `!fill me in!`. Good metadata and data handling practices dictate
+     that a detailed description should be added for each field, to better
+     inform database users and ideally eliminate the chances of inconsistencies
+     being introduced into the database in the future.
+
 TODO
 
 ...
