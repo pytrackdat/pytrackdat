@@ -60,207 +60,222 @@ def main():
 
         exit(1)
 
-    with open(design_file, "w") as df:
-        design_writer = csv.writer(df, delimiter=",")
-        for rn, rf in relations:
-            print("Detecting types for fields in relation '{}'...".format(rn))
+    # Check to make sure design file is openable, for later
+    with open(design_file, "w"):
+        pass
 
-            data = []
-            with open(rf, "r", encoding="utf-8-sig") as ff:
-                data_reader = csv.reader(ff, delimiter=",")
-                fields = [f for f in next(data_reader) if f != ""]
+    design_file_rows = []
+    for rn, rf in relations:
+        print("Detecting types for fields in relation '{}'...".format(rn))
 
-                d = next(data_reader)
-                while True:
-                    try:
-                        data.append(list(map(lambda x: x.strip(), d)))
-                        d = next(data_reader)
-                    except StopIteration:
-                        break
+        data = []
+        with open(rf, "r", encoding="utf-8-sig") as ff:
+            data_reader = csv.reader(ff, delimiter=",")
+            fields = [f for f in next(data_reader) if f != ""]
 
-                if fields is None:
-                    fields = []
+            d = next(data_reader)
+            while True:
+                try:
+                    data.append(list(map(lambda x: x.strip(), d)))
+                    d = next(data_reader)
+                except StopIteration:
+                    break
 
-            if len(fields) == 0:
-                continue
+            if fields is None:
+                fields = []
 
-            design_writer.writerow([rn, "new field name", "data type", "nullable?", "null values", "default",
-                                    "description", "additional fields..."])
+        if len(fields) == 0:
+            continue
 
-            key_found = False
+        design_file_rows.append([rn, "new field name", "data type", "nullable?", "null values", "default",
+                                 "description", "additional fields..."])
 
-            for i, f in zip(range(len(fields)), fields):
-                new_name = field_to_py_code(re.sub(r"[^\w]+", "", re.sub(r"\s+", "_", f.lower())))
-                detected_type = "unknown"
+        key_found = False
+
+        for i, f in zip(range(len(fields)), fields):
+            new_name = field_to_py_code(re.sub(r"[^\w]+", "", re.sub(r"\s+", "_", f.lower())))
+            detected_type = "unknown"
+            nullable = False
+            null_values = []
+
+            col = [d[i] for d in data]
+
+            integer_values = 0
+            decimal_values = 0
+            float_values = 0
+            all_values = set()
+            date_values = 0
+            time_values = 0
+            other_values = set()
+            other_values_seen = 0
+            choices = []
+            max_seen_length = -1
+            max_seen_decimals = -1
+            max_length = -1
+            include_alternate = False
+
+            for v in col:
+                str_v = str(v).strip()
+                if re.match(r"^([+-]?[1-9]\d*|0)$", str_v):
+                    integer_values += 1
+                elif re.match(r"^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$", str_v):
+                    decimal_values += 1
+                    max_seen_decimals = max(max_seen_decimals, (len(str_v.split(".")[-1].split("e")[0])
+                                                                if "." in str_v else -1))
+                    if "e" in str_v:
+                        float_values += 1
+                else:
+                    other_values.add(str_v)
+                    other_values_seen += 1
+
+                max_seen_length = max(max_seen_length, len(str_v))
+                all_values.add(str_v)
+
+                if re.match(RE_DATE_YMD_D, str_v) or \
+                        re.match(RE_DATE_YMD_S, str_v) or \
+                        re.match(RE_DATE_DMY_D, str_v) or \
+                        re.match(RE_DATE_DMY_S, str_v):
+                    date_values += 1
+
+                if re.match(r"^\d{1,2}:\d{2}(:\d{2})?$", str_v):
+                    time_values += 1
+
+            # Keys:
+
+            if len(all_values) == len(data) and "" not in all_values and not key_found:
+                detected_type = "manual key"
                 nullable = False
-                null_values = []
+                key_found = True
 
-                col = [d[i] for d in data]
+            # Integers:
 
-                integer_values = 0
-                decimal_values = 0
-                float_values = 0
-                all_values = set()
-                date_values = 0
-                time_values = 0
-                other_values = set()
-                other_values_seen = 0
-                choices = []
-                max_seen_length = -1
-                max_seen_decimals = -1
-                max_length = -1
-                include_alternate = False
+            elif integer_values == len(data):
+                detected_type = "integer"
+                nullable = False
 
-                for v in col:
-                    str_v = str(v).strip()
-                    if re.match(r"^([+-]?[1-9]\d*|0)$", str_v):
-                        integer_values += 1
-                    elif re.match(r"^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$", str_v):
-                        decimal_values += 1
-                        max_seen_decimals = max(max_seen_decimals, (len(str_v.split(".")[-1].split("e")[0])
-                                                                    if "." in str_v else -1))
-                        if "e" in str_v:
-                            float_values += 1
-                    else:
-                        other_values.add(str_v)
-                        other_values_seen += 1
+            elif integer_values > 0 and len(other_values) == 1:
+                detected_type = "integer"
+                nullable = True
 
-                    max_seen_length = max(max_seen_length, len(str_v))
-                    all_values.add(str_v)
+            elif integer_values > 0 and len(other_values) > 1 and (integer_values > 100):
+                detected_type = "integer"
+                nullable = True
+                include_alternate = True
 
-                    if re.match(RE_DATE_YMD_D, str_v) or \
-                            re.match(RE_DATE_YMD_S, str_v) or \
-                            re.match(RE_DATE_DMY_D, str_v) or \
-                            re.match(RE_DATE_DMY_S, str_v):
-                        date_values += 1
+            # Decimals: TODO: more
 
-                    if re.match(r"^\d{1,2}:\d{2}(:\d{2})?$", str_v):
-                        time_values += 1
+            elif decimal_values > 0 and len(other_values) in (0, 1):
+                # Integer or decimal values -> use a decimal field.
+                # TODO: Find number of digits!!!
+                detected_type = "decimal"
+                nullable = (len(other_values) == 1)
+                max_length = max_seen_length + max_seen_decimals + 4
 
-                # Keys:
+            # Floats: TODO: more
 
-                if len(all_values) == len(data) and "" not in all_values and not key_found:
-                    detected_type = "manual key"
-                    nullable = False
-                    key_found = True
+            elif float_values > 0 and len(other_values) in (0, 1):
+                # Integer, decimal or float values in column -> use a float field.
+                detected_type = "float"
+                nullable = (len(other_values) == 1)
 
-                # Integers:
+            # Dates:
 
-                elif integer_values == len(data):
-                    detected_type = "integer"
-                    nullable = False
+            elif date_values == len(data):
+                detected_type = "date"
+                nullable = False
+                # TODO: Detect date format and make additional settings with date format
 
-                elif integer_values > 0 and len(other_values) == 1:
-                    detected_type = "integer"
-                    nullable = True
+            elif date_values > 0 and len(other_values) == 1:
+                detected_type = "date"
+                nullable = True
+                null_values = list(other_values)[0]
 
-                elif integer_values > 0 and len(other_values) > 1 and (integer_values > 100):
-                    detected_type = "integer"
-                    nullable = True
-                    include_alternate = True
+            # Times:
 
-                # Decimals: TODO: more
+            elif time_values == len(data):
+                detected_type = "time"
+                nullable = False
+                # TODO: Detect time format and make additional settings with time format
 
-                elif decimal_values > 0 and len(other_values) in (0, 1):
-                    # Integer or decimal values -> use a decimal field.
-                    # TODO: Find number of digits!!!
-                    detected_type = "decimal"
-                    nullable = (len(other_values) == 1)
-                    max_length = max_seen_length + max_seen_decimals + 4
+            elif time_values > 0 and len(other_values) == 1:
+                detected_type = "time"
+                nullable = True
+                null_values = list(other_values)[0]
 
-                # Floats: TODO: more
+            # Enums:
 
-                elif float_values > 0 and len(other_values) in (0, 1):
-                    # Integer, decimal or float values in column -> use a float field.
-                    detected_type = "float"
-                    nullable = (len(other_values) == 1)
+            elif len(all_values) < 10 and integer_values <= 1 and max_seen_length < 24:
+                detected_type = "text"
+                nullable = ("" in all_values)
+                choices = sorted(list([c for c in all_values if c != ""]))
+                max_length = max_seen_length * 2
 
-                # Dates:
+                # Booleans:
+                if len(choices) in (2, 3):
+                    in_choices = [c.lower() for c in choices]
+                    if ("n" in in_choices and "y" in in_choices) or \
+                            ("no" in in_choices and "yes" in in_choices) or \
+                            ("t" in in_choices and "f" in integer_values) or \
+                            ("true" in in_choices and "false" in in_choices):
 
-                elif date_values == len(data):
-                    detected_type = "date"
-                    nullable = False
-                    # TODO: Detect date format and make additional settings with date format
+                        detected_type = "boolean"
+                        nullable = (len(choices) == 3)
+                        null_values = [c for c in choices
+                                       if c.lower() not in ("n", "y", "no", "yes", "t", "f", "true", "false")]
 
-                elif date_values > 0 and len(other_values) == 1:
-                    detected_type = "date"
-                    nullable = True
-                    null_values = list(other_values)[0]
+            # Text
 
-                # Times:
+            elif integer_values < max(len(data) / 10, 10) or len(other_values) >= 10:
+                detected_type = "text"
+                nullable = False
 
-                elif time_values == len(data):
-                    detected_type = "time"
-                    nullable = False
-                    # TODO: Detect time format and make additional settings with time format
+            design_file_rows.append([
+                f,  # Old field name
+                new_name,  # New field name (in database)
+                detected_type,  # Detected data type
+                str(nullable).lower(),  # Whether the field is nullable
+                "; ".join(null_values),  # What value(s) will become null in the database
+                "",  # The default value for the field (optional, null/blank if left empty)
+                "!fill me in!",  # Field description
+                *[m for m in [max(max_length, 2), max(max_seen_decimals, 1)] if detected_type == "decimal"],
+                *[m for m in [max_length] if detected_type == "text" and max_length > 0],  # IF TEXT/ENUM: max l.
+                *["; ".join([c for c in choices
+                             if len(choices) > 0 and detected_type != "boolean"])],  # IF ENUM: Choices
+            ])
 
-                elif time_values > 0 and len(other_values) == 1:
-                    detected_type = "time"
-                    nullable = True
-                    null_values = list(other_values)[0]
-
-                # Enums:
-
-                elif len(all_values) < 10 and integer_values <= 1 and max_seen_length < 24:
-                    detected_type = "text"
-                    nullable = ("" in all_values)
-                    choices = sorted(list([c for c in all_values if c != ""]))
-                    max_length = max_seen_length * 2
-
-                    # Booleans:
-                    if len(choices) in (2, 3):
-                        in_choices = [c.lower() for c in choices]
-                        if ("n" in in_choices and "y" in in_choices) or \
-                                ("no" in in_choices and "yes" in in_choices) or \
-                                ("t" in in_choices and "f" in integer_values) or \
-                                ("true" in in_choices and "false" in in_choices):
-
-                            detected_type = "boolean"
-                            nullable = (len(choices) == 3)
-                            null_values = [c for c in choices
-                                           if c.lower() not in ("n", "y", "no", "yes", "t", "f", "true", "false")]
-
-                # Text
-
-                elif integer_values < max(len(data) / 10, 10) or len(other_values) >= 10:
-                    detected_type = "text"
-                    nullable = False
-
-                design_writer.writerow([
-                    f,  # Old field name
-                    new_name,  # New field name (in database)
-                    detected_type,  # Detected data type
-                    str(nullable).lower(),  # Whether the field is nullable
-                    "; ".join(null_values),  # What value(s) will become null in the database
-                    "",  # The default value for the field (optional, null/blank if left empty)
-                    "!fill me in!",  # Field description
-                    *[m for m in [max(max_length, 2), max(max_seen_decimals, 1)] if detected_type == "decimal"],
-                    *[m for m in [max_length] if detected_type == "text" and max_length > 0],  # IF TEXT/ENUM: max l.
-                    *["; ".join([c for c in choices
-                                 if len(choices) > 0 and detected_type != "boolean"])],  # IF ENUM: Choices
+            if include_alternate:
+                design_file_rows.append([
+                    f,
+                    new_name + "_alt",  # New field name (in database; alternate)
+                    "text",  # Alternate fields are always text, possibly with choices
+                    "false",  # Alt. fields cannot be null
+                    "",
+                    "",
+                    "!fill me in!"
                 ])
 
-                if include_alternate:
-                    design_writer.writerow([
-                        f,
-                        new_name + "_alt",  # New field name (in database; alternate)
-                        "text",  # Alternate fields are always text, possibly with choices
-                        "false",  # Alt. fields cannot be null
-                        "",
-                        "",
-                        "!fill me in!"
-                    ])
+            print("    Field '{}':\n        Type: '{}'\n        Nullable: {}{}{}".format(
+                f,
+                detected_type,
+                nullable,
+                "\n        Choices: {}".format(choices) if len(choices) > 0 else "",
+                "\n        With alternate" if include_alternate else ""
+            ))
 
-                print("    Field '{}':\n        Type: '{}'\n        Nullable: {}{}{}".format(
-                    f,
-                    detected_type,
-                    nullable,
-                    "\n        Choices: {}".format(choices) if len(choices) > 0 else "",
-                    "\n        With alternate" if include_alternate else ""
-                ))
+        design_file_rows.append([])
+        print()
 
-            design_writer.writerow([])
-            print()
+        with open(design_file, "w") as df:
+            design_writer = csv.writer(df, delimiter=",")
+            max_length = max([len(r) for r in design_file_rows])
+
+            for r in design_file_rows:
+                while len(r) < max_length:
+                    r.append("")
+
+                design_writer.writerow(r)
+
+            print("    Wrote design file to '{}'...\n".format(design_file))
 
         print("Analyzed {} relations.".format(len(relations)))
 
