@@ -53,9 +53,6 @@ Detecting types for fields in relation 'specimen'...
         Type: 'text'
         Nullable: False
 
-    Wrote design file to 'design/design_first.csv'...
-
-Analyzed 2 relations.
 Detecting types for fields in relation 'site'...
     Field 'Site Name':
         Type: 'manual key'

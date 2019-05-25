@@ -265,19 +265,19 @@ def main():
         design_file_rows.append([])
         print()
 
-        with open(design_file, "w") as df:
-            design_writer = csv.writer(df, delimiter=",")
-            max_length = max([len(r) for r in design_file_rows])
+    with open(design_file, "w") as df:
+        design_writer = csv.writer(df, delimiter=",")
+        max_length = max([len(r) for r in design_file_rows])
 
-            for r in design_file_rows:
-                while len(r) < max_length:
-                    r.append("")
+        for r in design_file_rows:
+            while len(r) < max_length:
+                r.append("")
 
-                design_writer.writerow(r)
+            design_writer.writerow(r)
 
-            print("    Wrote design file to '{}'...\n".format(design_file))
+        print("    Wrote design file to '{}'...\n".format(design_file))
 
-        print("Analyzed {} relations.".format(len(relations)))
+    print("Analyzed {} relations.".format(len(relations)))
 
 
 if __name__ == "__main__":
