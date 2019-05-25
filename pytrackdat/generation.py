@@ -416,6 +416,8 @@ def create_admin_and_models(df: IO, site_name: str) -> Tuple[io.StringIO, io.Str
                     elif data_type == "manual key":
                         id_type = "text"
 
+                    # TODO: This handling of additional_fields could eventually cause trouble, because it can shift
+                    #  positions of additional fields if a blank additional field occurs before a valued one.
                     current_field_data = {
                         "name": field_to_py_code(current_field[1].lower()),
                         "csv_name": current_field[0],
@@ -425,7 +427,7 @@ def create_admin_and_models(df: IO, site_name: str) -> Tuple[io.StringIO, io.Str
                         "default": get_default_from_csv_with_type(current_field[5].strip(), data_type, nullable,
                                                                   null_values),
                         "description": current_field[6].strip(),
-                        "additional_fields": current_field[7:]
+                        "additional_fields": [f for f in current_field[7:] if f.strip() != ""]
                     }
 
                     if data_type == "text":
