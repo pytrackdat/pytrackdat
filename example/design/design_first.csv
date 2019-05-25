@@ -1,0 +1,14 @@
+specimens,new field name,data type,nullable?,null values,default,description,additional fields...
+Specimen Number,specimen_number,manual key,false,,,!fill me in!,
+Date Collected,date_collected,date,false,,,!fill me in!,
+Species,species,text,false,,,!fill me in!,42,Esox lucius; Micropterus dolomieu; Micropterus salmoides; Salvelinus namaycush; Sander vitreus
+Site Name,site_name,text,false,,,!fill me in!,28,Big Clear Lake; Buck Lake; Crow Lake; Devil Lake; Lake Opinicon; Little Lake; Loon Lake; Mosquito Lake; Newboro Lake
+Sex,sex,text,false,,,!fill me in!,2,F; M; U
+Collector(s),collectors,text,false,,,!fill me in!,
+
+sites,new field name,data type,nullable?,null values,default,description,additional fields...
+Site Name,site_name,manual key,false,,,!fill me in!,
+Latitude,latitude,decimal,false,,,!fill me in!,21,7,
+Longitude,longitude,decimal,false,,,!fill me in!,22,7,
+Comments,comments,text,false,,,!fill me in!,
+
