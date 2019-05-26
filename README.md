@@ -1261,7 +1261,7 @@ will be present in the upper left corner.
 <img src="images/ptd_import_btn.png" alt="PyTrackDat Import" width="600">
 
 Clicking on this button will bring you to the upload page, where a
-CSV-formatted page can be uploaded. Rows in the CSV file will be added to the
+CSV-formatted file can be uploaded. Rows in the CSV file will be added to the
 database, assuming the CSV file is **formatted correctly**.
 
 

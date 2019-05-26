@@ -157,11 +157,38 @@ python manage.py runserver
 
 ## Using and Testing the Site
 
-TODO: IMPORT DATA (ORDER MATTERS)
+### Importing Data
+
+While generating the site, an account with administrative privileges was
+created using the credentials we provided. This account can be used to log into
+the site.
+
+The first order of business is to import existing data. Since the `specimen`
+table points to the `site` table through a foreign key, it is important that
+we import [`sites.csv`](data/sites.csv) **first**, followed by
+[`specimens.csv`](data/specimens.csv).
+
+To import data into a table, we first click on the dashboard entry for the
+table to access the table-specific management page. An "Import CSV" button
+will be present in the upper left corner.
+
+<img src="../images/ptd_import_btn.png" alt="PyTrackDat Import" width="600">
+
+Clicking on this button will bring us to the upload page, where a
+CSV-formatted file can be uploaded. Rows in the CSV file will be added to the
+database, assuming the CSV file is **formatted correctly**.
+
+### Testing the Site
 
 TODO: TEST (LINK TO INSTRUCTIONS)
 
 
 ## Deploying the Final "Production" Site
 
-TODO: DEPLOY
+Once the design file and the resulting site are finalized, a "production"
+version of the site should be generated. In this case, "production" means
+"ready to use with actual data".
+
+For instructions on how to deploy, see the guides on
+[deploying on DigitalOcean](https://github.com/ColauttiLab/PyTrackDat#deploying-the-end-result-on-digitalocean) or
+[deploying on an existing or other server](https://github.com/ColauttiLab/PyTrackDat#deploying-the-end-result-on-an-existing-linux-server).
