@@ -180,7 +180,9 @@ database, assuming the CSV file is **formatted correctly**.
 
 ### Testing the Site
 
-TODO: TEST (LINK TO INSTRUCTIONS)
+We should explore the site, clicking on the single-entry add buttons for each
+table and making sure it behaves as expected. If any issues arise, edit the
+design file to correct them and re-generate the site.
 
 
 ## Deploying the Final "Production" Site
