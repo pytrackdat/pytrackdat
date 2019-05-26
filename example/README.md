@@ -118,9 +118,44 @@ the design file and test it, with help from our pre-existing data.
 
 ## Generating the Test Site
 
+PyTrackDat generates database web applications from the design file. To
+generate a site from the final design file, [`design_final.csv`](design/design_final.csv),
+we can run the following command:
+
 ```bash
 ptd-generate design/design_final.csv test_site
 ```
+
+This will produce a [Django framework](https://djangoproject.com)-powered
+web application archived as `test_site.zip` in the working directory, and
+directly accessible in the temporary PyTrackDat work directory,
+`tmp/test_site`.
+
+
+## Running the Test Site
+
+To run the site locally, we can use the following commands, which vary based
+on operating system. Following this, you should be able to navigate to
+[127.0.0.1:8000](http://127.0.0.1:8000) in your browser to see the test site.
+
+### Linux/macOS
+
+```bash
+cd tmp/test_site
+source site_env/bin/activate
+python ./manage.py runserver
+```
+
+### Windows
+
+```cmd
+cd tmp\test_site
+\site_env\Scripts\activate.bat
+python manage.py runserver
+```
+
+
+## Using and Testing the Site
 
 TODO: IMPORT DATA (ORDER MATTERS)
 
