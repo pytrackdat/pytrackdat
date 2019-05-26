@@ -52,6 +52,7 @@ ensure that the database generated is maximally useful.
      * [Step 5: Deploying the Application](#step-5-deploying-the-application)
         * [Deploying the End Result on DigitalOcean](#deploying-the-end-result-on-digitalocean)
         * [Deploying the End Result on an Existing Linux Server](#deploying-the-end-result-on-an-existing-linux-server)
+  * [Worked Example](#worked-example)
   * [Updating the Schema](#updating-the-schema)
      * [Updating the site on DigitalOcean](#updating-the-site-on-digitalocean)
   * [Using a PyTrackDat Application](#using-a-pytrackdat-application)
@@ -1150,6 +1151,13 @@ should be visible. Log in using the username and password entered into the
 > the main HTTP port, port 80. If you want to serve other content
 > concurrently with the PyTrackDat application, additional configuration will
 > be required.
+
+
+
+## Worked Example
+
+For a worked example of creating a PyTrackDat application start-to-finish, see
+[`example/README.md`](https://github.com/ColauttiLab/PyTrackDat/tree/master/example).
 
 
 
