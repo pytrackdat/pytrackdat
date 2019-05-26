@@ -724,23 +724,7 @@ cd tmp\site_name_here
 \site_env\Scripts\activate.bat
 ```
 
-Before starting the debug server, a **superuser** (administrative user) must
-be created for the web application. This can be done by running the following
-command and following the prompts which will appear onscreen:
-
-**macOS/Linux:**
-
-```bash
-python3 ./manage.py createsuperuser
-```
-
-**Windows:**
-
-```cmd
-python manage.py createsuperuser
-```
-
-Finally, run the development server from the command line with the following
+Then, run the development server from the command line with the following
 command, and navigate to the application in your web browser at
 `127.0.0.1:8000`:
 
