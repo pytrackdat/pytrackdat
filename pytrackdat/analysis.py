@@ -93,7 +93,7 @@ def main():
         key_found = False
 
         for i, f in zip(range(len(fields)), fields):
-            new_name = field_to_py_code(re.sub(r"[^\w]+", "", re.sub(r"\s+", "_", f.lower())))
+            new_name = field_to_py_code(re.sub(r"[^\w]+", "", re.sub(r"\s+", "_", f.lower().strip())))
             detected_type = "unknown"
             nullable = False
             null_values = []
