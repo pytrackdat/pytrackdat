@@ -30,7 +30,7 @@ import subprocess
 import sys
 
 
-from typing import Dict, IO, Optional, Tuple, Union
+from typing import Dict, IO, List, Optional, Tuple, Union
 
 from .common import *
 
@@ -361,22 +361,14 @@ def get_default_from_csv_with_type(dv: str, dt: str, nullable=False, null_values
     return dv
 
 
-def create_admin_and_models(df: IO, site_name: str) -> Tuple[io.StringIO, io.StringIO]:
+def design_to_relation_fields(df: IO) -> List[Dict]:
     """
-    Validates the design file and creates the contents of the admin and models
-    files for the Django data application.
+    Validates the design file into relations and their fields.
     """
 
-    af = io.StringIO()
-    mf = io.StringIO()
-
-    af.write(ADMIN_FILE_HEADER)
-    mf.write(MODELS_FILE_HEADER)
-
-    af.write("admin.site.site_header = 'PyTrackDat: {}'\n\n".format(site_name))
+    relations = []
 
     design_reader = csv.reader(df)
-
     relation_name = next(design_reader)
 
     end_loop = False
@@ -454,52 +446,15 @@ def create_admin_and_models(df: IO, site_name: str) -> Tuple[io.StringIO, io.Str
                     end_loop = True
                     break
 
-                # Otherwise, write data into the model and admin files
+                # Otherwise, save the relation information.
 
-            # Write model information
+            relations.append({
+                "name": python_relation_name,
+                "fields": relation_fields,
+                "id_type": id_type
+            })
 
-            mf.write("\n\n")
-            mf.write(MODEL_TEMPLATE.format(
-                name=python_relation_name,
-                fields=pprint.pformat(relation_fields, indent=12, width=120, compact=True),
-                label_name=python_relation_name[len(PDT_RELATION_PREFIX):],
-                id_type=id_type,
-                verbose_name=python_relation_name[len(PDT_RELATION_PREFIX):]
-            ))
-            mf.write("\n\n")
-
-            # Write admin information
-
-            af.write("\n\n@admin.register({})\n".format(python_relation_name))
-            af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, AdminAdvancedFiltersMixin, "
-                     "admin.ModelAdmin):\n".format(python_relation_name))
-            af.write("    change_list_template = 'admin/core/change_list.html'\n")
-            af.write("    actions = ['export_csv', 'export_labels']\n")
-
-            list_display_fields = [r["name"] for r in relation_fields
-                                   if r["data_type"] not in ("text", "auto key", "manual key") or "choices" in r]
-            key = [r["name"] for r in relation_fields if r["data_type"] in ("auto key", "manual key")]
-            list_display_fields = key + list_display_fields
-
-            list_filter_fields = [r["name"] for r in relation_fields
-                                  if r["data_type"] in ("boolean",) or "choices" in r]
-
-            advanced_filter_fields = [r["name"] for r in relation_fields]
-
-            if len(list_display_fields) > 1:
-                af.write("    list_display = ('{}',)\n".format("', '".join(list_display_fields)))
-
-            if len(list_filter_fields) > 0:
-                af.write("    list_filter = ('{}',)\n".format("', '".join(list_filter_fields)))
-
-            if len(advanced_filter_fields) > 0:
-                af.write("    advanced_filter_fields = ('{}',)\n".format("', '".join(advanced_filter_fields)))
-
-            for f in relation_fields:
-                mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
-
-            mf.flush()
-            af.flush()
+            # Find the next relation.
 
             relation_name = ""
 
@@ -513,6 +468,68 @@ def create_admin_and_models(df: IO, site_name: str) -> Tuple[io.StringIO, io.Str
             except StopIteration:
                 end_loop = True
                 break
+
+    return relations
+
+
+def create_admin_and_models(relations: List[Dict], site_name: str) -> Tuple[io.StringIO, io.StringIO]:
+    """
+    Creates the contents of the admin and models files for the Django data application.
+    """
+
+    af = io.StringIO()
+    mf = io.StringIO()
+
+    af.write(ADMIN_FILE_HEADER)
+    mf.write(MODELS_FILE_HEADER)
+
+    af.write("admin.site.site_header = 'PyTrackDat: {}'\n\n".format(site_name))
+
+    for relation in relations:
+        # Write model information
+
+        mf.write("\n\n")
+        mf.write(MODEL_TEMPLATE.format(
+            name=relation["name"],
+            fields=pprint.pformat(relation["fields"], indent=12, width=120, compact=True),
+            label_name=relation["name"][len(PDT_RELATION_PREFIX):],
+            id_type=relation["id_type"],
+            verbose_name=relation["name"][len(PDT_RELATION_PREFIX):]
+        ))
+        mf.write("\n\n")
+
+        # Write admin information
+
+        af.write("\n\n@admin.register({})\n".format(relation["name"]))
+        af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, AdminAdvancedFiltersMixin, "
+                 "admin.ModelAdmin):\n".format(relation["name"]))
+        af.write("    change_list_template = 'admin/core/change_list.html'\n")
+        af.write("    actions = ['export_csv', 'export_labels']\n")
+
+        list_display_fields = [r["name"] for r in relation["fields"]
+                               if r["data_type"] not in ("text", "auto key", "manual key") or "choices" in r]
+        key = [r["name"] for r in relation["fields"] if r["data_type"] in ("auto key", "manual key")]
+        list_display_fields = key + list_display_fields
+
+        list_filter_fields = [r["name"] for r in relation["fields"]
+                              if r["data_type"] in ("boolean",) or "choices" in r]
+
+        advanced_filter_fields = [r["name"] for r in relation["fields"]]
+
+        if len(list_display_fields) > 1:
+            af.write("    list_display = ('{}',)\n".format("', '".join(list_display_fields)))
+
+        if len(list_filter_fields) > 0:
+            af.write("    list_filter = ('{}',)\n".format("', '".join(list_filter_fields)))
+
+        if len(advanced_filter_fields) > 0:
+            af.write("    advanced_filter_fields = ('{}',)\n".format("', '".join(advanced_filter_fields)))
+
+        for f in relation["fields"]:
+            mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
+
+        mf.flush()
+        af.flush()
 
     af.seek(0)
     mf.seek(0)
@@ -571,7 +588,8 @@ def main():
         print("Validating design file '{}'...".format(design_file))
         with open(os.path.join(os.getcwd(), design_file), "r") as df:
             try:
-                a_buf, m_buf = create_admin_and_models(df, django_site_name)
+                relations = design_to_relation_fields(df)
+                a_buf, m_buf = create_admin_and_models(relations, django_site_name)
             except GenerationError as e:
                 exit_with_error(str(e))
         print("done.\n")
