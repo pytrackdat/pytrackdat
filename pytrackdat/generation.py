@@ -506,6 +506,7 @@ def create_admin_and_models(relations: List[Dict], site_name: str) -> Tuple[io.S
         af.write("    change_list_template = 'admin/core/change_list.html'\n")
         af.write("    actions = ['export_csv', 'export_labels']\n")
 
+        # TODO: Improve this to show all length-limited text fields
         list_display_fields = [r["name"] for r in relation["fields"]
                                if r["data_type"] not in ("text", "auto key", "manual key") or "choices" in r]
         key = [r["name"] for r in relation["fields"] if r["data_type"] in ("auto key", "manual key")]
