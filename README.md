@@ -170,8 +170,16 @@ Once downloaded, open a Terminal window (macOS/Linux) or a Command Prompt
 (Windows) and `cd` to a working directory where you want your PyTrackDat files
 to live:
 
+**macOS/Linux:**
+
 ```bash
 cd /path/to/pytrackdat
+```
+
+**Windows:**
+
+```cmd
+cd \path\to\pytrackdat
 ```
 
 > Getting Development Versions (Advanced Users Only)
