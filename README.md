@@ -722,7 +722,7 @@ source site_env/bin/activate
 
 ```cmd
 cd tmp\site_name_here
-\site_env\Scripts\activate.bat
+site_env\Scripts\activate.bat
 ```
 
 Then, run the development server from the command line with the following
