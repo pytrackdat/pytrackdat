@@ -35,18 +35,30 @@ RE_DATE_DMY_D = re.compile(r"^\d{1,2}-\d{1,2}-[1-2]\d{3}$")
 RE_DATE_DMY_S = re.compile(r"^\d{1,2}/\d{1,2}/[1-2]\d{3}$")
 
 RE_MULTIPLE_UNDERSCORES = re.compile(r"[_]{2,}")
+RE_NON_IDENTIFIER_CHARACTERS = re.compile(r"[^\w]+")
+RE_WHITESPACE_CHARACTERS = re.compile(r"\s+")
 
 PDT_RELATION_PREFIX = "PyTrackDat"
 
 
+def collapse_multiple_underscores(s: str):
+    return re.sub(RE_MULTIPLE_UNDERSCORES, "_", s)
+
+
+def sanitize_python_identifier(s: str) -> str:
+    return re.sub(RE_NON_IDENTIFIER_CHARACTERS, "", re.sub(RE_WHITESPACE_CHARACTERS, "_", s.strip()))
+
+
 def field_to_py_code(field: str) -> str:
+    field = sanitize_python_identifier(field.lower())
     field = field + "_field" if field in PYTHON_KEYWORDS else field
-    field = re.sub(RE_MULTIPLE_UNDERSCORES, "_", field)
+    field = collapse_multiple_underscores(field)
     return field
 
 
 def to_relation_name(name: str) -> str:
-    python_relation_name = PDT_RELATION_PREFIX + "".join([n.capitalize() for n in name.split("_")])
+    name_sanitized = collapse_multiple_underscores(sanitize_python_identifier(name))
+    python_relation_name = PDT_RELATION_PREFIX + "".join([n.capitalize() for n in name_sanitized.split("_")])
 
     # Take care of plurals so they do not look dumb.
 

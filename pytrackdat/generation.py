@@ -411,7 +411,7 @@ def design_to_relation_fields(df: IO) -> List[Dict]:
                     # TODO: This handling of additional_fields could eventually cause trouble, because it can shift
                     #  positions of additional fields if a blank additional field occurs before a valued one.
                     current_field_data = {
-                        "name": field_to_py_code(current_field[1].lower()),
+                        "name": field_to_py_code(current_field[1]),
                         "csv_name": current_field[0],
                         "data_type": data_type,
                         "nullable": nullable,
