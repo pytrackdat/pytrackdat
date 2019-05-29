@@ -636,7 +636,7 @@ def main():
 
     except FileNotFoundError as e:
         print(str(e))
-        exit_with_error("Design file not found.")
+        exit_with_error("Error: Design file not found.")
 
     with open(os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name, "settings.py"), "r+") as sf:
         old_contents = sf.read()
@@ -676,13 +676,13 @@ def main():
 
         # TODO: Properly check password validity
         if len(admin_password.strip()) < 8:
-            print("Please enter a secure password (8 or more characters).")
+            print("Error: Please enter a more secure password (8 or more characters).")
             admin_password = "1"
             admin_password_2 = "2"
             continue
 
         if admin_password.lower().strip() in common_passwords:
-            print("Please enter in a less commonly-used password (8 or more characters).")
+            print("Error: Please enter in a less commonly-used password (8 or more characters).")
             admin_password = "1"
             admin_password_2 = "2"
             continue
@@ -690,7 +690,7 @@ def main():
         admin_password_2 = getpass.getpass("Admin Account Password Again: ")
 
         if admin_password != admin_password_2:
-            print("Passwords do not match. Please try again.")
+            print("Error: Passwords do not match. Please try again.")
     print("======================================================\n")
 
     try:
@@ -706,7 +706,7 @@ def main():
 
     except subprocess.CalledProcessError:
         # Need to catch subprocess errors to prevent password from being shown onscreen.
-        exit_with_error("An error occurred while running the site setup script.\nTerminating...")
+        exit_with_error("Error: An error occurred while running the site setup script.\nTerminating...")
 
     shutil.make_archive(django_site_name, "zip", root_dir=os.path.join(os.getcwd(), "tmp"), base_dir=django_site_name)
 
