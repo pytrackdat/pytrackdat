@@ -390,14 +390,16 @@ def design_to_relation_fields(df: IO) -> List[Dict]:
                 while current_field and "".join(current_field).strip() != "":
                     # TODO: Process
 
-                    if current_field[2].lower() not in DATA_TYPES:
-                        raise GenerationError("Error: Unknown data type specified for field '{}': '{}'".format(
-                            current_field[1],
-                            current_field[2].lower()
+                    field_name = field_to_py_code(current_field[1])
+                    data_type = standardize_data_type(current_field[2])
+
+                    if data_type not in DATA_TYPES:
+                        raise GenerationError("Error: Unknown data type specified for field '{}': '{}'.".format(
+                            field_name,
+                            data_type
                         ))
 
-                    data_type = current_field[2].lower()
-                    nullable = current_field[3].lower() in ("true", "t", "yes", "y", "1")
+                    nullable = current_field[3].strip().lower() in ("true", "t", "yes", "y", "1")
                     null_values = tuple([n.strip() for n in current_field[4].split(";")])
 
                     if data_type in ("auto key", "manual key") and id_type != "":
@@ -413,15 +415,14 @@ def design_to_relation_fields(df: IO) -> List[Dict]:
 
                     # TODO: This handling of additional_fields could eventually cause trouble, because it can shift
                     #  positions of additional fields if a blank additional field occurs before a valued one.
-                    current_field_name = field_to_py_code(current_field[1])
                     current_field_data = {
-                        "name": current_field_name,
+                        "name": field_name,
                         "csv_name": current_field[0],
                         "data_type": data_type,
                         "nullable": nullable,
                         "null_values": null_values,
-                        "default": get_default_from_csv_with_type(current_field_name, current_field[5].strip(),
-                                                                  data_type, nullable, null_values),
+                        "default": get_default_from_csv_with_type(field_name, current_field[5].strip(), data_type,
+                                                                  nullable, null_values),
                         "description": current_field[6].strip(),
                         "additional_fields": [f for f in current_field[7:] if f.strip() != ""]
                     }

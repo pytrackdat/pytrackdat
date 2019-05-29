@@ -37,6 +37,7 @@ RE_DATE_DMY_S = re.compile(r"^\d{1,2}/\d{1,2}/[1-2]\d{3}$")
 RE_MULTIPLE_UNDERSCORES = re.compile(r"[_]{2,}")
 RE_NON_IDENTIFIER_CHARACTERS = re.compile(r"[^\w]+")
 RE_WHITESPACE_CHARACTERS = re.compile(r"\s+")
+RE_MULTIPLE_WHITESPACE_CHARACTERS = re.compile(r"\s{2,}")
 
 PDT_RELATION_PREFIX = "PyTrackDat"
 
@@ -54,6 +55,10 @@ def field_to_py_code(field: str) -> str:
     field = field + "_field" if field in PYTHON_KEYWORDS else field
     field = collapse_multiple_underscores(field)
     return field
+
+
+def standardize_data_type(dt: str) -> str:
+    return re.sub(RE_MULTIPLE_WHITESPACE_CHARACTERS, " ", dt.lower().replace("_", " "))
 
 
 def to_relation_name(name: str) -> str:
