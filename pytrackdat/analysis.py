@@ -229,7 +229,7 @@ def main():
                 detected_type = "text"
                 nullable = False
 
-            design_file_rows.append([
+            design_file_row = [
                 f,  # Old field name
                 new_name,  # New field name (in database)
                 detected_type,  # Detected data type
@@ -237,11 +237,23 @@ def main():
                 "; ".join(null_values),  # What value(s) will become null in the database
                 "",  # The default value for the field (optional, null/blank if left empty)
                 "!fill me in!",  # Field description
-                *[m for m in [max(max_length, 2), max(max_seen_decimals, 1)] if detected_type == "decimal"],
-                *[m for m in [max_length] if detected_type == "text" and max_length > 0],  # IF TEXT/ENUM: max l.
-                *["; ".join([c for c in choices
-                             if len(choices) > 0 and detected_type != "boolean"])],  # IF ENUM: Choices
-            ])
+                # TODO: If only Python 3.5+ support is needed, the following can be used
+                # *[m for m in [max(max_length, 2), max(max_seen_decimals, 1)] if detected_type == "decimal"],
+                # *[m for m in [max_length] if detected_type == "text" and max_length > 0],  # IF TEXT/ENUM: max l.
+                # *["; ".join([c for c in choices
+                #              if len(choices) > 0 and detected_type != "boolean"])],  # IF ENUM: Choices
+            ]
+
+            design_file_row.extend([m for m in [max(max_length, 2), max(max_seen_decimals, 1)]
+                                    if detected_type == "decimal"])
+
+            # IF TEXT/ENUM: max l.
+            design_file_row.extend([m for m in [max_length] if detected_type == "text" and max_length > 0])
+
+            # IF ENUM: Choices
+            design_file_row.extend(["; ".join([c for c in choices if len(choices) > 0 and detected_type != "boolean"])])
+
+            design_file_rows.append(design_file_row)
 
             if include_alternate:
                 design_file_rows.append([
@@ -265,7 +277,7 @@ def main():
         design_file_rows.append([])
         print()
 
-    with open(design_file, "w") as df:
+    with open(design_file, "w", newline="") as df:
         design_writer = csv.writer(df, delimiter=",")
         max_length = max([len(r) for r in design_file_rows])
 
