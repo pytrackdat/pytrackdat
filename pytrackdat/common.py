@@ -80,7 +80,7 @@ def to_relation_name(name: str) -> str:
     return python_relation_name
 
 
-def print_license():
+def print_license() -> None:
     print("""PyTrackDat v{}  Copyright (C) {} the PyTrackDat authors.
 This program comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
 """.format(VERSION, COPYRIGHT_DATES))
