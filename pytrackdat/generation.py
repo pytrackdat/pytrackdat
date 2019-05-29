@@ -324,7 +324,7 @@ DJANGO_TYPE_FORMATTERS = {
 }
 
 
-def get_default_from_csv_with_type(dv: str, dt: str, nullable=False, null_values=()) \
+def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=False, null_values=()) \
         -> Union[None, int, datetime.datetime, str, bool]:
     if dv.strip() == "" and dt != "boolean":
         return None
@@ -339,9 +339,12 @@ def get_default_from_csv_with_type(dv: str, dt: str, nullable=False, null_values
             return datetime.strptime(dv, "%Y-%m-%d")
         elif re.match(RE_DATE_DMY_D, dv):
             # TODO: ambiguous d-m-Y or m-d-Y
+            print("Warning: Assuming d-m-Y date format for ambiguously-formatted date field '{}'.".format(field_name))
             return datetime.strptime(dv, "%d-%m-%Y", str_v)
         else:
             # TODO: Warning
+            print("Warning: Default value '{}' the date-typed field '{}' does not match any "
+                  "PyTrackDat-compatible formats.".format(dv, field_name))
             return None
 
     if dt == "time":
@@ -410,14 +413,15 @@ def design_to_relation_fields(df: IO) -> List[Dict]:
 
                     # TODO: This handling of additional_fields could eventually cause trouble, because it can shift
                     #  positions of additional fields if a blank additional field occurs before a valued one.
+                    current_field_name = field_to_py_code(current_field[1])
                     current_field_data = {
-                        "name": field_to_py_code(current_field[1]),
+                        "name": current_field_name,
                         "csv_name": current_field[0],
                         "data_type": data_type,
                         "nullable": nullable,
                         "null_values": null_values,
-                        "default": get_default_from_csv_with_type(current_field[5].strip(), data_type, nullable,
-                                                                  null_values),
+                        "default": get_default_from_csv_with_type(current_field_name, current_field[5].strip(),
+                                                                  data_type, nullable, null_values),
                         "description": current_field[6].strip(),
                         "additional_fields": [f for f in current_field[7:] if f.strip() != ""]
                     }
