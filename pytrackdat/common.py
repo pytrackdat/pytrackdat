@@ -27,6 +27,7 @@ PYTHON_KEYWORDS = ["False", "None", "True", "and", "as", "assert", "async", "awa
                    "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"]
 
 DATA_TYPES = ["auto key", "manual key", "integer", "float", "decimal", "boolean", "text", "date", "time", "foreign key"]
+GIS_DATA_TYPES = ["point", "line string", "polygon", "multi point", "multi line string", "multi polygon"]
 
 
 RE_DATE_YMD_D = re.compile(r"^[1-2]\d{3}-\d{1,2}-\d{1,2}$")
@@ -40,6 +41,13 @@ RE_WHITESPACE_CHARACTERS = re.compile(r"\s+")
 RE_MULTIPLE_WHITESPACE_CHARACTERS = re.compile(r"\s{2,}")
 
 PDT_RELATION_PREFIX = "PyTrackDat"
+
+
+def valid_data_type(data_type: str, gis_mode: bool) -> bool:
+    """
+    Validates a data type. Assumes the data type has already been sanitized.
+    """
+    return (not gis_mode and data_type in DATA_TYPES) or (gis_mode and data_type in DATA_TYPES + GIS_DATA_TYPES)
 
 
 def collapse_multiple_underscores(s: str):

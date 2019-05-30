@@ -66,10 +66,10 @@ class SnapshotAdmin(admin.ModelAdmin):
 
 """.format(VERSION)
 
-MODELS_FILE_HEADER = """# Generated using PyTrackDat v{}
-from django.db import models
+MODELS_FILE_HEADER = """# Generated using PyTrackDat v{version}
+from {models_path} import models
 
-""".format(VERSION)
+"""
 
 MODEL_TEMPLATE = """class {name}(models.Model):
     @classmethod
@@ -206,6 +206,10 @@ INSTALLED_APPS_NEW = """INSTALLED_APPS = [
 STATIC_OLD = "STATIC_URL = '/static/'"
 STATIC_NEW = """STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')"""
+
+SPATIALITE_SETTINGS = """
+SPATIALITE_LIBRARY_PATH='{}'
+"""
 
 DISABLE_MAX_FIELDS = "\nDATA_UPLOAD_MAX_NUMBER_FIELDS = None\n"
 
@@ -364,7 +368,7 @@ def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=F
     return dv
 
 
-def design_to_relation_fields(df: IO) -> List[Dict]:
+def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
     """
     Validates the design file into relations and their fields.
     """
@@ -393,7 +397,7 @@ def design_to_relation_fields(df: IO) -> List[Dict]:
                     field_name = field_to_py_code(current_field[1])
                     data_type = standardize_data_type(current_field[2])
 
-                    if data_type not in DATA_TYPES:
+                    if not valid_data_type(data_type, gis_mode):
                         raise GenerationError("Error: Unknown data type specified for field '{}': '{}'.".format(
                             field_name,
                             data_type
@@ -477,7 +481,7 @@ def design_to_relation_fields(df: IO) -> List[Dict]:
     return relations
 
 
-def create_admin_and_models(relations: List[Dict], site_name: str) -> Tuple[io.StringIO, io.StringIO]:
+def create_admin_and_models(relations: List[Dict], site_name: str, gis_mode: bool) -> Tuple[io.StringIO, io.StringIO]:
     """
     Creates the contents of the admin and models files for the Django data application.
     """
@@ -486,7 +490,8 @@ def create_admin_and_models(relations: List[Dict], site_name: str) -> Tuple[io.S
     mf = io.StringIO()
 
     af.write(ADMIN_FILE_HEADER)
-    mf.write(MODELS_FILE_HEADER)
+    mf.write(MODELS_FILE_HEADER.format(version=VERSION,
+                                       models_path="django.contrib.gis.db" if gis_mode else "django.db"))
 
     af.write("admin.site.site_header = 'PyTrackDat: {}'\n\n".format(site_name))
 
@@ -563,6 +568,14 @@ def main():
         print_usage()
         exit(1)
 
+    # TODO: EXPERIMENTAL: GIS MODE
+    gis_mode = os.environ.get("PTD_GIS", "false").lower() == "true"
+    spatialite_library_path = os.environ.get("SPATIALITE_LIBRARY_PATH", "")
+    if gis_mode:
+        print("Notice: Enabling experimental GIS mode...")
+        if spatialite_library_path == "":
+            exit_with_error("Error: Please set SPATIALITE_LIBRARY_PATH.")
+
     args = sys.argv[1:]
 
     package_dir = os.path.dirname(__file__)
@@ -594,8 +607,8 @@ def main():
         print("Validating design file '{}'...".format(design_file))
         with open(os.path.join(os.getcwd(), design_file), "r") as df:
             try:
-                relations = design_to_relation_fields(df)
-                a_buf, m_buf = create_admin_and_models(relations, django_site_name)
+                relations = design_to_relation_fields(df, gis_mode)
+                a_buf, m_buf = create_admin_and_models(relations, django_site_name, gis_mode)
             except GenerationError as e:
                 exit_with_error(str(e))
         print("done.\n")
@@ -630,7 +643,7 @@ def main():
         with open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager", "models.py"), "w") \
                 as smf, open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager",
                                           "admin.py"), "w") as saf:
-            smf.write(MODELS_FILE_HEADER)
+            smf.write(MODELS_FILE_HEADER.format(version=VERSION, models_path="django.db"))
             smf.write("\n")
             smf.write(SNAPSHOT_MODEL.format(django_site_name))
             saf.write(SNAPSHOT_ADMIN_FILE)
@@ -641,11 +654,17 @@ def main():
 
     with open(os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name, "settings.py"), "r+") as sf:
         old_contents = sf.read()
+
         sf.seek(0)
+
         sf.write(old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW)
                  .replace(DEBUG_OLD, DEBUG_NEW)
                  .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url))
                  .replace(STATIC_OLD, STATIC_NEW) + DISABLE_MAX_FIELDS)
+
+        if gis_mode:
+            sf.write(SPATIALITE_SETTINGS.format(spatialite_library_path))
+
         sf.truncate()
 
     with open(os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name, "urls.py"), "r+") as uf:
