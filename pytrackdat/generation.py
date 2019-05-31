@@ -314,7 +314,53 @@ def date_formatter(f: Dict) -> str:
     )
 
 
+# All spatial fields cannot be null.
+
+
+def point_formatter(f: Dict) -> str:
+    # TODO: WARN IF NULLABLE
+    # TODO: DO WE EVER MAKE THIS BLANK?
+    # TODO: FIGURE OUT POINT FORMAT FOR DEFAULTS / IN GENERAL
+    return "models.PointField(help_text='{}')".format(f["description"].replace("'", "\\'"))
+
+
+def line_string_formatter(f: Dict) -> str:
+    # TODO: WARN IF NULLABLE
+    # TODO: DO WE EVER MAKE THIS BLANK?
+    # TODO: FIGURE OUT LINE STRING FORMAT FOR DEFAULTS / IN GENERAL
+    return "models.LineStringField(help_text='{}')".format(f["description"].replace("'", "\\'"))
+
+
+def polygon_formatter(f: Dict) -> str:
+    # TODO: WARN IF NULLABLE
+    # TODO: DO WE EVER MAKE THIS BLANK?
+    # TODO: FIGURE OUT POLYGON FORMAT FOR DEFAULTS / IN GENERAL
+    return "models.PolygonField(help_text='{}')".format(f["description"].replace("'", "\\'"))
+
+
+def multi_point_formatter(f: Dict) -> str:
+    # TODO: WARN IF NULLABLE
+    # TODO: DO WE EVER MAKE THIS BLANK?
+    # TODO: FIGURE OUT POINT FORMAT FOR DEFAULTS / IN GENERAL
+    return "models.MultiPointField(help_text='{}')".format(f["description"].replace("'", "\\'"))
+
+
+def multi_line_string_formatter(f: Dict) -> str:
+    # TODO: WARN IF NULLABLE
+    # TODO: DO WE EVER MAKE THIS BLANK?
+    # TODO: FIGURE OUT LINE STRING FORMAT FOR DEFAULTS / IN GENERAL
+    return "models.MultiLineStringField(help_text='{}')".format(f["description"].replace("'", "\\'"))
+
+
+def multi_polygon_formatter(f: Dict) -> str:
+    # TODO: WARN IF NULLABLE
+    # TODO: DO WE EVER MAKE THIS BLANK?
+    # TODO: FIGURE OUT POLYGON FORMAT FOR DEFAULTS / IN GENERAL
+    return "models.MultiPolygonField(help_text='{}')".format(f["description"].replace("'", "\\'"))
+
+
 DJANGO_TYPE_FORMATTERS = {
+    # Standard PyTrackDat Fields
     "auto key": auto_key_formatter,
     "manual key": manual_key_formatter,
     "foreign key": foreign_key_formatter,
@@ -324,6 +370,15 @@ DJANGO_TYPE_FORMATTERS = {
     "boolean": boolean_formatter,
     "text": text_formatter,
     "date": date_formatter,
+
+    # PyTrackDat GeoDjango Fields
+    "point": point_fomratter,
+    "line string": line_string_formatter,
+    "polygon": polygon_formatter,
+    "multi point": multi_point_fomratter,
+    "multi line string": multi_line_string_formatter,
+    "multi polygon": multi_polygon_formatter,
+    
     "unknown": text_formatter  # Default to text fields... TODO: Should give a warning
 }
 
