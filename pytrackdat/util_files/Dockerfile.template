@@ -13,7 +13,7 @@ RUN set -ex \
     && apk add --no-cache R R-dev \
     && pip install -U pip \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir -r /requirements.txt" \
-    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir uwsgi==2.0.17.1" \
+    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir uwsgi==2.0.18" \
     && chmod -R a+w /usr/lib/R/library \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "Rscript /install_dependencies.R" \
     && apk del build-deps
