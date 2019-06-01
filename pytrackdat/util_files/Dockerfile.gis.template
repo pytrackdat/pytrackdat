@@ -1,4 +1,4 @@
-FROM python:3.6-alpine3.7
+FROM python:3.6-alpine3.9
 
 ENV PYTHONUNBUFFERED 1
 
@@ -8,7 +8,6 @@ ADD install_dependencies.R /install_dependencies.R
 ADD db.sqlite3 /db.sqlite3
 
 RUN set -ex \
-    && apk --update add --no-cache --virtual fetch-deps ca-certificates openssl
     && apk --update add --no-cache --virtual build-deps \
         autoconf automake gcc g++ make libc-dev bzip2-dev file musl-dev linux-headers pcre pcre-dev unzip \
     && apk add --no-cache --virtual build-deps-edge gdal-dev geos-dev proj4-dev \
