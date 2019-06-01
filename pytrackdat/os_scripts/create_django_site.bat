@@ -22,7 +22,7 @@ rem Start the Django site
 
 rem Copy pre-built files to the site folder
 copy /B "%1\util_files\requirements.txt" "%2\"
-copy /B "%1\util_files\Dockerfile.template" "%2\"
+copy /B "%1\util_files\%4" "%2\"
 copy /B "%1\util_files\docker-compose.yml" "%2\"
 copy /B "%1\util_files\nginx.conf" "%2\"
 copy /B "%1\util_files\export_labels.R" "%2\"
@@ -35,8 +35,8 @@ rem Create the storage directory for snapshots
 mkdir snapshots
 
 rem Add site name to Dockerfile template
-powershell -Command "(gc Dockerfile.template) -replace 'SITE_NAME', '%2' | Out-File Dockerfile"
-del Dockerfile.template
+powershell -Command "(gc %4) -replace 'SITE_NAME', '%2' | Out-File Dockerfile"
+del %4
 
 rem Create the Django application for the models
 python manage.py startapp core

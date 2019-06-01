@@ -686,7 +686,8 @@ def main():
                 "os_scripts",
                 "create_django_site.bat" if os.name == "nt" else "create_django_site.bash"
             )
-            create_site_options = [create_site_script, package_dir, django_site_name, TEMP_DIRECTORY]
+            create_site_options = [create_site_script, package_dir, django_site_name, TEMP_DIRECTORY,
+                                   "Dockerfile.gis.template" if gis_mode else "Dockerfile.template"]
             subprocess.run(create_site_options, check=True)
 
             # Write admin and models file contents to disk
