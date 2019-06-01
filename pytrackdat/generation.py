@@ -372,10 +372,10 @@ DJANGO_TYPE_FORMATTERS = {
     "date": date_formatter,
 
     # PyTrackDat GeoDjango Fields
-    "point": point_fomratter,
+    "point": point_formatter,
     "line string": line_string_formatter,
     "polygon": polygon_formatter,
-    "multi point": multi_point_fomratter,
+    "multi point": multi_point_formatter,
     "multi line string": multi_line_string_formatter,
     "multi polygon": multi_polygon_formatter,
     
