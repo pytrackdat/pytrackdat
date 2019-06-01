@@ -208,7 +208,7 @@ STATIC_NEW = """STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')"""
 
 SPATIALITE_SETTINGS = """
-SPATIALITE_LIBRARY_PATH='{}'
+SPATIALITE_LIBRARY_PATH='{}' if (os.getenv('DJANGO_ENV') != 'production') else None
 """
 
 DISABLE_MAX_FIELDS = "\nDATA_UPLOAD_MAX_NUMBER_FIELDS = None\n"
