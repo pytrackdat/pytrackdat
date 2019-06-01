@@ -627,7 +627,7 @@ def main():
     gis_mode = os.environ.get("PTD_GIS", "false").lower() == "true"
     spatialite_library_path = os.environ.get("SPATIALITE_LIBRARY_PATH", "")
     if gis_mode:
-        print("Notice: Enabling experimental GIS mode...")
+        print("Notice: Enabling experimental GIS mode...\n")
         if spatialite_library_path == "":
             exit_with_error("Error: Please set SPATIALITE_LIBRARY_PATH.")
 
@@ -718,6 +718,7 @@ def main():
                  .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url))
                  .replace(STATIC_OLD, STATIC_NEW) + DISABLE_MAX_FIELDS)
 
+        # TODO: May not need spatialite path in settings
         if gis_mode:
             sf.write(SPATIALITE_SETTINGS.format(spatialite_library_path))
 
