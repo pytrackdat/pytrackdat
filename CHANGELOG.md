@@ -4,7 +4,10 @@
 
  * Add snapshot downloads
  * Add automatic pre-import snapshots
+ * Add **experimental** (optional) GIS data support
  * Improve output style for `ptd-analyze`
+ * Fix support for Python 3.4
+ * Improve error and warning reporting
  * Revise documentation
 
 ## Version 0.2.1 (2019-05-13)
