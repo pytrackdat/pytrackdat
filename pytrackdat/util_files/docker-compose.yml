@@ -2,7 +2,7 @@ version: '3'
 services:
   web:
     build: .
-    command: /bin/sh -c "python manage.py collectstatic --noinput && uwsgi"
+    command: /bin/sh -c "python3 manage.py collectstatic --noinput && uwsgi"
     volumes:
       - .:/code
   proxy:

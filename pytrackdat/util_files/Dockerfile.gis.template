@@ -1,44 +1,20 @@
-FROM python:3.6-alpine3.9
+FROM osgeo/gdal:alpine-normal-latest
 
 ENV PYTHONUNBUFFERED 1
 
 ADD requirements.txt /requirements.txt
 ADD install_dependencies.R /install_dependencies.R
-# TODO: Is this needed:
-ADD db.sqlite3 /db.sqlite3
 
 RUN set -ex \
-    && apk --update add --no-cache --virtual build-deps \
-        autoconf automake gcc g++ make libc-dev bzip2-dev file musl-dev linux-headers pcre pcre-dev unzip \
-    && apk add --no-cache --virtual build-deps-edge gdal-dev geos-dev proj4-dev \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-    && apk add --no-cache R R-dev \
-    && apk add --no-cache geos proj4 gdal \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-    && pip install -U pip \
-    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir -r /requirements.txt" \
-    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir uwsgi==2.0.18" \
+    && apk add --no-cache --virtual build-deps \
+        autoconf automake gcc g++ make libc-dev libxml2-dev bzip2-dev file musl-dev linux-headers pcre pcre-dev unzip \
+    && apk add --no-cache python3 python3-dev R R-dev \
+    && pip3 install -U pip \
+    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir -r /requirements.txt" \
+    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir uwsgi==2.0.18" \
     && chmod -R a+w /usr/lib/R/library \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "Rscript /install_dependencies.R" \
-    && wget "https://www.sqlite.org/2019/sqlite-amalgamation-3280000.zip" \
-    && unzip "sqlite-amalgamation-3280000.zip" \
-    && cd "sqlite-amalgamation-3280000" \
-    && CFLAGS="-DSQLITE_ENABLE_RTREE=1" ./configure \
-    && make \
-    && make install \
-    && cd .. \
-    && rm -rf "sqlite-amalgamation-3280000" \
-    && wget "https://www.gaia-gis.it/gaia-sins/libspatialite-sources/libspatialite-4.3.0.zip" \
-    && unzip "libspatialite-4.3.0.zip" \
-    && cd "libspatialite-4.3.0" \
-    && ./configure \
-    && make \
-    && make install \
-    && cd .. \
-    && rm -rf "libspatialite-4.3.0" \
-    && apk del fetch-deps build-deps build-deps-edge
+    && apk del build-deps
 RUN mkdir /code/
 WORKDIR /code/
 ADD . /code/
