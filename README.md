@@ -1,5 +1,7 @@
 # PyTrackDat — A pipeline for online data collection and management
 
+[![PyPI version](https://badge.fury.io/py/pytrackdat.svg)](https://badge.fury.io/py/pytrackdat)
+
 ## Overview
 
 PyTrackDat comprises two Python scripts that analyze and assist in converting
