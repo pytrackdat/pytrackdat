@@ -34,6 +34,7 @@ If you already have a server on which the application can be deployed, see the
 section below. The DigitalOcean service provider is not specifically required
 to run the application.
 
+
 Deployment Step 1: Create a DigitalOcean account
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -45,6 +46,7 @@ USD per month (as of the time of writing, the cheapest Droplet/VPS that one can
 create) for hosting the application.
 
 .. _`signup page`: https://cloud.digitalocean.com/registrations/new
+
 
 Deployment Step 2: Create a new droplet (virtual machine)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -101,3 +103,85 @@ application, which will be uploaded to the server.
 .. figure:: ../_static/email.png
    :width: 500
    :alt: New Droplet Email"
+
+
+Deployment Step 3: Log into the new droplet and set it up
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Note for Windows Users**: The DigitalOcean tutorials assume the user has a
+Linux or macOS system, and in general server administration with these
+operating systems is much more straightforward. However, by downloading the
+KiTTY utility mentioned in the Dependencies section of this tutorial, SSH can
+be used on Windows as well. Whenever a tutorial mentions a command involving
+``ssh username@server ...``, KiTTY can be used instead. Follow our
+[mini-tutorial](mini-tutorials/KiTTY.md) TODO: RE-LINK to learn how to sign into a droplet.
+
+Follow DigitalOcean's `initial server setup`_ guide to set up a new user
+account and a basic firewall on the new droplet.
+
+After creating a new account and following the other instructions in the guide,
+disconnect from the ``ssh`` session by using the following command:
+
+.. code-block:: bash
+
+   exit
+
+
+Then re-connect to the droplet using the newly-created non-root user account,
+typing in the password entered for the new user:
+
+.. code-block:: bash
+
+   ssh your_username@your.ip.address.here
+
+
+**Note for Windows users:** Use the same, alternate method of accessing the
+remote server as before, using the [mini-tutorial](mini-tutorials/KiTTY.md) TODO: RE-LINK
+provided and described above.
+
+Now the virtual machine is ready for installing the software needed to host the
+PyTrackDat application.
+
+Deployment steps 3 and 6 will take place on the droplet, and steps 4 and 5 will
+take place mostly on the local machine (your own computer).
+
+.. _`initial server setup`: https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04
+
+
+Deployment Step 4: Install Docker and Docker Compose on the Droplet
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Docker
+""""""
+
+Docker is a "container platform" which allows web applications to run inside
+their own sub-environments. The resulting PyTrackDat applications generated
+by the scripts are set up as Docker containers to make deploying them easier.
+
+Docker must be installed on any server being used to host a PyTrackDat
+application.
+
+Follow DigitalOcean's `instruction guide`_, following only **steps 1 and 2**,
+to install Docker on the newly-created droplet.
+
+*Further steps cover knowledge not needed for this tutorial, although it may
+be helpful for further understanding the Docker platform.*
+
+.. _`instruction guide`: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+
+Docker Compose
+""""""""""""""
+
+Docker Compose is a system for orchestrating multiple Docker containers at once
+in a way which makes it easy to put containers online or take them offline.
+
+Install Docker Compose on the droplet by following DigitalOcean's
+`Docker Compose instruction guide`_, following only **step 1**.
+
+.. _`Docker Compose instruction guide`: https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04
+
+
+Deployment Step 5: Build the application's production version (on your own computer)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TODO
