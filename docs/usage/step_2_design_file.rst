@@ -405,9 +405,9 @@ Type-Specific Settings
 
 The ``foreign key`` type requires one type-specific setting:
 
-  1. ``target``: The table which the foreign key field is pointing to. Remember
-     that table names are specified in the first column of the first row of
-     a block in the design file.
+1. ``target``: The table which the foreign key field is pointing to. Remember
+   that table names are specified in the first column of the first row of
+   a block in the design file.
 
 For example, if a row in a table called ``sample`` refers to a row in a table
 called ``site``, the ``target`` setting would be ``site``. This could have the
