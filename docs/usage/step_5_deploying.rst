@@ -184,4 +184,134 @@ Install Docker Compose on the droplet by following DigitalOcean's
 Deployment Step 5: Build the application's production version (on your own computer)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TODO
+*See the [above aside](#step-3-database-generator) TODO: RE-LINK, entitled "what is a
+production build?", for more information on why this process is needed.*
+
+To build the production version of the database application, the ``ptd-generate``
+script must be run again on your **local** computer (i.e. not the new droplet),
+this time answering ``y`` (yes) to the question ``Is this a production build?``:
+
+.. code-block:: bash
+
+   ptd-generate design.csv site_name
+
+
+The script will prompt for a URL. This must match the URL that will be used to
+access the site. It can also be an IP address. Whatever value is specified
+should not contain ``http://``, ``https://``, or a trailing slash.
+
+.. code-block::
+
+   Please enter the production site URL, without 'www.' or 'http://':
+
+
+If a domain name has been purchased (which is outside the scope of this
+tutorial), additional steps will need to be taken to attach it to the
+droplet. Nonetheless, the domain name should be entered at this step.
+
+If an IP address is being used to access the droplet (a no-cost option and
+recommended if the droplet is just being used to host the database), enter that
+into this prompt. The IP address has already been used in this tutorial to log
+into the droplet. For example, one could enter the following:
+
+.. code-block::
+
+   Please enter the production site URL, without 'www.' or 'http://': 142.93.159.136
+
+
+Deployment Step 6: Upload the application
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now that you have generated the production version of the site, it is time to
+upload it to the droplet and start it up.
+
+From the PyTrackDat directory, use the following instructions (depending on the
+operating system on your local computer) to upload the application.
+
+First, make sure you are in the main PyTrackDat directory using ``cd``.
+
+When the ``ptd-generate`` script was used to generate the PyTrackDat application,
+it created a ``.zip`` file archive in the main PyTrackDat directory called
+``site_name.zip``, based on whatever name was entered for ``site_name`` when the
+script was run.
+
+This archive contains everything needed to run the application, but it must
+first be uploaded to the server.
+
+macOS or Linux
+""""""""""""""
+
+On macOS and Linux, a built-in utility called SCP is provided, which can copy
+a file to a remote server. Run the following command, using the credentials
+used previously to access the server via ``ssh``:
+
+.. code-block:: bash
+
+   scp site_name.zip your_username@your.ip.address.here:~
+
+
+This will copy the site ``.zip`` archive to the home directory of your user
+account on the droplet.
+
+Windows
+"""""""
+
+By default, Windows does not include a utility for copying files to remote
+servers. However, in the Dependencies section earlier in the file, utilities
+are listed that can assist in this task. Download WinSCP in order to copy
+the zip file to the server.
+
+Follow our [mini-tutorial](mini-tutorials/WinSCP.md) TODO: RE-LINK for WinSCP to upload the
+``.zip`` archive to the droplet.
+
+
+Deployment Step 7: Start the application
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To start the application, log into the droplet again, using SSH:
+
+.. code-block:: bash
+
+   ssh your_username@your.ip.address.here
+
+
+**Note for Windows users:** Use the same, alternate method of accessing the
+remote server as before, using the [mini-tutorial](mini-tutorials/KiTTY.md) TODO: RE-LINK
+provided and described above.
+
+Then, unzip the archive containing the application within your home folder
+on the server, substituting ``site_name`` with whatever the archive uploaded to
+the server (in the previous step) is called:
+
+.. code-block:: bash
+
+   sudo apt install unzip
+   unzip site_name.zip
+
+
+Enter the application directory:
+
+.. code-block:: bash
+
+   cd site_name
+
+
+Use Docker Compose to build and start the application:
+
+.. code-block:: bash
+
+   docker-compose up --build --detach
+
+
+And finally, allow the site to be accessed externally by adding a rule to the
+firewall:
+
+
+.. code-block:: bash
+
+   sudo ufw allow http
+
+
+Now, by going to the IP address attached to the droplet, the site should be
+visible. Log in using the username and password entered into the `ptd-generate`
+script in order to manage data and other users.
