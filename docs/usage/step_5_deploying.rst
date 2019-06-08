@@ -167,7 +167,6 @@ to install Docker on the newly-created droplet.
 *Further steps cover knowledge not needed for this tutorial, although it may
 be helpful for further understanding the Docker platform.*
 
-.. _`instruction guide`: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
 
 Docker Compose
 """"""""""""""
@@ -177,8 +176,6 @@ in a way which makes it easy to put containers online or take them offline.
 
 Install Docker Compose on the droplet by following DigitalOcean's
 `Docker Compose instruction guide`_, following only **step 1**.
-
-.. _`Docker Compose instruction guide`: https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04
 
 
 Deployment Step 5: Build the application's production version (on your own computer)
@@ -277,7 +274,7 @@ To start the application, log into the droplet again, using SSH:
 
 **Note for Windows users:** Use the same, alternate method of accessing the
 remote server as before, using the [mini-tutorial](mini-tutorials/KiTTY.md) TODO: RE-LINK
-provided and described above.
+provided and described above. TODO: NOT DESCRIBED ABOVE ANYMORE...
 
 Then, unzip the archive containing the application within your home folder
 on the server, substituting ``site_name`` with whatever the archive uploaded to
@@ -315,3 +312,125 @@ firewall:
 Now, by going to the IP address attached to the droplet, the site should be
 visible. Log in using the username and password entered into the `ptd-generate`
 script in order to manage data and other users.
+
+
+
+Deploying the End Result on an Existing Linux Server
+----------------------------------------------------
+
+This guide assumes a moderate amount of prior knowlege about command-line Linux
+server administration, since the specifics depend on the operating system
+version and particular configuration of the server in question.
+
+
+Deployment Step 1: Install Docker and Docker Compose (If Not Already Done)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Follow something similar to DigitalOcean's `instruction guide`_, following only **steps 1 and 2**.
+
+Then, install Docker Compose by following steps similar to DigitalOcean's
+`Docker Compose instruction guide`_, following only **step 1**.
+
+These guides are for Ubuntu 18.04 LTS and installation specifics likely differ
+with other Linux distributions.
+
+
+Deployment Step 2: Build the Application's Production Version
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To build the production version of the database application, the
+``ptd-generate`` script must be run again on your **local** computer (i.e. not
+the VM or server), this time answering ``y`` (yes) to the question
+``Is this a production build?``:
+
+.. code-block:: bash
+
+   ptd-generate design.csv site_name
+
+
+The script will prompt for a URL. This must match the URL that will be used to
+access the site. It can also be an IP address. Whatever value is specified
+should not contain `http://`, `https://`, or a trailing slash.
+
+.. code-block::
+
+   Please enter the production site URL, without 'www.' or 'http://':
+
+
+If deploying without a domain name, use the IP address when prompted for a URL.
+
+
+Deployment Step 3: Upload the Application
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now that you have generated the production version of the site, it is time to
+upload it to the server and start it up.
+
+From the PyTrackDat directory, follow the instructions in the above
+DigitalOcean tutorial to upload the application. Swap the droplet IP address
+mentioned for the IP address or domain name of the server in question.
+
+
+Deployment Step 4: Start the Application
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To start the application, log into the server again, using SSH:
+
+.. code-block:: bash
+
+   ssh your_username@your.ip.address.here
+
+
+**Note for Windows users:** Use the same, alternate method of accessing the
+remote server as before, using the [mini-tutorial](mini-tutorials/KiTTY.md) TODO: RE-LINK
+provided and described above.
+
+Then, unzip the archive containing the application within your home folder
+on the server:
+
+.. code-block:: bash
+
+   sudo apt install unzip
+   unzip site_name.zip
+
+
+Enter the app directory:
+
+.. code-block:: bash
+
+   cd site_name
+
+
+Use Docker Compose to start the application:
+
+.. code-block:: bash
+
+   docker-compose up --build --detach
+
+
+And finally, allow the site to be accessed externally by adding a rule to the
+firewall. This command will depend on what firewall is being used. For ``ufw``,
+the following command can be used (assuming the container is bound to port 80):
+
+.. code-block:: bash
+
+   sudo ufw allow http
+
+
+Now, by going to the IP address or domain name attached to the server, the site
+should be visible. Log in using the username and password entered into the
+``ptd-generate`` script in order to manage data and other users.
+
+
+Note about Ports and Configuration
+----------------------------------
+
+These tutorials give instructions for serving the PyTrackDat application on
+the main HTTP port, port 80. If you want to serve other content
+concurrently with the PyTrackDat application, additional configuration will
+be required.
+
+
+
+.. _`instruction guide`: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+.. _`Docker Compose instruction guide`: https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04
