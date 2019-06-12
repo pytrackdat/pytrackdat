@@ -1198,9 +1198,9 @@ schema (i.e. add or remove columns), the following procedure can be used:
      application.
 
 
-### Updating the site on DigitalOcean
+### Updating the database on DigitalOcean
 
-First, export the data currently stored in the web application (if any) via the
+First, export the data currently stored in the database (if any) via the
 online interface. Log into the PyTrackDat application, select all data for each
 data type, and export individual CSV files.
 
@@ -1244,15 +1244,15 @@ PyTrackDat application using the web interface.
 
 
 
-## Using a PyTrackDat Application
+## Using a PyTrackDat Database
 
 ### Introduction
 
-PyTrackDat applications are built on top of the
+PyTrackDat databases are built on top of the
 [Django framework](http://djangoproject.com), and specifically the built-in
-Django admin site.
+Django administration system.
 
-When a PyTrackDat application is running, it should be accessible via the
+When a PyTrackDat database is running, it should be accessible via the
 configured URL (in the case of production builds) or the URL `localhost`
 during local testing.
 
@@ -1322,7 +1322,7 @@ local computer with the QR code labels.
 
 ### Advanced Filtering with [Django Advanced Filters](https://github.com/modlinltd/django-advanced-filters)
 
-PyTrackDat applications include the [Django Advanced Filters](https://github.com/modlinltd/django-advanced-filters)
+PyTrackDat databases include the [Django Advanced Filters](https://github.com/modlinltd/django-advanced-filters)
 module, which allows for creating and saving custom filters for data in the
 database.
 
