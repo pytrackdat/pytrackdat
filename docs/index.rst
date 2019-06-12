@@ -24,6 +24,15 @@ Welcome to PyTrackDat's documentation!
    usage/step_3_generator
    usage/step_4_testing
    usage/step_5_deploying
+   usage/example_site
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Updating PyTrackDat Sites
+
+   updating/updating_schema
+   updating/updating_deployment
 
 
 
