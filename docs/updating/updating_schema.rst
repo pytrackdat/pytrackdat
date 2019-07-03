@@ -9,7 +9,7 @@ schema (i.e. add or remove columns), the following procedure can be used:
 1. Export all tables as CSV files using the PyTrackDat-supplied action in the
    web interface.
 
-2. Either use the downloaded CSV files in the `ptd-analyze` script to
+2. Either use the downloaded CSV files in the ``ptd-analyze`` script to
    generate a new design file or use your original design file. Make sure to
    restore any foreign keys (and other changes) from before if starting anew.
 

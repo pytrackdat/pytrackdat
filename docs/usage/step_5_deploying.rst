@@ -310,8 +310,8 @@ firewall:
 
 
 Now, by going to the IP address attached to the droplet, the site should be
-visible. Log in using the username and password entered into the `ptd-generate`
-script in order to manage data and other users.
+visible. Log in using the username and password entered into the
+``ptd-generate`` script in order to manage data and other users.
 
 
 
@@ -350,7 +350,7 @@ the VM or server), this time answering ``y`` (yes) to the question
 
 The script will prompt for a URL. This must match the URL that will be used to
 access the site. It can also be an IP address. Whatever value is specified
-should not contain `http://`, `https://`, or a trailing slash.
+should not contain ``http://``, ``https://``, or a trailing slash.
 
 .. code-block::
 

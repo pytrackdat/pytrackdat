@@ -25,8 +25,8 @@ To download the latest stable release, run the following command:
 
 
 Once downloaded, open a Terminal window (macOS/Linux) or a Command Prompt
-(Windows) and `cd` to a working directory where you want your PyTrackDat files
-to live:
+(Windows) and ``cd`` to a working directory where you want your PyTrackDat
+files to live:
 
 
 **macOS/Linux:**

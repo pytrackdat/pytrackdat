@@ -31,9 +31,8 @@ following checklist:
 1. Check that data types and type-specific options are correct for each field
 2. Add human-readable **descriptions** for each field
 3. Change desired **foreign keys** from their detected data type to the foreign
-   key data type, following the
-   [foreign key documentation](#foreign-key-foreign-key-cross-relation) TODO: RE-LINK to link
-   them to the correct table.
+   key data type, following the `foreign key documentation <foreign-key-ref_>`_
+   to link them to the correct table.
 
 
 Design File Customization
@@ -387,6 +386,8 @@ Type-Specific Settings
 """"""""""""""""""""""
 
 **No** type-specific settings are available for ``time``.
+
+.. _foreign-key-ref:
 
 ``foreign key``: Foreign Key (Cross-Relation)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

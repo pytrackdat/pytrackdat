@@ -48,7 +48,9 @@ in production, and is simply used to make sure everything works first.
 Additional information must be provided to a production PyTrackDat build,
 specifically the URL of the server onto which the application will be
 deployed (i.e. set up and ran).
+
 **Note about PyTrackDat development builds**
+
 PyTrackDat application development builds cannot export baRcodeR labels from
 the web interface. This is a known issue and currently unfixable due to R
 and Python compatibility issues.

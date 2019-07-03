@@ -17,9 +17,10 @@ following command:
 
    ptd-analyze design.csv sample_type_1 samples1.csv sample_type_2 samples2.csv [...]
 
-Where `design.csv` is the name of the design file to output, and
-`sample_type_1` and `sample_type_2` are singular terms for the types of entries
-stored in `samples1.csv` and `samples2.csv`, respectively.  Feel free to add
-more sample types (with corresponding data files) as necessary for your
-dataset, or leave out `sample_type_2` and `samples2.csv` if only one data type
-is necessary for the database.
+
+Where ``design.csv`` is the name of the design file to output, and
+``sample_type_1`` and ``sample_type_2`` are singular terms for the types of
+entries stored in ``samples1.csv`` and ``samples2.csv``, respectively. Feel
+free to add more sample types (with corresponding data files) as necessary for
+your dataset, or leave out ``sample_type_2`` and ``samples2.csv`` if only one
+data type is necessary for the database.
