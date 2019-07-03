@@ -114,7 +114,7 @@ operating systems is much more straightforward. However, by downloading the
 KiTTY utility mentioned in the Dependencies section of this tutorial, SSH can
 be used on Windows as well. Whenever a tutorial mentions a command involving
 ``ssh username@server ...``, KiTTY can be used instead. Follow our
-[mini-tutorial](mini-tutorials/KiTTY.md) TODO: RE-LINK to learn how to sign into a droplet.
+:ref:`mini-tutorial <kitty>` to learn how to sign into a droplet.
 
 Follow DigitalOcean's `initial server setup`_ guide to set up a new user
 account and a basic firewall on the new droplet.
@@ -136,8 +136,8 @@ typing in the password entered for the new user:
 
 
 **Note for Windows users:** Use the same, alternate method of accessing the
-remote server as before, using the [mini-tutorial](mini-tutorials/KiTTY.md) TODO: RE-LINK
-provided and described above.
+remote server as before, using the :ref:`mini-tutorial <kitty>` provided and
+described above.
 
 Now the virtual machine is ready for installing the software needed to host the
 PyTrackDat application.
@@ -258,8 +258,8 @@ servers. However, in the Dependencies section earlier in the file, utilities
 are listed that can assist in this task. Download WinSCP in order to copy
 the zip file to the server.
 
-Follow our [mini-tutorial](mini-tutorials/WinSCP.md) TODO: RE-LINK for WinSCP to upload the
-``.zip`` archive to the droplet.
+Follow our :ref:`mini-tutorial <winscp>` for WinSCP to upload the ``.zip``
+archive to the droplet.
 
 
 Deployment Step 7: Start the application
