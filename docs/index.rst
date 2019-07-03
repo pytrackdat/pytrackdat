@@ -17,7 +17,7 @@ Welcome to PyTrackDat's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Using PyTrackDat
+   :caption: Using the PyTrackDat Tools
 
    usage/step_1_analyzer
    usage/step_2_design_file
@@ -33,6 +33,16 @@ Welcome to PyTrackDat's documentation!
 
    updating/updating_schema
    updating/updating_deployment
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Using PyTrackDat Sites
+
+   site_usage/introduction
+   site_usage/data_management
+   site_usage/exporting_labels
+   site_usage/advanced_filters
 
 
 
