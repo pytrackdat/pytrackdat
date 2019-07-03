@@ -45,6 +45,14 @@ Welcome to PyTrackDat's documentation!
    site_usage/advanced_filters
 
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Appendix: Windows Mini Tutorials
+
+   windows_tutorials/kitty
+   windows_tutorials/winscp
+
+
 
 Indices and tables
 ==================
