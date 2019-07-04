@@ -24,7 +24,7 @@ Welcome to PyTrackDat's documentation!
    usage/step_3_generator
    usage/step_4_testing
    usage/step_5_deploying
-   usage/example_site
+   usage/example_db
 
 
 .. toctree::
