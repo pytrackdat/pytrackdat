@@ -34,5 +34,7 @@ setup(
     entry_points={
         "console_scripts": ["ptd-analyze=pytrackdat.analysis:main",
                             "ptd-generate=pytrackdat.generation:main"]
-    }
+    },
+
+    test_suite="tests"
 )
