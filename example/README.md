@@ -1,4 +1,4 @@
-# Example PyTrackDat Site, Start to Finish
+# Example PyTrackDat Database, Start to Finish
 
 ## Preamble
 
@@ -116,20 +116,20 @@ Now that the design file is finalized, we can generate the PyTrackDat site from
 the design file and test it, with help from our pre-existing data.
 
 
-## Generating the Test Site
+## Generating the Test Database
 
 PyTrackDat generates database web applications from the design file. To
 generate a site from the final design file, [`design_final.csv`](design/design_final.csv),
 we can run the following command:
 
 ```bash
-ptd-generate design/design_final.csv test_site
+ptd-generate design/design_final.csv test_db
 ```
 
 This will produce a [Django framework](https://djangoproject.com)-powered
-web application archived as `test_site.zip` in the working directory, and
+web application archived as `test_db.zip` in the working directory, and
 directly accessible in the temporary PyTrackDat work directory,
-`tmp/test_site`.
+`tmp/test_db`.
 
 
 ## Running the Test Site
@@ -141,7 +141,7 @@ on operating system. Following this, you should be able to navigate to
 ### Linux/macOS
 
 ```bash
-cd tmp/test_site
+cd tmp/test_db
 source site_env/bin/activate
 python ./manage.py runserver
 ```
@@ -149,17 +149,17 @@ python ./manage.py runserver
 ### Windows
 
 ```cmd
-cd tmp\test_site
+cd tmp\test_db
 \site_env\Scripts\activate.bat
 python manage.py runserver
 ```
 
 
-## Using and Testing the Site
+## Using and Testing the Database
 
 ### Importing Data
 
-While generating the site, an account with administrative privileges was
+While generating the database, an account with administrative privileges was
 created using the credentials we provided. This account can be used to log into
 the site.
 
@@ -180,15 +180,15 @@ database, assuming the CSV file is **formatted correctly**.
 
 ### Testing the Site
 
-We should explore the site, clicking on the single-entry add buttons for each
-table and making sure it behaves as expected. If any issues arise, edit the
-design file to correct them and re-generate the site.
+We should explore the database, clicking on the single-entry add buttons for
+each table and making sure it behaves as expected. If any issues arise, edit
+the design file to correct them and re-generate the database.
 
 
 ## Deploying the Final "Production" Site
 
 Once the design file and the resulting site are finalized, a "production"
-version of the site should be generated. In this case, "production" means
+version of the database should be generated. In this case, "production" means
 "ready to use with actual data".
 
 For instructions on how to deploy, see the guides on
