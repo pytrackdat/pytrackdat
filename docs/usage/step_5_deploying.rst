@@ -105,6 +105,8 @@ application, which will be uploaded to the server.
    :alt: New Droplet Email"
 
 
+.. _`deploy-3`:
+
 Deployment Step 3: Log into the new droplet and set it up
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -181,7 +183,7 @@ Install Docker Compose on the droplet by following DigitalOcean's
 Deployment Step 5: Build the application's production version (on your own computer)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-*See the [above aside](#step-3-database-generator) TODO: RE-LINK, entitled "what is a
+*See the* :ref:`aside <production build>` *in step 3, entitled "what is a
 production build?", for more information on why this process is needed.*
 
 To build the production version of the database application, the ``ptd-generate``
@@ -273,8 +275,8 @@ To start the application, log into the droplet again, using SSH:
 
 
 **Note for Windows users:** Use the same, alternate method of accessing the
-remote server as before, using the [mini-tutorial](mini-tutorials/KiTTY.md) TODO: RE-LINK
-provided and described above. TODO: NOT DESCRIBED ABOVE ANYMORE...
+remote server as before, using the :ref:`mini-tutorial <kitty>` provided (see
+:ref:`rationale <deploy-3>` above.)
 
 Then, unzip the archive containing the application within your home folder
 on the server, substituting ``site_name`` with whatever the archive uploaded to
