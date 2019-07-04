@@ -4,9 +4,9 @@ Dependencies
 
 Make sure that Python 3 and ``pip3`` are installed.
 
-If Python 3 is already installed, update `pip3` to the latest version with the
-following command, run in a Terminal window (macOS/Linux) or in Command Prompt
-(Windows):
+If Python 3 is already installed, update ``pip3`` to the latest version with
+the following command, run in a Terminal window (macOS/Linux) or in Command
+Prompt (Windows):
 
 **macOS/Linux:**
 
