@@ -87,9 +87,6 @@ def to_relation_name(name: str) -> str:
         print("Warning: Auto-detected incorrect plural relation name.\n         Altering from "
               "{} to {}.\n         To avoid this, specify singular names.".format(old_name, python_relation_name))
 
-    if python_relation_name in PYTHON_KEYWORDS:
-        python_relation_name += "Class"
-
     return python_relation_name
 
 
