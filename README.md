@@ -190,7 +190,7 @@ cd \path\to\pytrackdat
 > (provided Git is installed) using the following command in a Terminal or
 > Command Prompt window:
 > 
-> ```git clone https://github.com/ColauttiLab/PyTrackDat.git```
+> ```git clone https://github.com/pytrackdat/pytrackdat.git```
 
 
 
@@ -1167,7 +1167,7 @@ should be visible. Log in using the username and password entered into the
 ## Worked Example
 
 For a worked example of creating a PyTrackDat application start-to-finish, see
-[`example/README.md`](https://github.com/ColauttiLab/PyTrackDat/tree/master/example).
+[`example/README.md`](https://github.com/pytrackdat/pytrackdat/tree/master/example).
 
 
 

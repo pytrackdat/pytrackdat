@@ -51,4 +51,4 @@ Command Prompt window:
 
 .. code-block:: bash
 
-   git clone https://github.com/ColauttiLab/PyTrackDat.git
+   git clone https://github.com/pytrackdat/pytrackdat.git

@@ -4,7 +4,7 @@
 
 Make sure you have PyTrackDat installed before trying this example. For
 instructions, see the
-[installation guide](https://github.com/ColauttiLab/PyTrackDat#installation).
+[installation guide](https://github.com/pytrackdat/pytrackdat#installation).
 
 **Note:** The dataset used here does not contain not real data.
 
@@ -106,7 +106,7 @@ the design file. These are visible in the
 
   1. Change the type of the 'Site Name' field to `foreign key`, and delete the
      old additional settings. In their place, as per the
-     [foreign key data type](https://github.com/ColauttiLab/PyTrackDat#foreign-key-foreign-key-cross-relation)
+     [foreign key data type](https://github.com/pytrackdat/pytrackdat#foreign-key-foreign-key-cross-relation)
      description, we add a single additional setting with the target table (in
      this case `site`) as the value.
      
@@ -192,5 +192,5 @@ version of the database should be generated. In this case, "production" means
 "ready to use with actual data".
 
 For instructions on how to deploy, see the guides on
-[deploying on DigitalOcean](https://github.com/ColauttiLab/PyTrackDat#deploying-the-end-result-on-digitalocean) or
-[deploying on an existing or other server](https://github.com/ColauttiLab/PyTrackDat#deploying-the-end-result-on-an-existing-linux-server).
+[deploying on DigitalOcean](https://github.com/pytrackdat/pytrackdat#deploying-the-end-result-on-digitalocean) or
+[deploying on an existing or other server](https://github.com/pytrackdat/pytrackdat#deploying-the-end-result-on-an-existing-linux-server).
