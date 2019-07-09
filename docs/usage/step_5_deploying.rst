@@ -197,9 +197,7 @@ this time answering ``y`` (yes) to the question ``Is this a production build?``:
 
 The script will prompt for a URL. This must match the URL that will be used to
 access the site. It can also be an IP address. Whatever value is specified
-should not contain ``http://``, ``https://``, or a trailing slash.
-
-.. code-block::
+should not contain ``http://``, ``https://``, or a trailing slash::
 
    Please enter the production site URL, without 'www.' or 'http://':
 
@@ -211,9 +209,7 @@ droplet. Nonetheless, the domain name should be entered at this step.
 If an IP address is being used to access the droplet (a no-cost option and
 recommended if the droplet is just being used to host the database), enter that
 into this prompt. The IP address has already been used in this tutorial to log
-into the droplet. For example, one could enter the following:
-
-.. code-block::
+into the droplet. For example, one could enter the following::
 
    Please enter the production site URL, without 'www.' or 'http://': 142.93.159.136
 
@@ -352,9 +348,7 @@ the VM or server), this time answering ``y`` (yes) to the question
 
 The script will prompt for a URL. This must match the URL that will be used to
 access the site. It can also be an IP address. Whatever value is specified
-should not contain ``http://``, ``https://``, or a trailing slash.
-
-.. code-block::
+should not contain ``http://``, ``https://``, or a trailing slash::
 
    Please enter the production site URL, without 'www.' or 'http://':
 
