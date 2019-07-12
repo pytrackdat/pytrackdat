@@ -203,6 +203,13 @@ INSTALLED_APPS_NEW = """INSTALLED_APPS = [
     'advanced_filters',
 ]"""
 
+INSTALLED_APPS_NEW_GIS = INSTALLED_APPS_NEW.replace(
+    "'django.contrib.staticfiles',",
+    """'django.contrib.staticfiles',
+
+    'django.contrib.gis',"""
+)
+
 STATIC_OLD = "STATIC_URL = '/static/'"
 STATIC_NEW = """STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')"""
@@ -210,6 +217,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')"""
 SPATIALITE_SETTINGS = """
 SPATIALITE_LIBRARY_PATH='{}' if (os.getenv('DJANGO_ENV') != 'production') else None
 """
+
+DATABASE_ENGINE_NORMAL = "django.db.backends.sqlite3"
+DATABASE_ENGINE_GIS = "django.contrib.gis.db.backends.spatialite"
 
 DISABLE_MAX_FIELDS = "\nDATA_UPLOAD_MAX_NUMBER_FIELDS = None\n"
 
@@ -713,14 +723,20 @@ def main():
 
         sf.seek(0)
 
-        sf.write(old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW)
-                 .replace(DEBUG_OLD, DEBUG_NEW)
-                 .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url))
-                 .replace(STATIC_OLD, STATIC_NEW) + DISABLE_MAX_FIELDS)
+        new_contents = (
+            old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW_GIS if gis_mode else INSTALLED_APPS_NEW)
+                        .replace(DEBUG_OLD, DEBUG_NEW)
+                        .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url))
+                        .replace(STATIC_OLD, STATIC_NEW) + DISABLE_MAX_FIELDS
+        )
+
+        if gis_mode:
+            new_contents = new_contents.replace(DATABASE_ENGINE_NORMAL, DATABASE_ENGINE_GIS)
+            new_contents += SPATIALITE_SETTINGS.format(spatialite_library_path)
+
+        sf.write(new_contents)
 
         # TODO: May not need spatialite path in settings
-        if gis_mode:
-            sf.write(SPATIALITE_SETTINGS.format(spatialite_library_path))
 
         sf.truncate()
 
