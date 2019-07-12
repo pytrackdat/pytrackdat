@@ -9,6 +9,8 @@ RUN set -ex \
     && apk add --no-cache --virtual build-deps \
         autoconf automake gcc g++ make libc-dev libxml2-dev bzip2-dev file musl-dev linux-headers pcre pcre-dev unzip \
     && apk add --no-cache python3 python3-dev R R-dev \
+    && apk add libspatialite --repository http://nl.alpinelinux.org/alpine/edge/testing \
+    && ln -s /usr/lib/mod_spatialite.so.7 /usr/lib/mod_spatialite.so \
     && pip3 install -U pip \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir -r /requirements.txt" \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir uwsgi==2.0.18" \
