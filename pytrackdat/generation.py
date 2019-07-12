@@ -649,8 +649,12 @@ def main():
     django_site_name_raw = args[1].strip()
     django_site_name = sanitize_python_identifier(django_site_name_raw)
 
+    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]$", django_site_name):
+        exit_with_error("Error: Site name '{}' cannot be turned into a valid Python package name. \n"
+                        "       Please choose a different name.".format(django_site_name))
+
     if django_site_name != django_site_name_raw:
-        print("Warning: Site name '{}' is not a valid Python package name;\n"
+        print("Warning: Site name '{}' is not a valid Python package name; \n"
               "         using '{}' instead.\n".format(django_site_name_raw, django_site_name))
 
     try:
