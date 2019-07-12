@@ -1,7 +1,7 @@
 __pycache__
 .idea
 .coverage
-env
+env*
 tmp/
 dist/
 build/
