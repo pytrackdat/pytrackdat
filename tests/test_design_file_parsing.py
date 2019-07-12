@@ -33,3 +33,12 @@ class TestDesignFileParsing(unittest.TestCase):
         with self.assertRaises(GenerationError):
             with open("./tests/design_files/two_primary_keys_3.csv") as tf:
                 design_to_relation_fields(tf, False)
+
+    def test_invalid_data_types(self):
+        with self.assertRaises(GenerationError):
+            with open("./tests/design_files/invalid_data_type.csv") as tf:
+                design_to_relation_fields(tf, False)
+
+            with open("./tests/design_files/point_field.csv") as tf:
+                # GIS mode is off, so an error should be raised.
+                design_to_relation_fields(tf, False)

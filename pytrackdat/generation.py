@@ -233,14 +233,18 @@ class GenerationError(Exception):
     pass
 
 
+def clean_field_help_text(d: str) -> str:
+    return d.replace("\\", "\\\\").replace("'", "\\'")
+
+
 def auto_key_formatter(f: Dict) -> str:
-    return "models.AutoField(primary_key=True, help_text='{}')".format(f["description"].replace("'", "\\'"))
+    return "models.AutoField(primary_key=True, help_text='{}')".format(clean_field_help_text(f["description"]))
 
 
 def manual_key_formatter(f: Dict) -> str:
     # TODO: Shouldn't be always text?
     return "models.TextField(primary_key=True, max_length=127, " \
-           "help_text='{}')".format((f["description"].replace("'", "\\'")))
+           "help_text='{}')".format(clean_field_help_text(f["description"]))
 
 
 def foreign_key_formatter(f: Dict) -> str:
@@ -254,7 +258,7 @@ def basic_number_formatter(f: Dict) -> str:
     t = BASIC_NUMBER_TYPES[f["data_type"]]
     return "models.{}(help_text='{}', null={}{})".format(
         t,
-        f["description"].replace("'", "\\'"),
+        clean_field_help_text(f["description"]),
         str(f["nullable"]),
         "" if f["default"] is None else ", default={}".format(f["default"])
     )
@@ -262,7 +266,7 @@ def basic_number_formatter(f: Dict) -> str:
 
 def decimal_formatter(f: Dict) -> str:
     return "models.DecimalField(help_text='{}', max_digits={}, decimal_places={}, null={}{})".format(
-        f["description"].replace("'", "\\'"),
+        clean_field_help_text(f["description"]),
         f["additional_fields"][0],
         f["additional_fields"][1],
         str(f["nullable"]),
@@ -272,7 +276,7 @@ def decimal_formatter(f: Dict) -> str:
 
 def boolean_formatter(f: Dict) -> str:
     return "models.BooleanField(help_text='{}', null={}{})".format(
-        f["description"].replace("'", "\\'"),
+        clean_field_help_text(f["description"]),
         str(f["nullable"]),
         "" if f["default"] is None else ", default={}".format(f["default"])
     )
@@ -306,8 +310,8 @@ def text_formatter(f: Dict) -> str:
 
     return "models.{}(help_text='{}'{}{}{})".format(
         "TextField" if max_length is None else "CharField",
-        f["description"].replace("'", "\\'"),
-        "" if f["default"] is None else ", default='{}'".format(f["default"]),
+        clean_field_help_text(f["description"]),
+        "" if f["default"] is None else ", default='{}'".format(f["default"]),  # TODO: Make sure default is cleaned
         "" if len(choices) == 0 else ", choices={}".format(str(choices)),
         "" if max_length is None else ", max_length={}".format(max_length)
     )
@@ -316,7 +320,7 @@ def text_formatter(f: Dict) -> str:
 def date_formatter(f: Dict) -> str:
     # TODO: standardize date formatting... I think this might already be standardized?
     return "models.DateField(help_text='{}', null={}{})".format(
-        f["description"].replace("'", "\\'"),
+        clean_field_help_text(f["description"]),
         str(f["nullable"]),
         "" if f["default"] is None else ", default=datetime.strptime('{}', '%Y-%m-%d')".format(
             f["default"].strftime("%Y-%m-%d")
