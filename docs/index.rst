@@ -47,6 +47,13 @@ Welcome to PyTrackDat's documentation!
 
 .. toctree::
    :maxdepth: 2
+   :caption: Work In Progress: GIS Support
+
+   gis/wip
+
+
+.. toctree::
+   :maxdepth: 2
    :caption: Appendix: Windows Mini Tutorials
 
    windows_tutorials/kitty
