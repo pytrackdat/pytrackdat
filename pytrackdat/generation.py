@@ -646,7 +646,12 @@ def main():
     package_dir = os.path.dirname(__file__)
 
     design_file = args[0]  # File name for design file input
-    django_site_name = args[1].strip()
+    django_site_name_raw = args[1].strip()
+    django_site_name = sanitize_python_identifier(django_site_name_raw)
+
+    if django_site_name != django_site_name_raw:
+        print("Warning: Site name '{}' is not a valid Python package name;\n"
+              "         using '{}' instead.\n".format(django_site_name_raw, django_site_name))
 
     try:
         importlib.import_module(django_site_name)
