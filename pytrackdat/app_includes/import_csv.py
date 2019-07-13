@@ -89,6 +89,7 @@ class ImportCSVMixin:
                                     object_data[f["name"]] = int(str_v)
                                     break
                                 elif f["nullable"]:
+                                    # TODO: This assumes null if not integer-like, might be wrong
                                     object_data[f["name"]] = None
                                 else:
                                     raise ValueError("Incorrect value for integer field {}: {}".format(f["name"],
@@ -104,6 +105,7 @@ class ImportCSVMixin:
                                     break
 
                                 elif f["nullable"]:
+                                    # TODO: This assumes null if not integer-like, might be wrong
                                     object_data[f["name"]] = None
 
                                 else:
@@ -124,6 +126,8 @@ class ImportCSVMixin:
                                 max_length = -1
                                 choices = []
 
+                                # TODO: More coersion for choices
+
                                 additional_fields = [f.strip() for f in f["additional_fields"] if f.strip() != ""]
 
                                 if len(additional_fields) in (1, 2):
@@ -137,6 +141,7 @@ class ImportCSVMixin:
 
                                 if len(choices) > 0 and str_v not in choices:
                                     if f["nullable"]:
+                                        # TODO: This assumes null if not integer-like, might be wrong
                                         object_data[f["name"]] = None
                                     else:
                                         raise ValueError("Value for text field {} in model {} is not one of the "
