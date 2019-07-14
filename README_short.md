@@ -6,3 +6,8 @@ facilitate data management, manipulation, and quality control. What each of
 these scripts does is outlined in this `README.md` file. Note that the care
 that is taken to assemble `.csv` files before using these scripts will help
 ensure that the database generated is maximally useful.
+
+## Documentation
+
+The latest documentation is available on
+[ReadTheDocs](https://pytrackdat.readthedocs.io/en/latest/).

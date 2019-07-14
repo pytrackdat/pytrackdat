@@ -14,6 +14,13 @@ ensure that the database generated is maximally useful.
 
 
 
+## Documentation
+
+The latest documentation is available on
+[ReadTheDocs](https://pytrackdat.readthedocs.io/en/latest/).
+
+
+
 ## Table of Contents
 
   * [Installation](#installation)
