@@ -34,7 +34,6 @@ class TestGenerationFormatters(unittest.TestCase):
         self.assertEqual(pg.clean_field_help_text("\\'"), "\\\\\\'")
 
     def test_auto_key_formatter(self):
-        print(pg.auto_key_formatter(AUTO_KEY_FIELD))
         self.assertEqual(
             pg.auto_key_formatter(AUTO_KEY_FIELD),
             "models.AutoField(primary_key=True, help_text='test \\\\\\'auto\\\\\\' key')"
