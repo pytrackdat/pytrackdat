@@ -624,7 +624,7 @@ def print_usage():
     print("Usage: ptd-generate design.csv output_site_name")
 
 
-def sanitize_and_check_site_name(site_name_raw):
+def sanitize_and_check_site_name(site_name_raw: str) -> str:
     site_name_stripped = site_name_raw.strip()
     site_name = sanitize_python_identifier(site_name_stripped)
 
@@ -644,6 +644,21 @@ def sanitize_and_check_site_name(site_name_raw):
         pass
 
     return site_name
+
+
+def is_common_password(password: str, package_dir: str) -> bool:
+    # Try to use password list created by Royce Williams and adapted for the Django project:
+    # https://gist.github.com/roycewilliams/281ce539915a947a23db17137d91aeb7
+
+    common_passwords = ["password", "123456", "12345678"]  # Fallbacks if file not present
+    try:
+        with gzip.open(os.path.join(package_dir, "common-passwords.txt.gz")) as f:
+            common_passwords = {p.strip() for p in f.read().decode().splitlines()
+                                if len(p.strip()) >= 8}  # Don't bother including too-short passwords
+    except OSError:
+        pass
+
+    return password.lower().strip() in common_passwords
 
 
 # TODO: TIMEZONES
@@ -770,16 +785,6 @@ def main():
         uf.write(old_contents.replace(URL_OLD, URL_NEW))
         uf.truncate()
 
-    # Try to use password list created by Royce Williams and adapted for the Django project:
-    # https://gist.github.com/roycewilliams/281ce539915a947a23db17137d91aeb7
-    common_passwords = ["password", "123456", "12345678"]  # Fallbacks if file not present
-    try:
-        with gzip.open(os.path.join(package_dir, "common-passwords.txt.gz")) as f:
-            common_passwords = {p.strip() for p in f.read().decode().splitlines()
-                                if len(p.strip()) >= 8}  # Don't bother including too-short passwords
-    except OSError:
-        pass
-
     print("\n================ ADMINISTRATIVE SETUP ================")
     admin_username = input("Admin Account Username: ")
     while admin_username.strip() == "":
@@ -798,7 +803,7 @@ def main():
             admin_password_2 = "2"
             continue
 
-        if admin_password.lower().strip() in common_passwords:
+        if is_common_password(admin_password, package_dir=package_dir):
             print("Error: Please enter in a less commonly-used password (8 or more characters).")
             admin_password = "1"
             admin_password_2 = "2"
