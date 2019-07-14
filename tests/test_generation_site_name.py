@@ -24,11 +24,13 @@ from pytrackdat.generation import GenerationError, sanitize_and_check_site_name
 
 class TestGenerationSiteName(unittest.TestCase):
     def test_site_name_invalid_chars(self):
-        with self.assertRaises(GenerationError):
-            # TODO: Check error message
-            sanitize_and_check_site_name("aaa!!!")
+        with self.assertRaisesRegex(GenerationError,
+                                    "Error: Site name '_' cannot be turned into a valid Python package name. \n"
+                                    "       Please choose a different name."):
+            sanitize_and_check_site_name("_")
 
     def test_site_name_conflict(self):
-        with self.assertRaises(GenerationError):
-            # TODO: Check error message
+        with self.assertRaisesRegex(GenerationError,
+                                    "Error: Site name 'unittest' conflicts with a Python package name. \n"
+                                    "       Please choose a different name."):
             sanitize_and_check_site_name("unittest")
