@@ -629,8 +629,8 @@ def sanitize_and_check_site_name(site_name_raw):
     site_name = sanitize_python_identifier(site_name_stripped)
 
     if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]$", site_name):
-        raise ValueError("Error: Site name '{}' cannot be turned into a valid Python package name. \n"
-                         "       Please choose a different name.".format(site_name))
+        raise GenerationError("Error: Site name '{}' cannot be turned into a valid Python package name. \n"
+                              "       Please choose a different name.".format(site_name))
 
     if site_name != site_name_stripped:
         print("Warning: Site name '{}' is not a valid Python package name; \n"
@@ -638,8 +638,8 @@ def sanitize_and_check_site_name(site_name_raw):
 
     try:
         importlib.import_module(site_name)
-        raise ValueError("Error: Site name '{}' conflicts with a Python package name. \n"
-                         "       Please choose a different name.".format(site_name))
+        raise GenerationError("Error: Site name '{}' conflicts with a Python package name. \n"
+                              "       Please choose a different name.".format(site_name))
     except ImportError:
         pass
 
