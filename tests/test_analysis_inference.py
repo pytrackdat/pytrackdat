@@ -24,6 +24,10 @@ import pytrackdat.analysis as pa
 
 UNIQUE_INT_LIST = [str(i) for i in range(1, 21)]
 NULL_INT_LIST = UNIQUE_INT_LIST + [""]
+REPEATED_INT_LIST = ["999"] * 20
+
+UNIQUE_CONSISTENT_DECIMAL_LIST = ["{}.{}".format(i, j) for i, j in zip(range(10, 51), range(51, 100))]
+MIXED_INTS_AND_DECIMALS = ["1", "1.1", "1.20", "2", "2.1", "2.20", "2.300"]
 
 
 class TestAnalysisInference(unittest.TestCase):
@@ -64,4 +68,43 @@ class TestAnalysisInference(unittest.TestCase):
             "is_key": False,
             "include_alternate": False,
             "max_seen_decimals": -1
+        })
+
+    def test_repeated_int(self):
+        inference = pa.infer_column_type(REPEATED_INT_LIST, False)
+        self.assertDictEqual(inference, {
+            "detected_type": "integer",
+            "nullable": False,
+            "null_values": (),
+            "choices": (),
+            "max_length": -1,
+            "is_key": False,
+            "include_alternate": False,
+            "max_seen_decimals": -1
+        })
+
+    def test_consistent_decimal(self):
+        inference = pa.infer_column_type(UNIQUE_CONSISTENT_DECIMAL_LIST, True)
+        self.assertDictEqual(inference, {
+            "detected_type": "decimal",
+            "nullable": False,
+            "null_values": (),
+            "choices": (),
+            "max_length": 11,  # 4 digits + decimal point + 2 digits after decimal + (constant 4) TODO: good formula?
+            "is_key": False,
+            "include_alternate": False,
+            "max_seen_decimals": 2
+        })
+
+    def test_mix_of_ints_and_decimals(self):
+        inference = pa.infer_column_type(MIXED_INTS_AND_DECIMALS, True)
+        self.assertDictEqual(inference, {
+            "detected_type": "decimal",
+            "nullable": False,
+            "null_values": (),
+            "choices": (),
+            "max_length": 12,  # 4 digits + decimal point + 3 digits after decimal + (constant 4) TODO: good formula?
+            "is_key": False,
+            "include_alternate": False,
+            "max_seen_decimals": 3
         })
