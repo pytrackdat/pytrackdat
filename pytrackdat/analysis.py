@@ -103,6 +103,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     elif integer_values > 0 and len(other_values) == 1:
         detected_type = "integer"
         nullable = True
+        # TODO: DO WE WANT NULL VALUES HERE?
 
     elif integer_values > 0 and len(other_values) > 1 and (integer_values > 100):
         detected_type = "integer"
@@ -178,7 +179,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     return {
         "detected_type": detected_type,
         "nullable": nullable,
-        "null_values": null_values,
+        "null_values": tuple(null_values),
         "choices": tuple(choices),
         "max_length": max_length,
         "is_key": is_key,
