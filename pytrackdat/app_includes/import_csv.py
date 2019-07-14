@@ -200,6 +200,39 @@ class ImportCSVMixin:
                                 object_data[f["name"]] = models[rel_name].objects.get(pk=foreign_key_value)
                                 # TODO!
 
+                            elif f["data_type"] == "point":
+                                # WKT Point
+                                if re.match(r"^POINT\s*\([0-9]+\s+[0-9]+\)$", str_v.upper()):
+                                    object_data[f["name"]] = str_v  # TODO: FIGURE OUT ACTUAL DATA STRUCTURE
+                                elif re.match(r"^\(?[0-9],?\s+[0-9]+\)?$", str_v.upper()):
+                                    # Coerce (5 7), (5, 7), etc. to WKT format
+                                    object_data[f["name"]] = "POINT ({})".format(
+                                        str_v.replace(",", "").replace("(", "").replace(")", ""))
+                                else:
+                                    # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
+                                    raise ValueError("Incorrect value for point field {}: {}".format(f["name"],
+                                                                                                     str_v.upper()))
+
+                            elif f["data_type"] == "line string":
+                                # TODO
+                                pass
+
+                            elif f["data_type"] == "polygon":
+                                # TODO
+                                pass
+
+                            elif f["data_type"] == "multi point":
+                                # TODO
+                                pass
+
+                            elif f["data_type"] == "multi line string":
+                                # TODO
+                                pass
+
+                            elif f["data_type"] == "multi polygon":
+                                # TODO
+                                pass
+
                     new_object = self.model(**object_data)
                     new_object.save()
 

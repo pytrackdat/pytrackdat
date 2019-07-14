@@ -624,6 +624,28 @@ def print_usage():
     print("Usage: ptd-generate design.csv output_site_name")
 
 
+def sanitize_and_check_site_name(site_name_raw):
+    site_name_stripped = site_name_raw.strip()
+    site_name = sanitize_python_identifier(site_name_stripped)
+
+    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]$", site_name):
+        raise ValueError("Error: Site name '{}' cannot be turned into a valid Python package name. \n"
+                         "       Please choose a different name.".format(site_name))
+
+    if site_name != site_name_stripped:
+        print("Warning: Site name '{}' is not a valid Python package name; \n"
+              "         using '{}' instead.\n".format(site_name_stripped, site_name))
+
+    try:
+        importlib.import_module(site_name)
+        raise ValueError("Error: Site name '{}' conflicts with a Python package name. \n"
+                         "       Please choose a different name.".format(site_name))
+    except ImportError:
+        pass
+
+    return site_name
+
+
 # TODO: TIMEZONES
 # TODO: Multiple date formats
 # TODO: More ways for custom validation
@@ -650,23 +672,12 @@ def main():
     package_dir = os.path.dirname(__file__)
 
     design_file = args[0]  # File name for design file input
-    django_site_name_raw = args[1].strip()
-    django_site_name = sanitize_python_identifier(django_site_name_raw)
 
-    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]$", django_site_name):
-        exit_with_error("Error: Site name '{}' cannot be turned into a valid Python package name. \n"
-                        "       Please choose a different name.".format(django_site_name))
-
-    if django_site_name != django_site_name_raw:
-        print("Warning: Site name '{}' is not a valid Python package name; \n"
-              "         using '{}' instead.\n".format(django_site_name_raw, django_site_name))
-
+    django_site_name = ""
     try:
-        importlib.import_module(django_site_name)
-        exit_with_error("Error: Site name '{}' conflicts with a Python package name. \n"
-                        "       Please choose a different name.".format(django_site_name))
-    except ImportError:
-        pass
+        django_site_name = sanitize_and_check_site_name(args[1])
+    except ValueError as e:
+        exit_with_error(str(e))
 
     if not os.path.exists(TEMP_DIRECTORY):
         os.makedirs(TEMP_DIRECTORY)
