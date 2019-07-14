@@ -36,7 +36,7 @@ import csv
 import re
 import sys
 
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from .common import *
 
@@ -188,6 +188,51 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     }
 
 
+def create_design_file_rows_from_inference(old_name: str, new_name: str, inference: Dict) -> List[List[str]]:
+    design_file_rows = []
+
+    design_file_row = [
+        old_name,  # Old field name
+        new_name,  # New field name (in database)
+        inference["detected_type"],  # Detected data type
+        str(inference["nullable"]).lower(),  # Whether the field is nullable
+        "; ".join(inference["null_values"]),  # What value(s) will become null in the database
+        "",  # The default value for the field (optional, null/blank if left empty)
+        "!fill me in!",  # Field description
+        # TODO: If only Python 3.5+ support is needed, the following can be used
+        # *[m for m in [max(max_length, 2), max(max_seen_decimals, 1)] if detected_type == "decimal"],
+        # *[m for m in [max_length] if detected_type == "text" and max_length > 0],  # IF TEXT/ENUM: max l.
+        # *["; ".join([c for c in choices
+        #              if len(choices) > 0 and detected_type != "boolean"])],  # IF ENUM: Choices
+    ]
+
+    design_file_row.extend([m for m in [max(inference["max_length"], 2), max(inference["max_seen_decimals"], 1)]
+                            if inference["detected_type"] == "decimal"])
+
+    # IF TEXT/ENUM: max l.
+    design_file_row.extend([m for m in [inference["max_length"]]
+                            if inference["detected_type"] == "text" and inference["max_length"] > 0])
+
+    # IF ENUM: Choices
+    design_file_row.extend(["; ".join([c for c in inference["choices"]
+                                       if len(inference["choices"]) > 0 and inference["detected_type"] != "boolean"])])
+
+    design_file_rows.append(design_file_row)
+
+    if inference["include_alternate"]:
+        design_file_rows.append([
+            old_name,
+            new_name + "_alt",  # New field name (in database; alternate)
+            "text",  # Alternate fields are always text, possibly with choices
+            "false",  # Alt. fields cannot be null
+            "",
+            "",
+            "!fill me in!"
+        ])
+
+    return design_file_rows
+
+
 def main():
     print_license()
 
@@ -247,61 +292,17 @@ def main():
             col = [d[i] for d in data]
             inference = infer_column_type(col, key_found)
 
-            detected_type = inference["detected_type"]
-            nullable = inference["nullable"]
-            null_values = inference["null_values"]
-            choices = inference["choices"]
-            max_length = inference["max_length"]
-            is_key = inference["is_key"]
-            include_alternate = inference["include_alternate"]
+            key_found = key_found or inference["is_key"]
 
-            max_seen_decimals = inference["max_seen_decimals"]
-
-            key_found = key_found or is_key
-
-            design_file_row = [
-                f,  # Old field name
-                new_name,  # New field name (in database)
-                detected_type,  # Detected data type
-                str(nullable).lower(),  # Whether the field is nullable
-                "; ".join(null_values),  # What value(s) will become null in the database
-                "",  # The default value for the field (optional, null/blank if left empty)
-                "!fill me in!",  # Field description
-                # TODO: If only Python 3.5+ support is needed, the following can be used
-                # *[m for m in [max(max_length, 2), max(max_seen_decimals, 1)] if detected_type == "decimal"],
-                # *[m for m in [max_length] if detected_type == "text" and max_length > 0],  # IF TEXT/ENUM: max l.
-                # *["; ".join([c for c in choices
-                #              if len(choices) > 0 and detected_type != "boolean"])],  # IF ENUM: Choices
-            ]
-
-            design_file_row.extend([m for m in [max(max_length, 2), max(max_seen_decimals, 1)]
-                                    if detected_type == "decimal"])
-
-            # IF TEXT/ENUM: max l.
-            design_file_row.extend([m for m in [max_length] if detected_type == "text" and max_length > 0])
-
-            # IF ENUM: Choices
-            design_file_row.extend(["; ".join([c for c in choices if len(choices) > 0 and detected_type != "boolean"])])
-
-            design_file_rows.append(design_file_row)
-
-            if include_alternate:
-                design_file_rows.append([
-                    f,
-                    new_name + "_alt",  # New field name (in database; alternate)
-                    "text",  # Alternate fields are always text, possibly with choices
-                    "false",  # Alt. fields cannot be null
-                    "",
-                    "",
-                    "!fill me in!"
-                ])
+            design_file_row = create_design_file_rows_from_inference(f, new_name, inference)
+            design_file_rows.extend(design_file_row)
 
             print("    Field '{}':\n        Type: '{}'\n        Nullable: {}{}{}".format(
                 f,
-                detected_type,
-                nullable,
-                "\n        Choices: {}".format(choices) if len(choices) > 0 else "",
-                "\n        With alternate" if include_alternate else ""
+                inference["detected_type"],
+                inference["nullable"],
+                "\n        Choices: {}".format(inference["choices"]) if len(inference["choices"]) > 0 else "",
+                "\n        With alternate" if inference["include_alternate"] else ""
             ))
 
         design_file_rows.append([])
