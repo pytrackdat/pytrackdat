@@ -190,9 +190,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
 
 
 def create_design_file_rows_from_inference(old_name: str, new_name: str, inference: Dict) -> List[List[str]]:
-    design_file_rows = []
-
-    design_file_row = [
+    design_file_rows = [[
         old_name,  # Old field name
         new_name,  # New field name (in database)
         inference["detected_type"],  # Detected data type
@@ -200,25 +198,15 @@ def create_design_file_rows_from_inference(old_name: str, new_name: str, inferen
         "; ".join(inference["null_values"]),  # What value(s) will become null in the database
         "",  # The default value for the field (optional, null/blank if left empty)
         "!fill me in!",  # Field description
-        # TODO: If only Python 3.5+ support is needed, the following can be used
-        # *[m for m in [max(max_length, 2), max(max_seen_decimals, 1)] if detected_type == "decimal"],
-        # *[m for m in [max_length] if detected_type == "text" and max_length > 0],  # IF TEXT/ENUM: max l.
-        # *["; ".join([c for c in choices
-        #              if len(choices) > 0 and detected_type != "boolean"])],  # IF ENUM: Choices
-    ]
-
-    design_file_row.extend([m for m in [max(inference["max_length"], 2), max(inference["max_seen_decimals"], 1)]
-                            if inference["detected_type"] == "decimal"])
-
-    # IF TEXT/ENUM: max l.
-    design_file_row.extend([m for m in [inference["max_length"]]
-                            if inference["detected_type"] == "text" and inference["max_length"] > 0])
-
-    # IF ENUM: Choices
-    design_file_row.extend(["; ".join([c for c in inference["choices"]
-                                       if len(inference["choices"]) > 0 and inference["detected_type"] != "boolean"])])
-
-    design_file_rows.append(design_file_row)
+        *[m for m in [max(inference["max_length"], 2), max(inference["max_seen_decimals"], 1)]
+          if inference["detected_type"] == "decimal"],
+        # IF TEXT/ENUM: max length:
+        *[m for m in [inference["max_length"]]
+          if inference["detected_type"] == "text" and inference["max_length"] > 0],
+        # IF ENUM: Choices:
+        *["; ".join([c for c in inference["choices"]
+                     if len(inference["choices"]) > 0 and inference["detected_type"] != "boolean"])],
+    ]]
 
     if inference["include_alternate"]:
         design_file_rows.append([
