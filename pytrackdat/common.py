@@ -30,6 +30,27 @@ DATA_TYPES = ["auto key", "manual key", "integer", "float", "decimal", "boolean"
 GIS_DATA_TYPES = ["point", "line string", "polygon", "multi point", "multi line string", "multi polygon"]
 
 
+DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS = {
+    "auto key": [],
+    "manual key": [],
+    "integer": [],
+    "float": [],
+    "decimal": ["max_length", "precision"],
+    "boolean": [],
+    "text": ["max_length", "options"],
+    "date": [],
+    "time": [],
+    "foreign key": ["target"],
+
+    "point": [],  # TODO: COORDINATE TYPE
+    "line string": [],  # TODO: COORDINATE TYPE
+    "polygon": [],  # TODO: COORDINATE TYPE
+    "multi point": [],  # TODO: COORDINATE TYPE
+    "multi line string": [],  # TODO: COORDINATE TYPE
+    "multi polygon": []  # TODO: COORDINATE TYPE
+}
+
+
 RE_DATE_YMD_D = re.compile(r"^[1-2]\d{3}-\d{1,2}-\d{1,2}$")
 RE_DATE_YMD_S = re.compile(r"^[1-2]\d{3}/\d{1,2}/\d{1,2}$")
 RE_DATE_DMY_D = re.compile(r"^\d{1,2}-\d{1,2}-[1-2]\d{3}$")

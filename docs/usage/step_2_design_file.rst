@@ -299,7 +299,7 @@ Type-Specific Settings
 
 The ``decimal`` type requires two type-specific settings:
 
-1. ``max length``: The maximum length a number can be, in digits; includes the
+1. ``max_length``: The maximum length a number can be, in digits; includes the
    decimal portion of the number.
 
 2. ``precision``: The number of digits after the decimal. Will be the same for
@@ -348,7 +348,7 @@ Type-Specific Settings
 
 The ``text`` type optionally can take up two type-specific settings:
 
-1. ``max length``: The maximum length of the contents in the field in terms of
+1. ``max_length``: The maximum length of the contents in the field in terms of
    number of characters.
 
 2. ``options``: A semicolon-separated list of possible values the text field

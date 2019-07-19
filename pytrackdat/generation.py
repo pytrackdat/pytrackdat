@@ -500,13 +500,23 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                         "additional_fields": [f for f in current_field[7:] if f.strip() != ""]
                     }
 
+                    if (len(current_field_data["additional_fields"]) >
+                            len(DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS[data_type])):
+                        print(
+                            "Warning: More additional settings specified for field '{}' than can be used.\n"
+                            "         Available settings: '{}' \n".format(
+                                field_name,
+                                "', '".join(DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS[data_type])
+                            )
+                        )
+
                     if data_type == "text":
                         choices = get_choices_from_text_field(current_field_data)
                         if choices is not None and current_field[5].strip() != "" and \
                                 current_field[5].strip() not in choices:
                             raise GenerationError(
                                 "Error: Default value for field '{}' in relation '{}' does not match any available "
-                                "choices for the field. Available choices: {}".format(
+                                "       choices for the field. Available choices: {}".format(
                                     current_field[1],
                                     python_relation_name,
                                     ", ".join(choices)
