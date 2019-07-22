@@ -203,9 +203,9 @@ class ImportCSVMixin:
 
                             elif f["data_type"] == "point":
                                 # WKT Point
-                                if re.match(r"^POINT\s*\([0-9]+\s+[0-9]+\)$", str_v.upper()):
-                                    object_data[f["name"]] = str_v  # TODO: FIGURE OUT ACTUAL DATA STRUCTURE
-                                elif re.match(r"^\(?[0-9],?\s+[0-9]+\)?$", str_v.upper()):
+                                if re.match(r"^POINT\s*\(-?[0-9]+(\.[0-9]+)?\s+-?[0-9]+(\.[0-9]+)?\)$", str_v.upper()):
+                                    object_data[f["name"]] = str_v
+                                elif re.match(r"^\(?-?[0-9]+(\.[0-9]+)?,?\s+-?[0-9]+(\.[0-9]+)?\)?$", str_v.upper()):
                                     # Coerce (5 7), (5, 7), etc. to WKT format
                                     object_data[f["name"]] = "POINT ({})".format(
                                         str_v.replace(",", "").replace("(", "").replace(")", ""))
