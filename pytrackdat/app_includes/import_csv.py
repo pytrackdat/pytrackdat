@@ -38,6 +38,8 @@ from snapshot_manager.models import Snapshot
 # TODO: ACCEPT https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry FOR GIS
 # TODO: NEED TO CHECK NULL VALUES?
 
+LINE_STRING_REGEX = r"\(\s*(-?\d+(\.\d+)\s+-?\d+(\.\d+),\s+)*-?\d+(\.\d+)\s*\)"
+
 
 class ImportCSVForm(forms.Form):
     csv_file = forms.FileField()
@@ -216,20 +218,23 @@ class ImportCSVMixin:
 
                             elif f["data_type"] == "line string":
                                 # WKT Line String
-                                if re.match(r"^LINESTRING\s*\((-?\d+(\.\d+)\s+-?\d+(\.\d+),\s+)*-?\d+(\.\d+)\)$",
+                                if re.match(r"^LINESTRING\s*{}$".format(LINE_STRING_REGEX),
                                             str_v.upper()):
                                     object_data[f["name"]] = str_v
-                                elif re.match(r"^\(?\)?$", str_v):
-                                    object_data[f["name"]] = "LINESTRING ({})".format(
-                                        str_v.replace("(", "").replace(")", ""))
                                 else:
                                     # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
                                     raise ValueError("Incorrect value for line string field {}: {}".format(
                                         f["name"], str_v.upper()))
 
                             elif f["data_type"] == "polygon":
-                                # TODO
-                                pass
+                                # WKT Polygon
+                                if re.match(r"^POLYGON\s*\(\s*({ls},\s*)*{ls}\s*\)".format(ls=LINE_STRING_REGEX),
+                                            str_v.upper()):
+                                    object_data[f["name"]] = str_v
+                                else:
+                                    # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
+                                    raise ValueError("Incorrect value for polygon field {}: {}".format(
+                                        f["name"], str_v.upper()))
 
                             elif f["data_type"] == "multi point":
                                 # TODO
