@@ -38,6 +38,7 @@ from snapshot_manager.models import Snapshot
 # TODO: ACCEPT https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry FOR GIS
 # TODO: NEED TO CHECK NULL VALUES?
 
+POINT_REGEX = r"\(\s*-?\d+(\.\d+)?\s+-?\d+(\.\d+)?\s*\)"
 LINE_STRING_REGEX = r"\(\s*(-?\d+(\.\d+)\s+-?\d+(\.\d+),\s+)*-?\d+(\.\d+)\s*\)"
 
 
@@ -205,8 +206,8 @@ class ImportCSVMixin:
 
                             elif f["data_type"] == "point":
                                 # WKT Point
-                                if re.match(r"^POINT\s*\(-?\d+(\.\d+)?\s+-?\d+(\.\d+)?\)$", str_v.upper()):
-                                    object_data[f["name"]] = str_v
+                                if re.match(r"^POINT\s*{}$".format(POINT_REGEX), str_v.upper()):
+                                    object_data[f["name"]] = str_v.upper()
                                 elif re.match(r"^\(?-?\d+(\.\d+)?,?\s+-?\d+(\.\d+)?\)?$", str_v):
                                     # Coerce (5 7), (5, 7), etc. to WKT format
                                     object_data[f["name"]] = "POINT ({})".format(
@@ -220,7 +221,7 @@ class ImportCSVMixin:
                                 # WKT Line String
                                 if re.match(r"^LINESTRING\s*{}$".format(LINE_STRING_REGEX),
                                             str_v.upper()):
-                                    object_data[f["name"]] = str_v
+                                    object_data[f["name"]] = str_v.upper()
                                 else:
                                     # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
                                     raise ValueError("Incorrect value for line string field {}: {}".format(
@@ -230,19 +231,30 @@ class ImportCSVMixin:
                                 # WKT Polygon
                                 if re.match(r"^POLYGON\s*\(\s*({ls},\s*)*{ls}\s*\)".format(ls=LINE_STRING_REGEX),
                                             str_v.upper()):
-                                    object_data[f["name"]] = str_v
+                                    object_data[f["name"]] = str_v.upper()
                                 else:
                                     # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
                                     raise ValueError("Incorrect value for polygon field {}: {}".format(
                                         f["name"], str_v.upper()))
 
                             elif f["data_type"] == "multi point":
-                                # TODO
-                                pass
+                                # WKT Multi Point
+                                if re.match(r"MULTIPOINT\s*\(({pt},\s*)*{pt}\s*\)".format(pt=POINT_REGEX),
+                                            str_v.upper()):
+                                    object_data[f["name"]] = str_v.upper()
+                                else:
+                                    # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
+                                    raise ValueError("Incorrect value for multi point field {}: {}".format(
+                                        f["name"], str_v.upper()))
 
                             elif f["data_type"] == "multi line string":
-                                # TODO
-                                pass
+                                if re.match(r"MULTILINESTRING\s*\(({ls},\s*)*{ls}\s*\)".format(ls=LINE_STRING_REGEX),
+                                            str_v.upper()):
+                                    object_data[f["name"]] = str_v.upper()
+                                else:
+                                    # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
+                                    raise ValueError("Incorrect value for multi line string field {}: {}".format(
+                                        f["name"], str_v.upper()))
 
                             elif f["data_type"] == "multi polygon":
                                 # TODO
