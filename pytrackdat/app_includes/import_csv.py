@@ -205,7 +205,7 @@ class ImportCSVMixin:
                                 # WKT Point
                                 if re.match(r"^POINT\s*\(-?\d+(\.\d+)?\s+-?\d+(\.\d+)?\)$", str_v.upper()):
                                     object_data[f["name"]] = str_v
-                                elif re.match(r"^\(?-?\d+(\.\d+)?,?\s+-?\d+(\.\d+)?\)?$", str_v.upper()):
+                                elif re.match(r"^\(?-?\d+(\.\d+)?,?\s+-?\d+(\.\d+)?\)?$", str_v):
                                     # Coerce (5 7), (5, 7), etc. to WKT format
                                     object_data[f["name"]] = "POINT ({})".format(
                                         str_v.replace(",", "").replace("(", "").replace(")", ""))
@@ -215,8 +215,17 @@ class ImportCSVMixin:
                                                                                                      str_v.upper()))
 
                             elif f["data_type"] == "line string":
-                                # TODO
-                                pass
+                                # WKT Line String
+                                if re.match(r"^LINESTRING\s*\((-?\d+(\.\d+)\s+-?\d+(\.\d+),\s+)*-?\d+(\.\d+)\)$",
+                                            str_v.upper()):
+                                    object_data[f["name"]] = str_v
+                                elif re.match(r"^\(?\)?$", str_v):
+                                    object_data[f["name"]] = "LINESTRING ({})".format(
+                                        str_v.replace("(", "").replace(")", ""))
+                                else:
+                                    # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
+                                    raise ValueError("Incorrect value for line string field {}: {}".format(
+                                        f["name"], str_v.upper()))
 
                             elif f["data_type"] == "polygon":
                                 # TODO
