@@ -40,6 +40,7 @@ from snapshot_manager.models import Snapshot
 
 POINT_REGEX = r"\(\s*-?\d+(\.\d+)?\s+-?\d+(\.\d+)?\s*\)"
 LINE_STRING_REGEX = r"\(\s*(-?\d+(\.\d+)\s+-?\d+(\.\d+),\s+)*-?\d+(\.\d+)\s*\)"
+POLYGON_REGEX = r"\(\s*({ls},\s*)*{ls}\s*\)".format(ls=LINE_STRING_REGEX)
 
 
 class ImportCSVForm(forms.Form):
@@ -229,7 +230,7 @@ class ImportCSVMixin:
 
                             elif f["data_type"] == "polygon":
                                 # WKT Polygon
-                                if re.match(r"^POLYGON\s*\(\s*({ls},\s*)*{ls}\s*\)".format(ls=LINE_STRING_REGEX),
+                                if re.match(r"^POLYGON\s*{}".format(POLYGON_REGEX),
                                             str_v.upper()):
                                     object_data[f["name"]] = str_v.upper()
                                 else:
@@ -257,8 +258,13 @@ class ImportCSVMixin:
                                         f["name"], str_v.upper()))
 
                             elif f["data_type"] == "multi polygon":
-                                # TODO
-                                pass
+                                if re.match(r"MULTIPOLYGON\s*\(({p},\s*)*{p}\s*\)".format(p=POLYGON_REGEX),
+                                            str_v.upper()):
+                                    object_data[f["name"]] = str_v.upper()
+                                else:
+                                    # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
+                                    raise ValueError("Incorrect value for multi polygon field {}: {}".format(
+                                        f["name"], str_v.upper()))
 
                     new_object = self.model(**object_data)
                     new_object.save()
