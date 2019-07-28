@@ -58,7 +58,7 @@ RE_DATE_DMY_S = re.compile(r"^\d{1,2}/\d{1,2}/[1-2]\d{3}$")
 
 RE_MULTIPLE_UNDERSCORES = re.compile(r"[_]{2,}")
 RE_NON_IDENTIFIER_CHARACTERS = re.compile(r"[^\w]+")
-RE_WHITESPACE_CHARACTERS = re.compile(r"\s+")
+RE_SEPARATOR_CHARACTERS = re.compile(r"[\s.\-]+")
 RE_MULTIPLE_WHITESPACE_CHARACTERS = re.compile(r"\s{2,}")
 
 PDT_RELATION_PREFIX = "PyTrackDat"
@@ -76,7 +76,7 @@ def collapse_multiple_underscores(s: str):
 
 
 def sanitize_python_identifier(s: str) -> str:
-    return re.sub(RE_NON_IDENTIFIER_CHARACTERS, "", re.sub(RE_WHITESPACE_CHARACTERS, "_", s.strip()))
+    return re.sub(RE_NON_IDENTIFIER_CHARACTERS, "", re.sub(RE_SEPARATOR_CHARACTERS, "_", s.strip()))
 
 
 def field_to_py_code(field: str) -> str:
