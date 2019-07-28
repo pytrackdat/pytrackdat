@@ -53,11 +53,15 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     integer_values = 0
     decimal_values = 0
     float_values = 0
+
     all_values = set()
+
     date_values = 0
     time_values = 0
+
+    non_numeric_values = set()
     other_values = set()
-    other_values_seen = 0
+
     max_seen_length = -1
     max_seen_decimals = -1
 
@@ -72,20 +76,22 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
             if "e" in str_v:
                 float_values += 1
         else:
-            other_values.add(str_v)
-            other_values_seen += 1
+            non_numeric_values.add(str_v)
+
+            if re.match(RE_DATE_YMD_D, str_v) or \
+                    re.match(RE_DATE_YMD_S, str_v) or \
+                    re.match(RE_DATE_DMY_D, str_v) or \
+                    re.match(RE_DATE_DMY_S, str_v):
+                date_values += 1
+
+            elif re.match(r"^\d{1,2}:\d{2}(:\d{2})?$", str_v):
+                time_values += 1
+
+            else:
+                other_values.add(str_v)
 
         max_seen_length = max(max_seen_length, len(str_v))
         all_values.add(str_v)
-
-        if re.match(RE_DATE_YMD_D, str_v) or \
-                re.match(RE_DATE_YMD_S, str_v) or \
-                re.match(RE_DATE_DMY_D, str_v) or \
-                re.match(RE_DATE_DMY_S, str_v):
-            date_values += 1
-
-        if re.match(r"^\d{1,2}:\d{2}(:\d{2})?$", str_v):
-            time_values += 1
 
     # Keys:
 
@@ -100,31 +106,31 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
         detected_type = "integer"
         nullable = False
 
-    elif integer_values > 0 and len(other_values) == 1:
+    elif integer_values > 0 and len(non_numeric_values) == 1:
         detected_type = "integer"
         nullable = True
         # TODO: DO WE WANT NULL VALUES HERE?
 
-    elif integer_values > 0 and len(other_values) > 1 and (integer_values > 100):
+    elif integer_values > 0 and len(non_numeric_values) > 1 and (integer_values > 100):
         detected_type = "integer"
         nullable = True
         include_alternate = True
 
     # Decimals: TODO: more
 
-    elif decimal_values > 0 and len(other_values) in (0, 1):
+    elif decimal_values > 0 and len(non_numeric_values) in (0, 1):
         # Integer or decimal values -> use a decimal field.
         # TODO: Find number of digits!!!
         detected_type = "decimal"
-        nullable = (len(other_values) == 1)
+        nullable = (len(non_numeric_values) == 1)
         max_length = max_seen_length + max_seen_decimals + 4
 
     # Floats: TODO: more
 
-    elif float_values > 0 and len(other_values) in (0, 1):
+    elif float_values > 0 and len(non_numeric_values) in (0, 1):
         # Integer, decimal or float values in column -> use a float field.
         detected_type = "float"
-        nullable = (len(other_values) == 1)
+        nullable = (len(non_numeric_values) == 1)
 
     # Dates:
 
@@ -172,7 +178,9 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
 
     # Text
 
-    elif integer_values < max(len(col) / 10, 10) or len(other_values) >= 10:
+    # TODO: I don't like this logic
+
+    elif integer_values < max(len(col) / 10, 10) or len(non_numeric_values) >= 10:
         detected_type = "text"
         nullable = False
 
