@@ -1,0 +1,45 @@
+{% extends "admin/index.html" %}
+{% load static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+{% endblock %}
+
+{% block content %}
+    <div style="padding-bottom: 30px;">
+        <h2>Search Records Via Barcode Contents</h2>
+        <p>Copy the contents of the barcode into the text box below.</p>
+        <form id="barcode-form">
+            <fieldset class="module aligned wide">
+                <div class="form-row field-name">
+                    <div>
+                        <label class="required" for="barcode-contents">Barcode contents:</label>
+                        <textarea name="barcode-contents" id="barcode-contents" cols="20" rows="2"
+                                  class="vLargeTextField"></textarea>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="submit-row">
+                <input type="submit" class="default" value="Search for Records">
+            </div>
+        </form>
+        <script type="text/javascript">
+            document.querySelector("#barcode-form").addEventListener("submit", function (e) {
+                e.preventDefault();
+                const barcodeContents = document.querySelector("#barcode-contents").value.trim();
+                const barcodeParts = barcodeContents.toLocaleLowerCase()
+                    .replace(/\s+/g, "\n")
+                    .split("\n");
+
+                if (barcodeParts.length !== 2) {
+                    alert("Incorrect barcode value.");
+                    return;
+                }
+
+                window.location.href = "/core/pytrackdat" + barcodeParts[0] + "/" + barcodeParts[1];
+            });
+        </script>
+    </div>
+    {{ block.super }}
+{% endblock %}
