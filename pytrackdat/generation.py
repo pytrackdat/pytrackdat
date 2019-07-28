@@ -243,7 +243,7 @@ def auto_key_formatter(f: Dict) -> str:
 
 def manual_key_formatter(f: Dict) -> str:
     # TODO: Shouldn't be always text?
-    return "models.TextField(primary_key=True, max_length=127, " \
+    return "models.CharField(primary_key=True, max_length=127, " \
            "help_text='{}')".format(clean_field_help_text(f["description"]))
 
 
