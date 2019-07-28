@@ -6,7 +6,7 @@
  * Add automatic pre-import snapshots
  * Add **experimental** (optional) GIS data support
  * Improve output style for `ptd-analyze`
- * Fix support for Python 3.4
+ * Improved analysis performance from `ptd-analyze`
  * Improve error and warning reporting
  * Revise documentation
 
