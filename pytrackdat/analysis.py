@@ -161,18 +161,18 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     elif len(all_values) < 10 and integer_values <= 1 and max_seen_length < 24:
         detected_type = "text"
         nullable = ("" in all_values)
-        choices = sorted(list([c for c in all_values if c != ""]))
+        choices = sorted(list(all_values))
+        in_choices = [c.lower() for c in choices]
         max_length = max_seen_length * 2
 
         # Booleans:
-        if len(choices) in (2, 3):
-            in_choices = [c.lower() for c in choices]
+        if len(choices) == 2 or (len(choices) == 3 and nullable):
             if ("n" in in_choices and "y" in in_choices) or \
                     ("no" in in_choices and "yes" in in_choices) or \
                     ("t" in in_choices and "f" in integer_values) or \
                     ("true" in in_choices and "false" in in_choices):
                 detected_type = "boolean"
-                nullable = (len(choices) == 3)
+                nullable = nullable
                 null_values = [c for c in choices
                                if c.lower() not in ("n", "y", "no", "yes", "t", "f", "true", "false")]
 

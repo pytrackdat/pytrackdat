@@ -5,6 +5,7 @@
  * Add snapshot downloads
  * Add automatic pre-import snapshots
  * Add **experimental** (optional) GIS data support
+ * Add search area for barcode contents (#6)
  * Improve output style for `ptd-analyze`
  * Improved analysis performance from `ptd-analyze`
  * Improve error and warning reporting
