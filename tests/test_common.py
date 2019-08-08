@@ -42,12 +42,12 @@ class TestCommonMethods(unittest.TestCase):
             self.assertEqual(collapse_multiple_underscores(b), a)
 
     def test_python_id_sanitization(self):
-        cases = [("A b", "A_b"), ("a*D(#b", "aDb"), ("c-----4", "c4")]
+        cases = [("A b", "A_b"), ("a*D(#b", "aDb"), ("c-----4", "c_4")]
         for b, a in cases:
             self.assertEqual(sanitize_python_identifier(b), a)
 
     def test_fieldify(self):
-        cases = [("A-84t___B", "a84t_b"), ("await", "await_field")]
+        cases = [("A-84t___B", "a_84t_b"), ("await", "await_field")]
         for b, a in cases:
             self.assertEqual(field_to_py_code(b), a)
 
