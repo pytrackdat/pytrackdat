@@ -278,7 +278,7 @@ class ImportCSVMixin:
         return render(
             request,
             "admin/core/csv_form.html",
-            dict(self.admin_site.each_context(request), form=ImportCSVForm())
+            dict(self.admin_site.each_context(request), title="Import CSV", form=ImportCSVForm())
         )
 
     def get_urls(self):
