@@ -1,4 +1,6 @@
 Django==2.2.4
+djangorestframework==3.10.2
+django-filter==2.2.0
 setuptools
 wheel
 django-advanced-filters==1.1.1

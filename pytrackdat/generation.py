@@ -161,15 +161,58 @@ def download_view(request, id):
 
 """
 
+API_FILE_HEADER = """# Generated using PyTrackDat v{version}
+
+from rest_framework import serializers
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.routers import DefaultRouter
+
+from core.models import *
+from snapshot_manager.models import Snapshot
+
+api_router = DefaultRouter()
+
+
+class SnapshotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Snapshot
+        fields = ['pdt_created_at', 'pdt_modified_at', 'snapshot_type', 'name', 'reason', 'size']
+
+
+class SnapshotViewSet(viewsets.ModelViewSet):
+    queryset = Snapshot.objects.all()
+    serializer_class = SnapshotSerializer
+    
+    
+api_router.register(r'snapshots', SnapshotViewSet)
+
+
+class MetaViewSet(viewsets.ViewSet):
+    def list(self, _request):
+        return Response({{
+            "site_name": "{site_name}",
+            "gis_mode": {gis_mode},
+            "relations": {relations}
+        }})
+
+
+api_router.register(r'meta', MetaViewSet, basename='meta')
+
+
+"""
+
 URL_OLD = """urlpatterns = [
     path('admin/', admin.site.urls),
 ]"""
 URL_NEW = """from django.urls import include
 
+from core.api import api_router
 from snapshot_manager.models import download_view
 
 urlpatterns = [
     path('', admin.site.urls),
+    path('api/', include(api_router.urls)),
     path('snapshots/<int:id>/download/', download_view, name='snapshot-download'),
     path('advanced_filters/', include('advanced_filters.urls')),
 ]"""
@@ -201,6 +244,7 @@ INSTALLED_APPS_NEW = """INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'advanced_filters',
+    'rest_framework',
 ]"""
 
 INSTALLED_APPS_NEW_GIS = INSTALLED_APPS_NEW.replace(
@@ -213,6 +257,10 @@ INSTALLED_APPS_NEW_GIS = INSTALLED_APPS_NEW.replace(
 STATIC_OLD = "STATIC_URL = '/static/'"
 STATIC_NEW = """STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')"""
+
+REST_FRAMEWORK_SETTINGS = """
+REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated']}
+"""
 
 SPATIALITE_SETTINGS = """
 SPATIALITE_LIBRARY_PATH='{}' if (os.getenv('DJANGO_ENV') != 'production') else None
@@ -451,6 +499,7 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
 
     while not end_loop:
         python_relation_name = to_relation_name(relation_name[0])
+        python_relation_name_lower = field_to_py_code(relation_name[0])
 
         relation_fields = []
         id_type = ""
@@ -538,6 +587,7 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
 
             relations.append({
                 "name": python_relation_name,
+                "name_lower": python_relation_name_lower,
                 "fields": relation_fields,
                 "id_type": id_type
             })
@@ -637,6 +687,39 @@ def create_models(relations: List[Dict], site_name: str, gis_mode: bool) -> io.S
     return mf
 
 
+def create_api(relations: List[Dict], site_name: str, gis_mode: bool) -> io.StringIO:
+    """
+    Creates the contents of the API specification file.
+    """
+
+    api_file = io.StringIO()
+
+    api_file.write(API_FILE_HEADER.format(version=VERSION, site_name=site_name, gis_mode=gis_mode,
+                                          relations=pprint.pformat(relations, indent=12, width=120, compact=True)))
+
+    for relation in relations:
+        api_file.write("\n")
+        api_file.write("class {}Serializer(serializers.ModelSerializer):\n".format(relation["name"]))
+        api_file.write("    class Meta:\n")
+        api_file.write("        model = {}\n".format(relation["name"]))
+        api_file.write("        fields = ['{}']\n".format("', '".join([f["name"] for f in relation["fields"]])))
+
+        api_file.write("\n\n")
+
+        api_file.write("class {}ViewSet(viewsets.ModelViewSet):\n".format(relation["name"]))
+        api_file.write("    queryset = {}.objects.all()\n".format(relation["name"]))
+        api_file.write("    serializer_class = {}Serializer\n".format(relation["name"]))
+
+        api_file.write("\n\n")
+
+        api_file.write("api_router.register(r'data/{}', {}ViewSet)\n".format(relation["name_lower"], relation["name"]))
+
+        api_file.flush()
+
+    api_file.seek(0)
+    return api_file
+
+
 TEMP_DIRECTORY = os.path.join(os.getcwd(), "tmp")
 
 
@@ -725,6 +808,7 @@ def main():
 
     a_buf = None
     m_buf = None
+    api_buf = None
 
     # Process and validate design file, get contents of admin and models files
     try:
@@ -734,6 +818,7 @@ def main():
                 relations = design_to_relation_fields(df, gis_mode)
                 a_buf = create_admin(relations, django_site_name, gis_mode)
                 m_buf = create_models(relations, django_site_name, gis_mode)
+                api_buf = create_api(relations, django_site_name, gis_mode)
             except GenerationError as e:
                 exit_with_error(str(e))
         print("done.\n")
@@ -748,7 +833,7 @@ def main():
 
         print()
 
-        with a_buf, m_buf:
+        with a_buf, m_buf, api_buf:
             # Run site creation script
             # TODO: Make path more robust
             create_site_script = os.path.join(
@@ -767,6 +852,10 @@ def main():
             # Write model file contents to disk
             with open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "models.py"), "w") as mf:
                 shutil.copyfileobj(m_buf, mf)
+
+            # Write API specification file contents to disk
+            with open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "api.py"), "w") as api_f:
+                shutil.copyfileobj(api_buf, api_f)
 
         with open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager", "models.py"), "w") \
                 as smf, open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager",
@@ -789,7 +878,9 @@ def main():
             old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW_GIS if gis_mode else INSTALLED_APPS_NEW)
                         .replace(DEBUG_OLD, DEBUG_NEW)
                         .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url))
-                        .replace(STATIC_OLD, STATIC_NEW) + DISABLE_MAX_FIELDS
+                        .replace(STATIC_OLD, STATIC_NEW)
+            + DISABLE_MAX_FIELDS
+            + REST_FRAMEWORK_SETTINGS
         )
 
         if gis_mode:
