@@ -165,6 +165,7 @@ API_FILE_HEADER = """# Generated using PyTrackDat v{version}
 
 from rest_framework import serializers
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 
@@ -708,7 +709,17 @@ def create_api(relations: List[Dict], site_name: str, gis_mode: bool) -> io.Stri
 
         api_file.write("class {}ViewSet(viewsets.ModelViewSet):\n".format(relation["name"]))
         api_file.write("    queryset = {}.objects.all()\n".format(relation["name"]))
-        api_file.write("    serializer_class = {}Serializer\n".format(relation["name"]))
+        api_file.write("    serializer_class = {}Serializer\n\n".format(relation["name"]))
+        api_file.write("    @action(detail=False)\n")
+        api_file.write("    def categorical_counts(self, _request):\n")
+        api_file.write("        counts = {}\n")
+        api_file.write("        categorical_fields = ['{}']\n".format(
+            "', '".join([f["name"] for f in relation["fields"] if "choices" in f])))
+        api_file.write("        for row in {}.objects.values():\n".format(relation["name"]))
+        api_file.write("            for f in categorical_fields:\n")
+        api_file.write("                counts[f] = counts.get(f, {})\n")
+        api_file.write("                counts[f][row[f]] = counts[f].get(row[f], 0) + 1\n")
+        api_file.write("        return Response(counts)\n")
 
         api_file.write("\n\n")
 
