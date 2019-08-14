@@ -94,7 +94,7 @@ SNAPSHOT_MODEL = """import os
 import shutil
 from datetime import datetime
 
-import {}.settings as settings
+import {site_name}.settings as settings
 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -560,33 +560,17 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
     return relations
 
 
-def create_admin_and_models(relations: List[Dict], site_name: str, gis_mode: bool) -> Tuple[io.StringIO, io.StringIO]:
+def create_admin(relations: List[Dict], site_name: str, gis_mode: bool) -> io.StringIO:
     """
-    Creates the contents of the admin and models files for the Django data application.
+    Creates the contents of the admin.py file for the Django data application.
     """
 
     af = io.StringIO()
-    mf = io.StringIO()
 
     af.write(ADMIN_FILE_HEADER)
-    mf.write(MODELS_FILE_HEADER.format(version=VERSION,
-                                       models_path="django.contrib.gis.db" if gis_mode else "django.db"))
-
     af.write("admin.site.site_header = 'PyTrackDat: {}'\n\n".format(site_name))
 
     for relation in relations:
-        # Write model information
-
-        mf.write("\n\n")
-        mf.write(MODEL_TEMPLATE.format(
-            name=relation["name"],
-            fields=pprint.pformat(relation["fields"], indent=12, width=120, compact=True),
-            label_name=relation["name"][len(PDT_RELATION_PREFIX):],
-            id_type=relation["id_type"],
-            verbose_name=relation["name"][len(PDT_RELATION_PREFIX):]
-        ))
-        mf.write("\n\n")
-
         # Write admin information
 
         af.write("\n\n@admin.register({})\n".format(relation["name"]))
@@ -615,16 +599,42 @@ def create_admin_and_models(relations: List[Dict], site_name: str, gis_mode: boo
         if len(advanced_filter_fields) > 0:
             af.write("    advanced_filter_fields = ('{}',)\n".format("', '".join(advanced_filter_fields)))
 
+        af.flush()
+
+    af.seek(0)
+
+    return af
+
+
+def create_models(relations: List[Dict], site_name: str, gis_mode: bool) -> io.StringIO:
+    """
+    Creates the contents of the model.py file for the Django data application.
+    """
+
+    mf = io.StringIO()
+
+    mf.write(MODELS_FILE_HEADER.format(version=VERSION,
+                                       models_path="django.contrib.gis.db" if gis_mode else "django.db"))
+
+    for relation in relations:
+        mf.write("\n\n")
+        mf.write(MODEL_TEMPLATE.format(
+            name=relation["name"],
+            fields=pprint.pformat(relation["fields"], indent=12, width=120, compact=True),
+            label_name=relation["name"][len(PDT_RELATION_PREFIX):],
+            id_type=relation["id_type"],
+            verbose_name=relation["name"][len(PDT_RELATION_PREFIX):]
+        ))
+        mf.write("\n\n")
+
         for f in relation["fields"]:
             mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
 
         mf.flush()
-        af.flush()
 
-    af.seek(0)
     mf.seek(0)
 
-    return af, mf
+    return mf
 
 
 TEMP_DIRECTORY = os.path.join(os.getcwd(), "tmp")
@@ -722,7 +732,8 @@ def main():
         with open(os.path.join(os.getcwd(), design_file), "r") as df:
             try:
                 relations = design_to_relation_fields(df, gis_mode)
-                a_buf, m_buf = create_admin_and_models(relations, django_site_name, gis_mode)
+                a_buf = create_admin(relations, django_site_name, gis_mode)
+                m_buf = create_models(relations, django_site_name, gis_mode)
             except GenerationError as e:
                 exit_with_error(str(e))
         print("done.\n")
@@ -749,10 +760,12 @@ def main():
                                    "Dockerfile.gis.template" if gis_mode else "Dockerfile.template"]
             subprocess.run(create_site_options, check=True)
 
-            # Write admin and models file contents to disk
-            with open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "models.py"), "w") as mf, \
-                    open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "admin.py"), "w") as af:
+            # Write admin file contents to disk
+            with open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "admin.py"), "w") as af:
                 shutil.copyfileobj(a_buf, af)
+
+            # Write model file contents to disk
+            with open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "models.py"), "w") as mf:
                 shutil.copyfileobj(m_buf, mf)
 
         with open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager", "models.py"), "w") \
@@ -760,7 +773,7 @@ def main():
                                           "admin.py"), "w") as saf:
             smf.write(MODELS_FILE_HEADER.format(version=VERSION, models_path="django.db"))
             smf.write("\n")
-            smf.write(SNAPSHOT_MODEL.format(django_site_name))
+            smf.write(SNAPSHOT_MODEL.format(site_name=django_site_name))
             saf.write(SNAPSHOT_ADMIN_FILE)
 
     except FileNotFoundError as e:
