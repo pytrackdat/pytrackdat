@@ -656,7 +656,7 @@ def create_admin(relations: List[Dict], site_name: str, gis_mode: bool) -> io.St
     return af
 
 
-def create_models(relations: List[Dict], site_name: str, gis_mode: bool) -> io.StringIO:
+def create_models(relations: List[Dict], gis_mode: bool) -> io.StringIO:
     """
     Creates the contents of the model.py file for the Django data application.
     """
@@ -817,7 +817,7 @@ def main():
             try:
                 relations = design_to_relation_fields(df, gis_mode)
                 a_buf = create_admin(relations, django_site_name, gis_mode)
-                m_buf = create_models(relations, django_site_name, gis_mode)
+                m_buf = create_models(relations, gis_mode)
                 api_buf = create_api(relations, django_site_name, gis_mode)
             except GenerationError as e:
                 exit_with_error(str(e))
