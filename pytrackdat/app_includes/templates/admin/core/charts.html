@@ -1,0 +1,76 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+    <div id="ptd-charts">
+        <div id="ptd-chart-nav"></div>
+        <div id="ptd-chart-container"></div>
+    </div>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!--suppress JSUnresolvedFunction -->
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", async () => {
+            const ptdPlotContainer = document.querySelector("#ptd-chart-container");
+
+            const meta = await (await fetch("/api/meta/")).json();
+
+            const chartOptions = {
+                chart: {height: 300, type: "bar"},
+                plotOptions: {bar: {horizontal: true}},
+                dataLabels: {enabled: true},
+            };
+
+            for (let r in meta["relations"]) {
+                if (!meta["relations"].hasOwnProperty(r)) continue;
+
+                const rel = meta["relations"][r];
+
+                const categoricalVariables = rel["fields"].filter(f => f.hasOwnProperty("choices"));
+
+                const plotGroupTitle = document.createElement("h2");
+                // TODO: Don't hardcode PyTrackDat
+                plotGroupTitle.appendChild(document.createTextNode(rel["name"].replace("PyTrackDat", "")));
+                ptdPlotContainer.appendChild(plotGroupTitle);
+
+                categoricalVariables.forEach(f => {
+                    const plotContainer = document.createElement("div");
+                    plotContainer.setAttribute("style", "width: 50%; box-sizing: border-box; display: inline-block; " +
+                        "padding: 20px;");
+
+                    const plotTitle = document.createElement("h3");
+                    plotTitle.appendChild(document.createTextNode(f["name"]));
+                    plotContainer.appendChild(plotTitle);
+
+                    const newPlot = document.createElement("div");
+                    newPlot.setAttribute("id", `ptd-chart-${rel["name_lower"]}-${f["name"]}`);
+                    plotContainer.appendChild(newPlot);
+
+                    ptdPlotContainer.appendChild(plotContainer);
+                });
+
+                (async () => {
+                    const data = await (await
+                        fetch(`/api/data/${rel["name_lower"]}/categorical_counts/`)).json();
+
+                    if (Object.keys(data).length === 0) return;
+
+                    for (let f in categoricalVariables) {
+                        if (!categoricalVariables.hasOwnProperty(f)) continue;
+
+                        const field = categoricalVariables[f];
+
+                        const dataLabels = Object.keys(data[field["name"]]).sort();
+                        const dataValues = dataLabels.map(l => data[field["name"]][l]);
+
+                        const options = {
+                            ...chartOptions,
+                            series: [{data: dataValues}],
+                            xaxis: {categories: dataLabels}
+                        };
+
+                        (new ApexCharts(document.querySelector(`#ptd-chart-${rel["name_lower"]}-${field["name"]}`),
+                            options)).render();
+                    }
+                })();
+            }
+        });
+    </script>
+{% endblock %}
