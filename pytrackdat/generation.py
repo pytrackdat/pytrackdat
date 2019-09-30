@@ -481,7 +481,7 @@ def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=F
         if nullable and ((len(null_values) != 0 and dv.strip() in null_values) or (dv.strip() == "")):
             return None
 
-        return dv.lower() in ("y", "yes", "t", "true")
+        return dv.lower() in ("y", "yes", "t", "true", "1")
 
     return dv
 
