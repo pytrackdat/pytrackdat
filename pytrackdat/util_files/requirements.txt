@@ -1,5 +1,5 @@
-Django==2.2.4
-djangorestframework==3.10.2
+Django==2.2.6
+djangorestframework==3.10.3
 django-filter==2.2.0
 setuptools
 wheel

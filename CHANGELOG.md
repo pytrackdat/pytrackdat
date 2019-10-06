@@ -10,7 +10,7 @@
  * Improved analysis performance from `ptd-analyze`
  * Improve error and warning reporting
  * Revise documentation
- * Update Django to 2.2.4
+ * Update Django to 2.2.6
 
 ## Version 0.2.1 (2019-05-13)
 
