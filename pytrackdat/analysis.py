@@ -41,6 +41,9 @@ from typing import Dict, List, Tuple
 from .common import *
 
 
+__all__ = ["infer_column_type", "create_design_file_rows_from_inference", "main"]
+
+
 def infer_column_type(col: List[str], key_found: bool) -> Dict:
     detected_type = "unknown"
     nullable = False
