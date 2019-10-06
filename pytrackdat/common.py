@@ -69,6 +69,21 @@ RE_NON_IDENTIFIER_CHARACTERS = re.compile(r"[^\w]+")
 RE_SEPARATOR_CHARACTERS = re.compile(r"[\s.\-]+")
 RE_MULTIPLE_WHITESPACE_CHARACTERS = re.compile(r"\s{2,}")
 
+
+# Order matters here - they line up and are zipped into matching pairs.
+BOOLEAN_TRUE_VALUES = ("y", "yes", "t", "true", "1")
+BOOLEAN_FALSE_VALUES = ("n", "no", "f", "false", "0")
+BOOLEAN_TF_PAIRS = tuple(zip(BOOLEAN_TRUE_VALUES, BOOLEAN_FALSE_VALUES))
+
+
+DATE_FORMATS = (
+    (RE_DATE_YMD_D, "%Y-%m-%d"),
+    (RE_DATE_YMD_S, "%Y/%m/%d"),
+    (RE_DATE_DMY_D, "%d-%m-%Y"),
+    (RE_DATE_DMY_S, "%d/%m/%Y")
+)
+
+
 PDT_RELATION_PREFIX = "PyTrackDat"
 
 

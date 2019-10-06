@@ -85,10 +85,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
         else:
             non_numeric_values.add(str_v)
 
-            if re.match(RE_DATE_YMD_D, str_v) or \
-                    re.match(RE_DATE_YMD_S, str_v) or \
-                    re.match(RE_DATE_DMY_D, str_v) or \
-                    re.match(RE_DATE_DMY_S, str_v):
+            if any(re.match(df[0], str_v) is not None for df in DATE_FORMATS):
                 date_values += 1
 
             elif re.match(r"^\d{1,2}:\d{2}(:\d{2})?$", str_v):
@@ -174,16 +171,10 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
         max_length = max_seen_length * 2
 
         # Booleans:
-        if len(choices) == 2 or (len(choices) == 3 and nullable):
-            if ("n" in in_choices and "y" in in_choices) or \
-                    ("no" in in_choices and "yes" in in_choices) or \
-                    ("t" in in_choices and "f" in integer_values) or \
-                    ("true" in in_choices and "false" in in_choices) or \
-                    ("0" in in_choices and "1" in in_choices):
-                detected_type = "boolean"
-                nullable = nullable
-                null_values = [c for c in choices
-                               if c.lower() not in ("n", "y", "no", "yes", "t", "f", "true", "false", "1", "0")]
+        if len(choices) == 2 or (len(choices) == 3 and nullable) and any(tv in in_choices and fv in in_choices
+                                                                         for tv, fv in BOOLEAN_TF_PAIRS):
+            detected_type = "boolean"
+            null_values = [c for c in choices if c.lower() not in BOOLEAN_TRUE_VALUES + BOOLEAN_FALSE_VALUES]
 
     # Text
 

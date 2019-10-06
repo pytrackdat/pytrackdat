@@ -114,14 +114,14 @@ class ImportCSVMixin:
                                                                                                      str_v.lower()))
 
                             elif f["data_type"] == "boolean":
-                                if str_v.lower() in ("y", "yes", "t", "true"):
-                                    object_data[f["name"]] = True
-                                    break
-                                elif str_v.lower() in ("n", "no", "f", "false"):
-                                    object_data[f["name"]] = False
+                                if str_v.lower() in BOOLEAN_TRUE_VALUES + BOOLEAN_FALSE_VALUES:
+                                    object_data[f["name"]] = str_v.lower() in BOOLEAN_TRUE_VALUES
                                     break
                                 elif f["nullable"]:
                                     object_data[f["name"]] = None
+                                else:
+                                    raise ValueError("Incorrect value for boolean field {}: {}".format(f["name"],
+                                                                                                       str_v.lower()))
 
                             elif f["data_type"] == "text":
                                 max_length = -1
@@ -156,23 +156,21 @@ class ImportCSVMixin:
                                 # TODO: More date formats
                                 # TODO: Further validation
                                 # TODO: encode format somewhere?
-                                if re.match(RE_DATE_YMD_D, str_v):
-                                    object_data[f["name"]] = datetime.strptime(str_v, "%Y-%m-%d")
+                                found_date = False
+                                for dr, df in DATE_FORMATS:
+                                    if re.match(dr, str_v):
+                                        object_data[f["name"]] = datetime.strptime(str_v, df)
+                                        found_date = True
+                                        break
+
+                                if found_date:
                                     break
-                                elif re.match(RE_DATE_YMD_S, str_v):
-                                    object_data[f["name"]] = datetime.strptime(str_v, "%Y/%m/%d")
-                                    break
-                                elif re.match(RE_DATE_DMY_D, str_v):
-                                    object_data[f["name"]] = datetime.strptime(str_v, "%d-%m-%Y")
-                                    break
-                                elif re.match(RE_DATE_DMY_S, str_v):
-                                    object_data[f["name"]] = datetime.strptime(str_v, "%d/%m/%Y")
-                                    break
-                                elif f["nullable"]:
-                                    object_data[f["name"]] = None
-                                else:
+
+                                if not f["nullable"]:
                                     raise ValueError("Incorrect value for date field {} in model {}: "
                                                      "{}".format(f["name"], model_name, str_v))
+
+                                object_data[f["name"]] = None
 
                             elif f["data_type"] == "time":
                                 # TODO: More time formats (12-hour especially)
