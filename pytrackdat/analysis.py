@@ -106,9 +106,8 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
         detected_type = "integer"
         nullable = False
 
-    elif integer_values > 0 and len(non_numeric_values) == 1 and (decimal_values - integer_values) == 0 \
+    elif integer_values > 0 and len(non_numeric_values) == 1 and decimal_values == 0 \
             and not (integer_values == 2 and "0" in all_values and "1" in all_values):
-        print(set(all_values), decimal_values, integer_values)
         detected_type = "integer"
         nullable = True
         # TODO: DO WE WANT NULL VALUES HERE?
