@@ -90,12 +90,8 @@ class ImportCSVMixin:
                                 break
 
                             elif f["data_type"] == "integer":
-                                if re.match(RE_INTEGER, str_v):
-                                    object_data[f["name"]] = int(str_v)
-                                    break
-                                elif re.match(RE_INTEGER_HUMAN, str_v):
-                                    # TODO: This is locale-specific
-                                    object_data[f["name"]] = int(re.sub(r"[,.\s]", "", str_v))
+                                if re.match(RE_INTEGER, str_v) or re.match(RE_INTEGER_HUMAN, str_v):
+                                    object_data[f["name"]] = int(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", str_v))
                                     break
                                 elif f["nullable"]:
                                     # TODO: This assumes null if not integer-like, might be wrong
@@ -106,17 +102,13 @@ class ImportCSVMixin:
 
                             elif f["data_type"] in ("float", "decimal"):
                                 if re.match(RE_DECIMAL, str_v.lower()):
-                                    if f["data_type"] == "float":
-                                        object_data[f["name"]] = float(str_v.lower())
-                                    else:
-                                        object_data[f["name"]] = Decimal(str_v.lower())
-
+                                    n_str_v = re.sub(RE_NUMBER_GROUP_SEPARATOR, "", str_v.lower())
+                                    object_data[f["name"]] = (float(n_str_v) if f["data_type"] == "float"
+                                                              else Decimal(n_str_v))
                                     break
-
                                 elif f["nullable"]:
                                     # TODO: This assumes null if not integer-like, might be wrong
                                     object_data[f["name"]] = None
-
                                 else:
                                     raise ValueError("Incorrect value for float field {}: {}".format(f["name"],
                                                                                                      str_v.lower()))

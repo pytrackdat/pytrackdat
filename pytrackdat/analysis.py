@@ -67,14 +67,21 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
 
     for v in col:
         str_v = str(v).strip()
+
         if re.match(RE_INTEGER, str_v) or re.match(RE_INTEGER_HUMAN, str_v):
             integer_values += 1
-        elif re.match(RE_DECIMAL, str_v):
+
+        elif re.match(RE_DECIMAL, str_v.lower()) or re.match(RE_DECIMAL_HUMAN, str_v.lower()):
             decimal_values += 1
-            max_seen_decimals = max(max_seen_decimals, (len(str_v.split(".")[-1].split("e")[0])
-                                                        if "." in str_v else -1))
+            max_seen_decimals = max(
+                max_seen_decimals,
+                (len(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", str_v).split(".")[-1].split("e")[0])
+                 if "." in str_v else -1)
+            )
+
             if "e" in str_v:
                 float_values += 1
+
         else:
             non_numeric_values.add(str_v)
 

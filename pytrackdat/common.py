@@ -51,9 +51,13 @@ DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS = {
 }
 
 
-RE_INTEGER = re.compile(r"^([+\-]?[1-9]\d*|0)$")
-RE_INTEGER_HUMAN = re.compile(r"^([+\-]?([1-9]\d{0,2})[\s,](\d{3}[\s,])*\d{3})$")  # TODO: THIS IS LOCALE-SPECIFIC
-RE_DECIMAL = re.compile(r"^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$")
+RE_INTEGER = re.compile(r"^([-+]?[1-9]\d*|0)$")
+RE_INTEGER_HUMAN = re.compile(r"^([-+]?([1-9]\d{0,2})[\s,](\d{3}[\s,])*\d{3})$")  # TODO: THIS IS LOCALE-SPECIFIC
+RE_DECIMAL = re.compile(r"^[-+]?\d*\.?\d+(e[-+]?\d+)?$")
+# TODO: THIS IS LOCALE-SPECIFIC, AND CAN WE HAVE GROUPS AFTER?
+RE_DECIMAL_HUMAN = re.compile(r"[-+]?(\d{1,3}[\s,](\d{3}[\s,])*\d{3}|\d{0,3})\.?\d+(e[-+]?\d+)?")
+# TODO: THIS IS LOCALE-SPECIFIC
+RE_NUMBER_GROUP_SEPARATOR = re.compile(r"[,\s]")
 
 RE_DATE_YMD_D = re.compile(r"^[1-2]\d{3}-\d{1,2}-\d{1,2}$")
 RE_DATE_YMD_S = re.compile(r"^[1-2]\d{3}/\d{1,2}/\d{1,2}$")
