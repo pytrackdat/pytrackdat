@@ -90,8 +90,12 @@ class ImportCSVMixin:
                                 break
 
                             elif f["data_type"] == "integer":
-                                if re.match(r"^([+-]?[1-9]\d*|0)$", str_v):
+                                if re.match(RE_INTEGER, str_v):
                                     object_data[f["name"]] = int(str_v)
+                                    break
+                                elif re.match(RE_INTEGER_HUMAN, str_v):
+                                    # TODO: This is locale-specific
+                                    object_data[f["name"]] = int(re.sub(r"[,.\s]", "", str_v))
                                     break
                                 elif f["nullable"]:
                                     # TODO: This assumes null if not integer-like, might be wrong
@@ -101,7 +105,7 @@ class ImportCSVMixin:
                                                                                                        str_v))
 
                             elif f["data_type"] in ("float", "decimal"):
-                                if re.match(r"^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$", str_v.lower()):
+                                if re.match(RE_DECIMAL, str_v.lower()):
                                     if f["data_type"] == "float":
                                         object_data[f["name"]] = float(str_v.lower())
                                     else:

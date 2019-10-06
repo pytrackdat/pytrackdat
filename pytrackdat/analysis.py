@@ -67,9 +67,9 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
 
     for v in col:
         str_v = str(v).strip()
-        if re.match(r"^([+-]?[1-9]\d*|0)$", str_v):
+        if re.match(RE_INTEGER, str_v) or re.match(RE_INTEGER_HUMAN, str_v):
             integer_values += 1
-        elif re.match(r"^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$", str_v):
+        elif re.match(RE_DECIMAL, str_v):
             decimal_values += 1
             max_seen_decimals = max(max_seen_decimals, (len(str_v.split(".")[-1].split("e")[0])
                                                         if "." in str_v else -1))

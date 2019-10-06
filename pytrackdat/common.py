@@ -51,6 +51,10 @@ DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS = {
 }
 
 
+RE_INTEGER = re.compile(r"^([+\-]?[1-9]\d*|0)$")
+RE_INTEGER_HUMAN = re.compile(r"^([+\-]?([1-9]\d{0,2})[\s,](\d{3}[\s,])*\d{3})$")  # TODO: THIS IS LOCALE-SPECIFIC
+RE_DECIMAL = re.compile(r"^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$")
+
 RE_DATE_YMD_D = re.compile(r"^[1-2]\d{3}-\d{1,2}-\d{1,2}$")
 RE_DATE_YMD_S = re.compile(r"^[1-2]\d{3}/\d{1,2}/\d{1,2}$")
 RE_DATE_DMY_D = re.compile(r"^\d{1,2}-\d{1,2}-[1-2]\d{3}$")
