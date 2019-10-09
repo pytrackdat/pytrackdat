@@ -517,7 +517,7 @@ def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=F
         if nullable and ((len(null_values) != 0 and dv.strip() in null_values) or (dv.strip() == "")):
             return None
 
-        return dv.lower() in ("y", "yes", "t", "true", "1")
+        return dv.lower() in BOOLEAN_TRUE_VALUES
 
     return dv
 
@@ -871,11 +871,11 @@ def main():
         print("done.\n")
 
         prod_build = input("Is this a production build? (y/n): ")
-        if prod_build.lower() in ("y", "yes"):
+        if prod_build.lower() in BOOLEAN_TRUE_VALUES:
             site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
             while "http:" in site_url or "https:" in site_url or "/www." in site_url:
                 site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
-        elif prod_build.lower() not in ("n", "no"):
+        elif prod_build.lower() not in BOOLEAN_FALSE_VALUES:
             print("Invalid answer '{}', assuming 'n'...".format(prod_build))
 
         print()
