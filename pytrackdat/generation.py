@@ -364,10 +364,8 @@ def boolean_formatter(f: Dict) -> str:
 def get_choices_from_text_field(f: Dict) -> Optional[Tuple[str]]:
     if len(f["additional_fields"]) == 2:
         # TODO: Choice human names
-        choice_names = [str(c).strip() for c in f["additional_fields"][1].split(";") if str(c).strip() != ""]
-        if len(choice_names) == 0:
-            return None
-        return tuple(choice_names)
+        choice_names = tuple(str(c).strip() for c in f["additional_fields"][1].split(";") if str(c).strip() != "")
+        return choice_names if len(choice_names) > 0 else None
     return None
 
 
@@ -487,17 +485,19 @@ def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=F
     if dt == "date":
         # TODO: adjust format based on heuristics
         # TODO: Allow extra column setting with date format from python docs?
-        if re.match(RE_DATE_YMD_D, dv):
-            return datetime.strptime(dv, "%Y-%m-%d")
-        elif re.match(RE_DATE_DMY_D, dv):
-            # TODO: ambiguous d-m-Y or m-d-Y
-            print("Warning: Assuming d-m-Y date format for ambiguously-formatted date field '{}'.".format(field_name))
-            return datetime.strptime(dv, "%d-%m-%Y", str_v)
-        else:
+
+        dt_interpretations = tuple(datetime.strptime(dv, df) for dr, df in DATE_FORMATS)
+        if len(dt_interpretations) == 0:
             # TODO: Warning
             print("Warning: Default value '{}' the date-typed field '{}' does not match any "
                   "PyTrackDat-compatible formats.".format(dv, field_name))
             return None
+
+        if re.match(RE_DATE_DMY_D, dv) or re.match(RE_DATE_DMY_S, dv):
+            print("Warning: Assuming d{sep}m{sep}Y date format for ambiguously-formatted date field '{field}'.".format(
+                sep="-" if "-" in dv else "/", field=fiield_name))
+
+        return dt_interpretations[0]
 
     if dt == "time":
         # TODO: adjust format based on MORE heuristics
@@ -583,10 +583,10 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                     if (len(current_field_data["additional_fields"]) >
                             len(DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS[data_type])):
                         print(
-                            "Warning: More additional settings specified for field '{}' than can be used.\n"
-                            "         Available settings: '{}' \n".format(
-                                field_name,
-                                "', '".join(DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS[data_type])
+                            "Warning: More additional settings specified for field '{field}' than can be used.\n"
+                            "         Available settings: '{settings}' \n".format(
+                                field=field_name,
+                                settings="', '".join(DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS[data_type])
                             )
                         )
 
@@ -595,11 +595,11 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                         if choices is not None and current_field[5].strip() != "" and \
                                 current_field[5].strip() not in choices:
                             raise GenerationError(
-                                "Error: Default value for field '{}' in relation '{}' does not match any available "
-                                "       choices for the field. Available choices: {}".format(
-                                    current_field[1],
-                                    python_relation_name,
-                                    ", ".join(choices)
+                                "Error: Default value for field '{field}' in relation '{relation}' does not match any "
+                                "available choices for the field. Available choices: {choices}".format(
+                                    field=current_field[1],
+                                    relation=python_relation_name,
+                                    choices=", ".join(choices)
                                 ))
 
                         if choices is not None and len(choices) > 1:
@@ -658,18 +658,18 @@ def create_admin(relations: List[Dict], site_name: str, gis_mode: bool) -> io.St
         af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, AdminAdvancedFiltersMixin, "
                  "admin.ModelAdmin):\n".format(relation["name"]))
         af.write("    change_list_template = 'admin/core/change_list.html'\n")
-        af.write("    actions = ['export_csv', 'export_labels']\n")
+        af.write("    actions = ('export_csv', 'export_labels')\n")
 
         # TODO: Improve this to show all length-limited text fields
         list_display_fields = [r["name"] for r in relation["fields"]
                                if r["data_type"] not in ("text", "auto key", "manual key") or "choices" in r]
         key = [r["name"] for r in relation["fields"] if r["data_type"] in ("auto key", "manual key")]
-        list_display_fields = key + list_display_fields
+        list_display_fields = tuple(key + list_display_fields)
 
-        list_filter_fields = [r["name"] for r in relation["fields"]
-                              if r["data_type"] in ("boolean",) or "choices" in r]
+        list_filter_fields = tuple(r["name"] for r in relation["fields"]
+                                   if r["data_type"] in ("boolean",) or "choices" in r)
 
-        advanced_filter_fields = [r["name"] for r in relation["fields"]]
+        advanced_filter_fields = tuple(r["name"] for r in relation["fields"])
 
         if len(list_display_fields) > 1:
             af.write("    list_display = ('{}',)\n".format("', '".join(list_display_fields)))
@@ -733,7 +733,7 @@ def create_api(relations: List[Dict], site_name: str, gis_mode: bool) -> io.Stri
         api_file.write("class {}Serializer(serializers.ModelSerializer):\n".format(relation["name"]))
         api_file.write("    class Meta:\n")
         api_file.write("        model = {}\n".format(relation["name"]))
-        api_file.write("        fields = ['{}']\n".format("', '".join([f["name"] for f in relation["fields"]])))
+        api_file.write("        fields = ('{}',)\n".format("', '".join([f["name"] for f in relation["fields"]])))
 
         api_file.write("\n\n")
 
@@ -794,7 +794,7 @@ def is_common_password(password: str, package_dir: str) -> bool:
     # Try to use password list created by Royce Williams and adapted for the Django project:
     # https://gist.github.com/roycewilliams/281ce539915a947a23db17137d91aeb7
 
-    common_passwords = ["password", "123456", "12345678"]  # Fallbacks if file not present
+    common_passwords = {"password", "123456", "12345678"}  # Fallbacks if file not present
     try:
         with gzip.open(os.path.join(package_dir, "common-passwords.txt.gz")) as f:
             common_passwords = {p.strip() for p in f.read().decode().splitlines()
