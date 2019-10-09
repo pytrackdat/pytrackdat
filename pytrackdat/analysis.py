@@ -281,7 +281,10 @@ def main():
             d = next(data_reader)
             while True:
                 try:
-                    data.append(list(map(lambda x: x.strip(), d)))
+                    row = list(map(lambda x: x.strip(), d))
+                    if len([c for c in row if c != ""]) > 0:
+                        # Skip blank rows, they're likely CSV artifacts
+                        data.append(list(map(lambda x: x.strip(), d)))
                     d = next(data_reader)
                 except StopIteration:
                     break
