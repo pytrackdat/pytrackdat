@@ -47,6 +47,8 @@ __all__ = ["infer_column_type", "create_design_file_rows_from_inference", "main"
 ALTERNATE_THRESHOLD = 0.5
 MAX_CHOICES = 16
 MAX_CHOICE_LENGTH = 24
+CHAR_FIELD_MAX_LENGTH = 48
+CHAR_FIELD_LENGTH = 64
 
 
 def infer_column_type(col: List[str], key_found: bool) -> Dict:
@@ -197,6 +199,8 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     elif integer_values < max(len(col) / 10, 10) or len(non_numeric_values) >= 10:
         detected_type = "text"
         nullable = False
+        if max_seen_length <= CHAR_FIELD_MAX_LENGTH:
+            max_length = CHAR_FIELD_LENGTH
 
     return {
         "detected_type": detected_type,
