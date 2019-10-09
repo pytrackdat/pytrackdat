@@ -67,11 +67,13 @@ __all__ = ["GenerationError",
 ADMIN_FILE_HEADER = """# Generated using PyTrackDat v{}
 from django.contrib import admin
 from advanced_filters.admin import AdminAdvancedFiltersMixin
+from reversion.admin import VersionAdmin
 
 from core.models import *
 from .export_csv import ExportCSVMixin
 from .import_csv import ImportCSVMixin
 from .export_labels import ExportLabelsMixin
+from .charts import ChartsMixin
 
 """.format(VERSION)
 
@@ -274,6 +276,7 @@ INSTALLED_APPS_NEW = """INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'reversion',
     'advanced_filters',
     'rest_framework',
 ]"""
@@ -670,8 +673,8 @@ def create_admin(relations: List[Dict], site_name: str, gis_mode: bool) -> io.St
         # Write admin information
 
         af.write("\n\n@admin.register({})\n".format(relation["name"]))
-        af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, AdminAdvancedFiltersMixin, "
-                 "admin.ModelAdmin):\n".format(relation["name"]))
+        af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, ChartsMixin, "
+                 "AdminAdvancedFiltersMixin, VersionAdmin):\n".format(relation["name"]))
         af.write("    change_list_template = 'admin/core/change_list.html'\n")
         af.write("    actions = ('export_csv', 'export_labels')\n")
 
@@ -757,13 +760,15 @@ def create_api(relations: List[Dict], site_name: str, gis_mode: bool) -> io.Stri
         api_file.write("    serializer_class = {}Serializer\n\n".format(relation["name"]))
         api_file.write("    @action(detail=False)\n")
         api_file.write("    def categorical_counts(self, _request):\n")
-        api_file.write("        counts = {}\n")
-        api_file.write("        categorical_fields = ['{}']\n".format(
+        api_file.write("        categorical_fields = ('{}',)\n".format(
             "', '".join([f["name"] for f in relation["fields"] if "choices" in f])))
+        api_file.write("        categorical_choices = {}\n".format(
+            pprint.pformat({f["name"]: f["choices"] for f in relation["fields"] if "choices" in f},
+                           indent=12, width=120, compact=True)))
+        api_file.write("        counts = {f: {c: 0 for c in categorical_choices[f]} for f in categorical_fields}\n")
         api_file.write("        for row in {}.objects.values():\n".format(relation["name"]))
         api_file.write("            for f in categorical_fields:\n")
-        api_file.write("                counts[f] = counts.get(f, {})\n")
-        api_file.write("                counts[f][row[f]] = counts[f].get(row[f], 0) + 1\n")
+        api_file.write("                counts[f][row[f]] += 1\n")
         api_file.write("        return Response(counts)\n")
 
         api_file.write("\n\n")
