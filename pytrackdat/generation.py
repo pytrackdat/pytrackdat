@@ -327,37 +327,43 @@ def manual_key_formatter(f: Dict) -> str:
 
 
 def foreign_key_formatter(f: Dict) -> str:
-    return "models.ForeignKey('{}', help_text='{}', on_delete=models.CASCADE)".format(
-        to_relation_name(f["additional_fields"][0]),
-        f["description"].replace("'", "\\'")
-    )
+    return (
+        "models.ForeignKey('{relation}', help_text='{help_text}', blank={nullable}, null={nullable}, "
+        "on_delete=models.{on_delete})".format(
+            relation=to_relation_name(f["additional_fields"][0]),
+            help_text=f["description"].replace("'", "\\'"),
+            nullable=str(f["nullable"]),
+            on_delete="SET_NULL" if f["nullable"] else "CASCADE"
+        ))
 
 
 def basic_number_formatter(f: Dict) -> str:
     t = BASIC_NUMBER_TYPES[f["data_type"]]
-    return "models.{}(help_text='{}', null={}{})".format(
-        t,
-        clean_field_help_text(f["description"]),
-        str(f["nullable"]),
-        "" if f["default"] is None else ", default={}".format(f["default"])
+    return "models.{type}(help_text='{help_text}', blank={nullable}, null={nullable}{default})".format(
+        type=t,
+        help_text=clean_field_help_text(f["description"]),
+        nullable=str(f["nullable"]),
+        default="" if f["default"] is None else ", default={}".format(f["default"])
     )
 
 
 def decimal_formatter(f: Dict) -> str:
-    return "models.DecimalField(help_text='{}', max_digits={}, decimal_places={}, null={}{})".format(
-        clean_field_help_text(f["description"]),
-        f["additional_fields"][0],
-        f["additional_fields"][1],
-        str(f["nullable"]),
-        "" if f["default"] is None else ", default=Decimal({})".format(f["default"])
-    )
+    return (
+        "models.DecimalField(help_text='{help_text}', max_digits={max_digits}, decimal_places={decimals}, "
+        "blank={nullable}, null={nullable}{default})".format(
+            help_text=clean_field_help_text(f["description"]),
+            max_digits=f["additional_fields"][0],
+            decimals=f["additional_fields"][1],
+            nullable=str(f["nullable"]),
+            default="" if f["default"] is None else ", default=Decimal({})".format(f["default"])
+        ))
 
 
 def boolean_formatter(f: Dict) -> str:
-    return "models.BooleanField(help_text='{}', null={}{})".format(
-        clean_field_help_text(f["description"]),
-        str(f["nullable"]),
-        "" if f["default"] is None else ", default={}".format(f["default"])
+    return "models.BooleanField(help_text='{help_text}', blank={nullable}, null={nullable}{default})".format(
+        help_text=clean_field_help_text(f["description"]),
+        nullable=str(f["nullable"]),
+        default="" if f["default"] is None else ", default={}".format(f["default"])
     )
 
 
@@ -385,21 +391,24 @@ def text_formatter(f: Dict) -> str:
         if choice_names is not None:
             choices = tuple(zip(choice_names, choice_names))
 
-    return "models.{}(help_text='{}'{}{}{})".format(
-        "TextField" if max_length is None else "CharField",
-        clean_field_help_text(f["description"]),
-        "" if f["default"] is None else ", default='{}'".format(f["default"]),  # TODO: Make sure default is cleaned
-        "" if len(choices) == 0 else ", choices={}".format(str(choices)),
-        "" if max_length is None else ", max_length={}".format(max_length)
+    return "models.{field_type}(help_text='{help_text}', blank={blank_value}{default}{choices}{length})".format(
+        field_type="TextField" if max_length is None else "CharField",
+        help_text=clean_field_help_text(f["description"]),
+        blank_value=str(len(choices) == 0 or f["nullable"]),
+
+        # TODO: Make sure default is cleaned
+        default="" if f["default"] is None else ", default='{}'".format(f["default"]),
+        choices="" if len(choices) == 0 else ", choices={}".format(str(choices)),
+        length="" if max_length is None else ", max_length={}".format(max_length)
     )
 
 
 def date_formatter(f: Dict) -> str:
     # TODO: standardize date formatting... I think this might already be standardized?
-    return "models.DateField(help_text='{}', null={}{})".format(
-        clean_field_help_text(f["description"]),
-        str(f["nullable"]),
-        "" if f["default"] is None else ", default=datetime.strptime('{}', '%Y-%m-%d')".format(
+    return "models.DateField(help_text='{help_text}', blank={nullable}, null={nullable}{default})".format(
+        help_text=clean_field_help_text(f["description"]),
+        nullable=str(f["nullable"]),
+        default="" if f["default"] is None else ", default=datetime.strptime('{}', '%Y-%m-%d')".format(
             f["default"].strftime("%Y-%m-%d")
         )
     )
