@@ -27,7 +27,7 @@ NULL_INT_LIST = UNIQUE_INT_LIST + [""]
 REPEATED_INT_LIST = ["999"] * 20
 
 UNIQUE_CONSISTENT_DECIMAL_LIST = ["{}.{}".format(i, j) for i, j in zip(range(10, 51), range(51, 100))]
-MIXED_INTS_AND_DECIMALS = ["1", "1.1", "1.20", "2", "2.1", "2.20", "2.300"]
+MIXED_INTS_AND_DECIMALS = ("1", "1.1", "1.20", "2", "2.1", "2.20", "2.300")
 
 
 class TestAnalysisInference(unittest.TestCase):
