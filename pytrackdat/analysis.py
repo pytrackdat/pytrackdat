@@ -44,6 +44,11 @@ from .common import *
 __all__ = ["infer_column_type", "create_design_file_rows_from_inference", "main"]
 
 
+ALTERNATE_THRESHOLD = 0.5
+MAX_CHOICES = 16
+MAX_CHOICE_LENGTH = 24
+
+
 def infer_column_type(col: List[str], key_found: bool) -> Dict:
     detected_type = "unknown"
     nullable = False
@@ -57,7 +62,10 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     decimal_values = 0
     float_values = 0
 
+    integer_values_set = set()
+
     all_values = set()
+    all_values_counts = {}
 
     date_values = 0
     time_values = 0
@@ -73,6 +81,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
 
         if re.match(RE_INTEGER, str_v) or re.match(RE_INTEGER_HUMAN, str_v):
             integer_values += 1
+            integer_values_set.add(int(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", str_v)))
 
         elif re.match(RE_DECIMAL, str_v.lower()) or re.match(RE_DECIMAL_HUMAN, str_v.lower()):
             decimal_values += 1
@@ -99,6 +108,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
 
         max_seen_length = max(max_seen_length, len(str_v))
         all_values.add(str_v)
+        all_values_counts[str_v] = all_values_counts.get(str_v, 0) + 1
 
     # Keys:
 
@@ -114,12 +124,12 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
         nullable = False
 
     elif integer_values > 0 and len(non_numeric_values) == 1 and decimal_values == 0 \
-            and not (integer_values == 2 and "0" in all_values and "1" in all_values):
+            and not (len(integer_values_set) == 2 and 0 in integer_values_set and 1 in integer_values_set):
         detected_type = "integer"
         nullable = True
         # TODO: DO WE WANT NULL VALUES HERE?
 
-    elif integer_values > 0 and len(non_numeric_values) > 1 and (integer_values > 100):
+    elif integer_values > 0 and len(non_numeric_values) > 1 and ((integer_values / len(col)) >= ALTERNATE_THRESHOLD):
         detected_type = "integer"
         nullable = True
         include_alternate = True
@@ -166,7 +176,8 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
 
     # Enums:
 
-    elif len(all_values) < 10 and max_seen_length < 24:
+    elif (len([a for a in all_values if a.strip() != ""]) < MAX_CHOICES and max_seen_length < MAX_CHOICE_LENGTH and
+          sum(v for a, v in all_values_counts.items() if a.strip() != "") >= 2 * len(all_values)):
         detected_type = "text"
         nullable = ("" in all_values)
         choices = sorted(list(all_values))
@@ -174,8 +185,8 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
         max_length = max_seen_length * 2
 
         # Booleans:
-        if len(choices) == 2 or (len(choices) == 3 and nullable) and any(tv in in_choices and fv in in_choices
-                                                                         for tv, fv in BOOLEAN_TF_PAIRS):
+        if (len(choices) == 2 or (len(choices) == 3 and nullable)) and any(tv in in_choices and fv in in_choices
+                                                                           for tv, fv in BOOLEAN_TF_PAIRS):
             detected_type = "boolean"
             null_values = [c for c in choices if c.lower() not in BOOLEAN_TRUE_VALUES + BOOLEAN_FALSE_VALUES]
 
