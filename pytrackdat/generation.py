@@ -30,7 +30,7 @@ import shutil
 import subprocess
 import sys
 
-
+from decimal import Decimal
 from typing import Dict, IO, List, Optional, Tuple, Union
 
 from .common import *
@@ -475,12 +475,18 @@ DJANGO_TYPE_FORMATTERS = {
 
 
 def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=False, null_values=()) \
-        -> Union[None, int, datetime.datetime, str, bool]:
+        -> Union[None, int, float, Decimal, datetime.datetime, str, bool]:
     if dv.strip() == "" and dt != "boolean":
         return None
 
     if dt == "integer":
-        return int(dv)
+        return int(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv))
+
+    if dt == "float":
+        return float(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.lower()))
+
+    if dt == "decimal":
+        return Decimal(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.lower()))
 
     if dt == "date":
         # TODO: adjust format based on heuristics
