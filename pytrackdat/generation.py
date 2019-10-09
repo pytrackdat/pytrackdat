@@ -763,7 +763,8 @@ def create_api(relations: List[Dict], site_name: str, gis_mode: bool) -> io.Stri
         api_file.write("        categorical_fields = ('{}',)\n".format(
             "', '".join([f["name"] for f in relation["fields"] if "choices" in f])))
         api_file.write("        categorical_choices = {}\n".format(
-            pprint.pformat({f["name"]: f["choices"] for f in relation["fields"] if "choices" in f},
+            pprint.pformat({f["name"]: f["choices"] + (("",) if f["nullable"] else ())
+                            for f in relation["fields"] if "choices" in f},
                            indent=12, width=120, compact=True)))
         api_file.write("        counts = {f: {c: 0 for c in categorical_choices[f]} for f in categorical_fields}\n")
         api_file.write("        for row in {}.objects.values():\n".format(relation["name"]))
