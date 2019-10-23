@@ -179,5 +179,4 @@ def exit_with_error(message: str):
     print()
     print(message)
     print()
-    # TODO: HANDLE CLEANUP
     exit(1)

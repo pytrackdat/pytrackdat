@@ -832,6 +832,11 @@ def is_common_password(password: str, package_dir: str) -> bool:
 # TODO: More customization options
 
 
+def clean_up(package_dir: str, django_site_name: str):
+    subprocess.run([os.path.join(package_dir, "os_scripts", "clean_up.bat" if os.name == "nt" else "clean_up.bash"),
+                    package_dir, django_site_name, TEMP_DIRECTORY])
+
+
 def main():
     print_license()
 
@@ -962,33 +967,46 @@ def main():
         uf.truncate()
 
     print("\n================ ADMINISTRATIVE SETUP ================")
-    admin_username = input("Admin Account Username: ")
-    while admin_username.strip() == "":
-        print("Please enter a username.")
-        admin_username = input("Admin Account Username: ")
-    admin_email = input("Admin Account Email (Optional): ")
+
+    admin_username = ""
+    admin_email = ""
     admin_password = "1"
     admin_password_2 = "2"
-    while admin_password != admin_password_2:
-        admin_password = getpass.getpass("Admin Account Password: ")
 
-        # TODO: Properly check password validity
-        if len(admin_password.strip()) < 8:
-            print("Error: Please enter a more secure password (8 or more characters).")
-            admin_password = "1"
-            admin_password_2 = "2"
-            continue
+    try:
+        admin_username = input("Admin Account Username: ")
+        while admin_username.strip() == "":
+            print("Please enter a username.")
+            admin_username = input("Admin Account Username: ")
+        admin_email = input("Admin Account Email (Optional): ")
 
-        if is_common_password(admin_password, package_dir=package_dir):
-            print("Error: Please enter in a less commonly-used password (8 or more characters).")
-            admin_password = "1"
-            admin_password_2 = "2"
-            continue
+        while admin_password != admin_password_2:
+            admin_password = getpass.getpass("Admin Account Password: ")
 
-        admin_password_2 = getpass.getpass("Admin Account Password Again: ")
+            # TODO: Properly check password validity
+            if len(admin_password.strip()) < 8:
+                print("Error: Please enter a more secure password (8 or more characters).")
+                admin_password = "1"
+                admin_password_2 = "2"
+                continue
 
-        if admin_password != admin_password_2:
-            print("Error: Passwords do not match. Please try again.")
+            if is_common_password(admin_password, package_dir=package_dir):
+                print("Error: Please enter in a less commonly-used password (8 or more characters).")
+                admin_password = "1"
+                admin_password_2 = "2"
+                continue
+
+            admin_password_2 = getpass.getpass("Admin Account Password Again: ")
+
+            if admin_password != admin_password_2:
+                print("Error: Passwords do not match. Please try again.")
+
+    except KeyboardInterrupt:
+        print("\n\nCleaning up and exiting...")
+        clean_up(package_dir, django_site_name)
+        print("Done.\n")
+        exit(0)
+
     print("======================================================\n")
 
     try:
@@ -1004,6 +1022,7 @@ def main():
 
     except subprocess.CalledProcessError:
         # Need to catch subprocess errors to prevent password from being shown onscreen.
+        clean_up(package_dir, django_site_name)
         exit_with_error("Error: An error occurred while running the site setup script.\nTerminating...")
 
     shutil.make_archive(django_site_name, "zip", root_dir=os.path.join(os.getcwd(), "tmp"), base_dir=django_site_name)
