@@ -868,8 +868,7 @@ def main():
         os.makedirs(TEMP_DIRECTORY)
 
     if os.name not in ("nt", "posix"):
-        print("Unsupported platform.")
-        exit(1)
+        exit_with_error("Unsupported platform.")
 
     site_url = "localhost"
 
@@ -888,15 +887,20 @@ def main():
                 api_buf = create_api(relations, django_site_name, gis_mode)
             except GenerationError as e:
                 exit_with_error(str(e))
-        print("done.\n")
+        print("Done.\n")
 
-        prod_build = input("Is this a production build? (y/n): ")
-        if prod_build.lower() in BOOLEAN_TRUE_VALUES:
-            site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
-            while "http:" in site_url or "https:" in site_url or "/www." in site_url:
+        try:
+            prod_build = input("Is this a production build? (y/n): ")
+            if prod_build.lower() in BOOLEAN_TRUE_VALUES:
                 site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
-        elif prod_build.lower() not in BOOLEAN_FALSE_VALUES:
-            print("Invalid answer '{}', assuming 'n'...".format(prod_build))
+                while "http:" in site_url or "https:" in site_url or "/www." in site_url:
+                    site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
+            elif prod_build.lower() not in BOOLEAN_FALSE_VALUES:
+                print("Invalid answer '{}', assuming 'n'...".format(prod_build))
+
+        except KeyboardInterrupt:
+            print("\nExiting...\n")
+            exit(0)
 
         print()
 
