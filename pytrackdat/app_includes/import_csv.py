@@ -76,6 +76,8 @@ class ImportCSVMixin:
                 snapshot = Snapshot(snapshot_type='auto', reason='Pre-import snapshot')
                 snapshot.save()
 
+                model_objects = []
+
                 for row in reader:
                     object_data = {}
                     for h in header_fields:
@@ -260,8 +262,9 @@ class ImportCSVMixin:
                                     raise ValueError("Incorrect value for multi polygon field {}: {}".format(
                                         f["name"], str_v.upper()))
 
-                    new_object = self.model(**object_data)
-                    new_object.save()
+                    model_objects.append(self.model(**object_data))
+
+                self.model.objects.bulk_create(model_objects)
 
             else:
                 # TODO: Handle Errors
