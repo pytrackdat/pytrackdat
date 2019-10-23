@@ -258,7 +258,7 @@ def main():
         exit(1)
 
     design_file = args[0]  # Name for output
-    relations = list(zip(args[1::2], map(str.lower, args[2::2])))  # Split pairs of file name, relation name
+    relations = tuple(zip(args[1::2], map(str.lower, args[2::2])))  # Split pairs of file name, relation name
 
     if len(set(args[1::2])) < len(args[1::2]):
         print("Error: You cannot use the same relation name(s) for more than one table:")
