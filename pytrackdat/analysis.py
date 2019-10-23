@@ -269,10 +269,6 @@ def main():
 
         exit(1)
 
-    # Check to make sure design file is openable, for later
-    with open(design_file, "w"):
-        pass
-
     design_file_rows = []
     for rn, rf in relations:
         print("Detecting types for fields in relation '{}'...".format(rn))
@@ -339,19 +335,24 @@ def main():
         design_file_rows.extend(new_design_file_rows)
         print()
 
-    with open(design_file, "w", newline="") as df:
-        design_writer = csv.writer(df, delimiter=",")
-        max_length = max([len(r) for r in design_file_rows])
+    try:
+        with open(design_file, "w", newline="") as df:
+            design_writer = csv.writer(df, delimiter=",")
+            max_length = max([len(r) for r in design_file_rows])
 
-        for r in design_file_rows:
-            while len(r) < max_length:
-                r.append("")
+            for r in design_file_rows:
+                while len(r) < max_length:
+                    r.append("")
 
-            design_writer.writerow(r)
+                design_writer.writerow(r)
 
-        print("    Wrote design file to '{}'...\n".format(design_file))
+            print("    Wrote design file to '{}'...\n".format(design_file))
 
-    print("Analyzed {} relations.".format(len(relations)))
+        print("Analyzed {} relations.".format(len(relations)))
+
+    except IOError:
+        print("\nError: Could not write to design file.\n")
+        exit(1)
 
 
 if __name__ == "__main__":
