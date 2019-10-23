@@ -51,6 +51,14 @@ CHAR_FIELD_MAX_LENGTH = 48
 CHAR_FIELD_LENGTH = 64
 
 
+def strip_blank_fields(fields: tuple) -> tuple:
+    blank_tail = len(fields)
+    while blank_tail > 0 and fields[blank_tail-1].strip() == "":
+        blank_tail -= 1
+
+    return fields[:blank_tail]
+
+
 def infer_column_type(col: List[str], key_found: bool) -> Dict:
     detected_type = "unknown"
     nullable = False
@@ -276,7 +284,13 @@ def main():
         data = []
         with open(rf, "r", encoding="utf-8-sig") as ff:
             data_reader = csv.reader(ff, delimiter=",")
-            fields = [f for f in next(data_reader) if f != ""]
+
+            # TODO: strip or no? might cause errors but could handle in import.
+            fields = strip_blank_fields(tuple(f for f in next(data_reader)))
+
+            if len(fields) == 0:
+                print("\nError: No fields detected.\n")
+                exit(1)
 
             d = next(data_reader)
             while True:
