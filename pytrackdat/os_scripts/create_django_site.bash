@@ -3,35 +3,35 @@
 set -eu
 
 # Enter the temporary site construction directory
-cd $3
+cd "$3"
 
 # Create and activate the virtual environment used for setup
 virtualenv -p python3 ./tmp_env
 PS1="" source ./tmp_env/bin/activate
 
 # Install the dependencies required for setup
-pip install -r $1/util_files/requirements_setup.txt
+pip install -r "$1/util_files/requirements_setup.txt"
 
 # Start the Django site
-python ./tmp_env/bin/django-admin startproject $2
+python ./tmp_env/bin/django-admin startproject "$2"
 
 # Copy pre-built files to the site folder
-cp $1/util_files/requirements.txt $2/
-cp $1/util_files/$4 $2/
-cp $1/util_files/docker-compose.yml $2/
-cp $1/util_files/nginx.conf $2/
-cp $1/util_files/export_labels.R $2/
-cp $1/util_files/install_dependencies.R $2/
+cp "$1/util_files/requirements.txt" "$2/"
+cp "$1/util_files/$4" "$2/"
+cp "$1/util_files/docker-compose.yml" "$2/"
+cp "$1/util_files/nginx.conf" "$2/"
+cp "$1/util_files/export_labels.R" "$2/"
+cp "$1/util_files/install_dependencies.R" "$2/"
 
 # Enter the Django site directory
-cd $2
+cd "$2"
 
 # Create the storage directory for snapshots
 mkdir snapshots
 
 # Add site name to Dockerfile template
-sed -e "s/SITE_NAME/$2/g" ./$4 > ./Dockerfile
-rm ./$4
+sed -e "s/SITE_NAME/$2/g" "./$4" > ./Dockerfile
+rm "./$4"
 
 # Make Django site manager script executable
 chmod +x ./manage.py
@@ -43,8 +43,8 @@ chmod +x ./manage.py
 ./manage.py startapp snapshot_manager
 
 # Copy pre-built application scripts to the application
-cp -r $1/app_includes/* ./core/
-cp $1/common.py ./core/
+cp -r "$1"/app_includes/* ./core/
+cp "$1/common.py" ./core/
 
 # Deactivate the temporary setup virtual environment
 deactivate

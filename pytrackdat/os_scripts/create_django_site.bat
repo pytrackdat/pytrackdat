@@ -32,7 +32,7 @@ mkdir snapshots
 
 rem Add site name to Dockerfile template
 powershell -Command "(gc %4) -replace 'SITE_NAME', '%2' | Out-File Dockerfile"
-del %4
+del "%4"
 
 rem Create the Django application for the models
 python manage.py startapp core
