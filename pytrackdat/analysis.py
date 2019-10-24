@@ -289,8 +289,7 @@ def main():
             fields = strip_blank_fields(tuple(f for f in next(data_reader)))
 
             if len(fields) == 0:
-                print("\nError: No fields detected.\n")
-                exit(1)
+                exit_with_error("Error: No fields detected")
 
             d = next(data_reader)
             while True:
