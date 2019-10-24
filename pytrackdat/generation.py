@@ -905,6 +905,9 @@ def main():
         print()
 
         with a_buf, m_buf, api_buf:
+            # Clean up any old remnants
+            clean_up(package_dir, django_site_name)
+
             # Run site creation script
             # TODO: Make path more robust
             create_site_script = os.path.join(

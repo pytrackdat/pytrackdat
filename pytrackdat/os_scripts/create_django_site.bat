@@ -3,10 +3,6 @@
 rem Enter the temporary site construction directory
 cd "%3"
 
-rem Remove existing site data if it exists
-rmdir /Q /S tmp_env > nul 2> nul
-rmdir /Q /S "%2" > nul 2> nul
-
 rem Create and activate the virtual environment used for setup
 virtualenv -p python3 tmp_env > nul 2> nul
 if errorlevel 1 (
