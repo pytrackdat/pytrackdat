@@ -826,15 +826,24 @@ def is_common_password(password: str, package_dir: str) -> bool:
     return password.lower().strip() in common_passwords
 
 
+def copy_buf_to_path(buf, path):
+    with open(path, "w") as fh:
+        shutil.copyfileobj(buf, fh)
+
+
+def clean_up(package_dir: str, django_site_name: str):
+    subprocess.run((os.path.join(package_dir, "os_scripts", "clean_up.bat" if os.name == "nt" else "clean_up.bash"),
+                    package_dir, django_site_name, TEMP_DIRECTORY))
+
+
+def get_script_file_name(name: str):
+    return "{}.{}".format(name, "bat" if os.name == "nt" else "bash")
+
+
 # TODO: TIMEZONES
 # TODO: Multiple date formats
 # TODO: More ways for custom validation
 # TODO: More customization options
-
-
-def clean_up(package_dir: str, django_site_name: str):
-    subprocess.run([os.path.join(package_dir, "os_scripts", "clean_up.bat" if os.name == "nt" else "clean_up.bash"),
-                    package_dir, django_site_name, TEMP_DIRECTORY])
 
 
 def main():
@@ -873,77 +882,80 @@ def main():
 
     site_url = "localhost"
 
-    a_buf = None
-    m_buf = None
-    api_buf = None
-
     # Process and validate design file, get contents of admin and models files
+
+    print("Validating design file '{}'...".format(design_file))
+
+    relations = []
+
     try:
-        print("Validating design file '{}'...".format(design_file))
         with open(os.path.join(os.getcwd(), design_file), "r") as df:
             try:
                 relations = design_to_relation_fields(df, gis_mode)
-                a_buf = create_admin(relations, django_site_name, gis_mode)
-                m_buf = create_models(relations, gis_mode)
-                api_buf = create_api(relations, django_site_name, gis_mode)
             except GenerationError as e:
                 exit_with_error(str(e))
-        print("Done.\n")
 
-        try:
-            prod_build = input("Is this a production build? (y/n): ")
-            if prod_build.lower() in BOOLEAN_TRUE_VALUES:
+    except FileNotFoundError:
+        exit_with_error("Error: Design file not found: '{}'.".format(design_file))
+
+    except IOError:
+        exit_with_error("Error: Design file could not be read: '{}'.".format(design_file))
+
+    if len(relations) == 0:
+        exit_with_error("Error: No relations detected.")
+
+    a_buf = create_admin(relations, django_site_name, gis_mode)
+    m_buf = create_models(relations, gis_mode)
+    api_buf = create_api(relations, django_site_name, gis_mode)
+
+    print("Done.\n")
+
+    try:
+        prod_build = input("Is this a production build? (y/n): ")
+        if prod_build.lower() in BOOLEAN_TRUE_VALUES:
+            site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
+            while "http:" in site_url or "https:" in site_url or "/www." in site_url:
                 site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
-                while "http:" in site_url or "https:" in site_url or "/www." in site_url:
-                    site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
-            elif prod_build.lower() not in BOOLEAN_FALSE_VALUES:
-                print("Invalid answer '{}', assuming 'n'...".format(prod_build))
+        elif prod_build.lower() not in BOOLEAN_FALSE_VALUES:
+            print("Invalid answer '{}', assuming 'n'...".format(prod_build))
 
-        except KeyboardInterrupt:
-            print("\nExiting...\n")
-            exit(0)
+    except KeyboardInterrupt:
+        print("\nExiting...\n")
+        exit(0)
 
-        print()
+    print()
 
-        with a_buf, m_buf, api_buf:
-            # Clean up any old remnants
-            clean_up(package_dir, django_site_name)
+    core_app_path = os.path.join(TEMP_DIRECTORY, django_site_name, "core")
+    snapshot_manager_path = os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager")
+    django_site_path = os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name)
 
-            # Run site creation script
-            create_site_script = os.path.join(
-                package_dir,
-                "os_scripts",
-                "create_django_site.bat" if os.name == "nt" else "create_django_site.bash"
-            )
-            create_site_options = (create_site_script, package_dir, django_site_name, TEMP_DIRECTORY,
-                                   "Dockerfile.gis.template" if gis_mode else "Dockerfile.template")
-            subprocess.run(create_site_options, check=True)
+    with a_buf, m_buf, api_buf:
+        # Clean up any old remnants
+        clean_up(package_dir, django_site_name)
 
-            # Write admin file contents to disk
-            with open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "admin.py"), "w") as af:
-                shutil.copyfileobj(a_buf, af)
+        # Run site creation script
+        subprocess.run((
+            os.path.join(package_dir, "os_scripts", get_script_file_name("create_django_site")),
+            package_dir, django_site_name, TEMP_DIRECTORY, "Dockerfile{}.template".format(".gis" if gis_mode else "")
+        ), check=True)
 
-            # Write model file contents to disk
-            with open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "models.py"), "w") as mf:
-                shutil.copyfileobj(m_buf, mf)
+        # Write admin file contents to disk
+        copy_buf_to_path(a_buf, os.path.join(core_app_path, "admin.py"))
 
-            # Write API specification file contents to disk
-            with open(os.path.join(TEMP_DIRECTORY, django_site_name, "core", "api.py"), "w") as api_f:
-                shutil.copyfileobj(api_buf, api_f)
+        # Write model file contents to disk
+        copy_buf_to_path(m_buf, os.path.join(core_app_path, "models.py"))
 
-        with open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager", "models.py"), "w") \
-                as smf, open(os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager",
-                                          "admin.py"), "w") as saf:
-            smf.write(MODELS_FILE_HEADER.format(version=VERSION, models_path="django.db"))
-            smf.write("\n")
-            smf.write(SNAPSHOT_MODEL.format(site_name=django_site_name))
-            saf.write(SNAPSHOT_ADMIN_FILE)
+        # Write API specification file contents to disk
+        copy_buf_to_path(api_buf, os.path.join(core_app_path, "api.py"))
 
-    except FileNotFoundError as e:
-        print(str(e))
-        exit_with_error("Error: Design file not found.")
+    with open(os.path.join(snapshot_manager_path, "models.py"), "w") as smf, \
+            open(os.path.join(snapshot_manager_path, "admin.py"), "w") as saf:
+        smf.write(MODELS_FILE_HEADER.format(version=VERSION, models_path="django.db"))
+        smf.write("\n")
+        smf.write(SNAPSHOT_MODEL.format(site_name=django_site_name))
+        saf.write(SNAPSHOT_ADMIN_FILE)
 
-    with open(os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name, "settings.py"), "r+") as sf:
+    with open(os.path.join(django_site_path, "settings.py"), "r+") as sf:
         old_contents = sf.read()
 
         sf.seek(0)
@@ -967,7 +979,7 @@ def main():
 
         sf.truncate()
 
-    with open(os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name, "urls.py"), "r+") as uf:
+    with open(os.path.join(django_site_path, "urls.py"), "r+") as uf:
         old_contents = uf.read()
         uf.seek(0)
         uf.write(old_contents.replace(URL_OLD, URL_NEW))
@@ -1018,14 +1030,10 @@ def main():
 
     try:
         # TODO: Make path more robust
-        site_setup_script = os.path.join(
-            package_dir,
-            "os_scripts",
-            "run_site_setup.bat" if os.name == "nt" else "run_site_setup.bash"
-        )
-        site_setup_options = (site_setup_script, os.path.dirname(__file__), django_site_name, TEMP_DIRECTORY,
-                              admin_username, admin_email, admin_password, site_url)
-        subprocess.run(site_setup_options, check=True)
+        subprocess.run((
+            os.path.join(package_dir, "os_scripts", get_script_file_name("run_site_setup")), package_dir,
+            django_site_name, TEMP_DIRECTORY, admin_username, admin_email, admin_password, site_url
+        ), check=True)
 
     except subprocess.CalledProcessError:
         # Need to catch subprocess errors to prevent password from being shown onscreen.
