@@ -854,6 +854,7 @@ def main():
 
     args = sys.argv[1:]
 
+    # TODO: Make path more robust
     package_dir = os.path.dirname(__file__)
 
     design_file = args[0]  # File name for design file input
@@ -909,14 +910,13 @@ def main():
             clean_up(package_dir, django_site_name)
 
             # Run site creation script
-            # TODO: Make path more robust
             create_site_script = os.path.join(
-                os.path.dirname(__file__),
+                package_dir,
                 "os_scripts",
                 "create_django_site.bat" if os.name == "nt" else "create_django_site.bash"
             )
-            create_site_options = [create_site_script, package_dir, django_site_name, TEMP_DIRECTORY,
-                                   "Dockerfile.gis.template" if gis_mode else "Dockerfile.template"]
+            create_site_options = (create_site_script, package_dir, django_site_name, TEMP_DIRECTORY,
+                                   "Dockerfile.gis.template" if gis_mode else "Dockerfile.template")
             subprocess.run(create_site_options, check=True)
 
             # Write admin file contents to disk
@@ -1023,8 +1023,8 @@ def main():
             "os_scripts",
             "run_site_setup.bat" if os.name == "nt" else "run_site_setup.bash"
         )
-        site_setup_options = [site_setup_script, os.path.dirname(__file__), django_site_name, TEMP_DIRECTORY,
-                              admin_username, admin_email, admin_password, site_url]
+        site_setup_options = (site_setup_script, os.path.dirname(__file__), django_site_name, TEMP_DIRECTORY,
+                              admin_username, admin_email, admin_password, site_url)
         subprocess.run(site_setup_options, check=True)
 
     except subprocess.CalledProcessError:
