@@ -154,12 +154,12 @@ class ImportCSVMixin:
                                 object_data[f["name"]] = str_v
                                 break
 
-                            elif f["data_type"] == "date":
+                            elif f["data_type"] in ("date", "time"):
                                 # TODO: More date formats
                                 # TODO: Further validation
-                                # TODO: encode format somewhere?
+                                # TODO: Encode format somewhere?
                                 found_date = False
-                                for dr, df in DATE_FORMATS:
+                                for dr, df in (DATE_FORMATS if f["data_type"] == "date" else TIME_FORMATS):
                                     if re.match(dr, str_v):
                                         object_data[f["name"]] = datetime.strptime(str_v, df)
                                         found_date = True
@@ -173,14 +173,6 @@ class ImportCSVMixin:
                                                      "{}".format(f["name"], model_name, str_v))
 
                                 object_data[f["name"]] = None
-
-                            elif f["data_type"] == "time":
-                                # TODO: More time formats (12-hour especially)
-                                # TODO: Further validation
-                                if re.match(r"^\d{2}:\d{2}$", str_v):
-                                    object_data[f["name"]] = datetime.strptime(str_v, "%H:%M")
-                                elif re.match(r"^\d{2}:\d{2}:\d{2}$", str_v):
-                                    object_data[f["name"]] = datetime.strptime(str_v, "%H:%M:%S")
 
                             elif f["data_type"] == "foreign key":
                                 # TODO: TYPES PROPERLY

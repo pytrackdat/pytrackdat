@@ -99,6 +99,9 @@ RE_DATE_YMD_S = re.compile(r"^[1-2]\d{3}/\d{1,2}/\d{1,2}$")
 RE_DATE_DMY_D = re.compile(r"^\d{1,2}-\d{1,2}-[1-2]\d{3}$")
 RE_DATE_DMY_S = re.compile(r"^\d{1,2}/\d{1,2}/[1-2]\d{3}$")
 
+RE_TIME_HH_MM_24 = re.compile(r"^\d{2}:\d{2}$")
+RE_TIME_HH_MM_SS_24 = re.compile(r"^\d{2}:\d{2}:\d{2}$")
+
 RE_MULTIPLE_UNDERSCORES = re.compile(r"[_]{2,}")
 RE_NON_IDENTIFIER_CHARACTERS = re.compile(r"[^\w]+")
 RE_SEPARATOR_CHARACTERS = re.compile(r"[\s.\-]+")
@@ -109,6 +112,12 @@ RE_MULTIPLE_WHITESPACE_CHARACTERS = re.compile(r"\s{2,}")
 BOOLEAN_TRUE_VALUES = ("y", "yes", "t", "true", "1")
 BOOLEAN_FALSE_VALUES = ("n", "no", "f", "false", "0")
 BOOLEAN_TF_PAIRS = tuple(zip(BOOLEAN_TRUE_VALUES, BOOLEAN_FALSE_VALUES))
+
+
+TIME_FORMATS = (
+    (RE_TIME_HH_MM_24, "%H:%M"),
+    (RE_TIME_HH_MM_SS_24, "%H:%M:%S")
+)
 
 
 DATE_FORMATS = (

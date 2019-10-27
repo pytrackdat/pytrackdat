@@ -110,7 +110,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
             if any(re.match(df[0], str_v) is not None for df in DATE_FORMATS):
                 date_values += 1
 
-            elif re.match(r"^\d{1,2}:\d{2}(:\d{2})?$", str_v):
+            elif any(re.match(df[0], str_v) is not None for df in TIME_FORMATS):
                 time_values += 1
 
             else:
