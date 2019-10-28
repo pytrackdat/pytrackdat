@@ -584,11 +584,18 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                     elif data_type == "manual key":
                         id_type = "text"
 
+                    csv_names = tuple(f.replace(r"\;", ";") for f in re.split(r";;\s*", current_field[0]))
+                    if len(csv_names) > 1 and data_type != "":
+                        # TODO: Codify this better
+                        raise GenerationError("Error: Cannot take more than one column as input for field "
+                                              "'{field}' with data type {data_type}.".format(field=current_field[0],
+                                                                                             data_type=data_type))
+
                     # TODO: This handling of additional_fields could eventually cause trouble, because it can shift
                     #  positions of additional fields if a blank additional field occurs before a valued one.
                     current_field_data = {
                         "name": field_name,
-                        "csv_name": current_field[0],
+                        "csv_names": csv_names,
                         "data_type": data_type,
                         "nullable": nullable,
                         "null_values": null_values,
