@@ -87,10 +87,7 @@ def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=F
     if dt == "time":
         # TODO: adjust format based on MORE heuristics
         # TODO: Allow extra column setting with time format from python docs?
-        if len(dv.split(":")) == 2:
-            return datetime.strptime(dv, "%H:%M")
-        else:
-            return datetime.strptime(dv, "%H:%M:%S")
+        return datetime.strptime(dv, "%H:%M" if len(dv.split(":")) == 2 else "%H:%M:%S")
 
     if dt == "boolean":
         if nullable and ((len(null_values) != 0 and dv.strip() in null_values) or (dv.strip() == "")):
@@ -137,7 +134,7 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                             data_type
                         ))
 
-                    nullable = current_field[3].strip().lower() in ("true", "t", "yes", "y", "1")
+                    nullable = current_field[3].strip().lower() in BOOLEAN_TRUE_VALUES
                     null_values = tuple([n.strip() for n in current_field[4].split(";")])
 
                     if data_type in ("auto key", "manual key") and id_type != "":
