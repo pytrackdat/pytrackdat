@@ -36,7 +36,7 @@ import csv
 import re
 import sys
 
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from .common import *
 

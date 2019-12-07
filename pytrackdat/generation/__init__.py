@@ -18,7 +18,6 @@
 #     David Lougheed (david.lougheed@gmail.com)
 
 import csv
-import datetime
 import getpass
 import gzip
 import importlib
@@ -30,8 +29,9 @@ import shutil
 import subprocess
 import sys
 
+from datetime import datetime
 from decimal import Decimal
-from typing import Dict, IO, List, Optional, Tuple, Union
+from typing import Dict, IO, List, Union
 
 from ..common import *
 from .constants import *
@@ -39,10 +39,12 @@ from .constants import *
 from . import constants
 from . import errors
 from . import formatters
+from . import utils
 
 __all__ = ["constants",
            "errors",
            "formatters",
+           "utils",
            "get_default_from_csv_with_type",
            "design_to_relation_fields",
            "create_admin",
@@ -55,7 +57,7 @@ __all__ = ["constants",
 
 
 def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=False, null_values=()) \
-        -> Union[None, int, float, Decimal, datetime.datetime, str, bool]:
+        -> Union[None, int, float, Decimal, datetime, str, bool]:
     if dv.strip() == "" and dt != "boolean":
         return None
 
@@ -81,7 +83,7 @@ def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=F
 
         if re.match(RE_DATE_DMY_D, dv) or re.match(RE_DATE_DMY_S, dv):
             print("Warning: Assuming d{sep}m{sep}Y date format for ambiguously-formatted date field '{field}'.".format(
-                sep="-" if "-" in dv else "/", field=fiield_name))
+                sep="-" if "-" in dv else "/", field=field_name))
 
         return dt_interpretations[0]
 
@@ -152,9 +154,9 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                     csv_names = tuple(f.replace(r"\;", ";") for f in re.split(r";;\s*", current_field[0]))
                     if len(csv_names) > 1 and data_type != "":
                         # TODO: Codify this better
-                        raise GenerationError("Error: Cannot take more than one column as input for field "
-                                              "'{field}' with data type {data_type}.".format(field=current_field[0],
-                                                                                             data_type=data_type))
+                        raise errors.GenerationError(
+                            "Error: Cannot take more than one column as input for field '{field}' with data type "
+                            "{data_type}.".format(field=current_field[0], data_type=data_type))
 
                     # TODO: This handling of additional_fields could eventually cause trouble, because it can shift
                     #  positions of additional fields if a blank additional field occurs before a valued one.
@@ -181,10 +183,10 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                         )
 
                     if data_type == "text":
-                        choices = get_choices_from_text_field(current_field_data)
+                        choices = formatters.get_choices_from_text_field(current_field_data)
                         if choices is not None and current_field[5].strip() != "" and \
                                 current_field[5].strip() not in choices:
-                            raise GenerationError(
+                            raise errors.GenerationError(
                                 "Error: Default value for field '{field}' in relation '{relation}' does not match any "
                                 "available choices for the field. Available choices: {choices}".format(
                                     field=current_field[1],
@@ -291,7 +293,7 @@ def create_models(relations: List[Dict], gis_mode: bool) -> io.StringIO:
             label_name=relation["name"][len(PDT_RELATION_PREFIX):],
             id_type=relation["id_type"],
             verbose_name=relation["name"][len(PDT_RELATION_PREFIX):],
-            model_fields="\n".join("    {} = {}".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f))
+            model_fields="\n".join("    {} = {}".format(f["name"], formatters.DJANGO_TYPE_FORMATTERS[f["data_type"]](f))
                                    for f in relation["fields"])
         ))
         mf.flush()
@@ -448,7 +450,7 @@ def main():
         with open(os.path.join(os.getcwd(), design_file), "r") as df:
             try:
                 relations = design_to_relation_fields(df, gis_mode)
-            except GenerationError as e:
+            except errors.GenerationError as e:
                 exit_with_error(str(e))
 
     except FileNotFoundError:
