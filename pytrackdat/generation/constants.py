@@ -19,7 +19,44 @@
 
 from ..common import *
 
-ADMIN_FILE_HEADER = """# Generated using PyTrackDat v{}
+
+__all__ = [
+    "ADMIN_FILE_HEADER_TEMPLATE",
+    "MODEL_ADMIN_TEMPLATE",
+
+    "MODELS_FILE_HEADER",
+    "MODEL_TEMPLATE",
+
+    "SNAPSHOT_ADMIN_FILE",
+    "SNAPSHOT_MODEL",
+
+    "API_FILE_HEADER",
+    "MODEL_SERIALIZER_TEMPLATE",
+    "MODEL_VIEWSET_TEMPLATE",
+    "MODEL_ROUTER_REGISTRATION_TEMPLATE",
+
+    "URL_OLD",
+    "URL_NEW",
+    "DEBUG_OLD",
+    "DEBUG_NEW",
+    "ALLOWED_HOSTS_OLD",
+    "ALLOWED_HOSTS_NEW",
+    "INSTALLED_APPS_OLD",
+    "INSTALLED_APPS_NEW",
+    "INSTALLED_APPS_NEW_GIS",
+    "STATIC_OLD",
+    "STATIC_NEW",
+    "REST_FRAMEWORK_SETTINGS",
+    "SPATIALITE_SETTINGS",
+    "DATABASE_ENGINE_NORMAL",
+    "DATABASE_ENGINE_GIS",
+    "DISABLE_MAX_FIELDS",
+
+    "BASIC_NUMBER_TYPES",
+]
+
+
+ADMIN_FILE_HEADER_TEMPLATE = """# Generated using PyTrackDat v{}
 from django.contrib import admin
 from advanced_filters.admin import AdminAdvancedFiltersMixin
 from reversion.admin import VersionAdmin
@@ -30,7 +67,56 @@ from .import_csv import ImportCSVMixin
 from .export_labels import ExportLabelsMixin
 from .charts import ChartsMixin
 
+admin.site.site_header = "PyTrackDat: {{}}"
+
 """.format(VERSION)
+
+MODEL_ADMIN_TEMPLATE = """
+@admin.register({relation_name})
+class {relation_name}Admin(
+    ExportCSVMixin,
+    ImportCSVMixin,
+    ExportLabelsMixin,
+    ChartsMixin,
+    AdminAdvancedFiltersMixin,
+    VersionAdmin
+):
+    change_list_template = 'admin/core/change_list.html'
+    actions = ('export_csv', 'export_labels')
+{list_display}{list_filter}{advanced_filter_fields}
+"""
+
+
+MODELS_FILE_HEADER = """# Generated using PyTrackDat v{version}
+from {models_path} import models
+
+"""
+
+MODEL_TEMPLATE = """
+class {name}(models.Model):
+    @classmethod
+    def ptd_info(cls):
+        return {fields}
+
+    @classmethod
+    def get_label_name(cls):
+        return '{label_name}'
+
+    @classmethod
+    def get_id_type(cls):
+        return '{id_type}'
+
+    class Meta:
+        verbose_name = '{verbose_name}'
+
+    pdt_created_at = models.DateTimeField(auto_now_add=True, null=False)
+    pdt_modified_at = models.DateTimeField(auto_now=True, null=False)
+
+    {model_fields}
+"""
+
+
+# Snapshot Specification Code
 
 SNAPSHOT_ADMIN_FILE = """# Generated using PyTrackDat v{}
 from django.contrib import admin
@@ -52,30 +138,6 @@ class SnapshotAdmin(admin.ModelAdmin):
     download_link.short_description = 'Download Link'
 
 """.format(VERSION)
-
-MODELS_FILE_HEADER = """# Generated using PyTrackDat v{version}
-from {models_path} import models
-
-"""
-
-MODEL_TEMPLATE = """class {name}(models.Model):
-    @classmethod
-    def ptd_info(cls):
-        return {fields}
-
-    @classmethod
-    def get_label_name(cls):
-        return '{label_name}'
-
-    @classmethod
-    def get_id_type(cls):
-        return '{id_type}'
-
-    class Meta:
-        verbose_name = '{verbose_name}'
-
-    pdt_created_at = models.DateTimeField(auto_now_add=True, null=False)
-    pdt_modified_at = models.DateTimeField(auto_now=True, null=False)"""
 
 SNAPSHOT_MODEL = """import os
 import shutil
@@ -148,6 +210,9 @@ def download_view(request, id):
 
 """
 
+
+# API Specification Code
+
 API_FILE_HEADER = """# Generated using PyTrackDat v{version}
 
 from rest_framework import serializers
@@ -189,6 +254,34 @@ api_router.register(r'meta', MetaViewSet, basename='meta')
 
 
 """
+
+MODEL_SERIALIZER_TEMPLATE = """
+class {relation_name}Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = {relation_name}
+        fields = {fields}
+"""
+
+MODEL_VIEWSET_TEMPLATE = """
+class {relation_name}ViewSet(viewsets.ModelViewSet):
+    queryset = {relation_name}.objects.all()
+    serializer_class = {relation_name}Serializer
+    @action(detail=False)
+    def categorical_counts(self, _request):
+        categorical_fields = {categorical_fields}
+        categorical_choices = {categorical_choices}
+        counts = {f: {c: 0 for c in categorical_choices[f]} for f in categorical_fields}
+        for row in {relation_name}.objects.values():
+            for f in categorical_fields:
+                counts[f][row[f]] += 1
+        return Response(counts)
+"""
+
+MODEL_ROUTER_REGISTRATION_TEMPLATE = """
+api_router.register(r'data/{relation_name_lower}', {relation_name}ViewSet)
+"""
+
+# Settings Code
 
 URL_OLD = """urlpatterns = [
     path('admin/', admin.site.urls),
@@ -259,6 +352,9 @@ DATABASE_ENGINE_NORMAL = "django.db.backends.sqlite3"
 DATABASE_ENGINE_GIS = "django.contrib.gis.db.backends.spatialite"
 
 DISABLE_MAX_FIELDS = "\nDATA_UPLOAD_MAX_NUMBER_FIELDS = None\n"
+
+
+# Other Constants
 
 BASIC_NUMBER_TYPES = {
     "integer": "IntegerField",

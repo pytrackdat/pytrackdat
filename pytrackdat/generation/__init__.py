@@ -34,6 +34,7 @@ from decimal import Decimal
 from typing import Dict, IO, List, Optional, Tuple, Union
 
 from ..common import *
+from .constants import *
 
 from . import constants
 from . import errors
@@ -237,37 +238,34 @@ def create_admin(relations: List[Dict], site_name: str, gis_mode: bool) -> io.St
 
     af = io.StringIO()
 
-    af.write(ADMIN_FILE_HEADER)
-    af.write("admin.site.site_header = 'PyTrackDat: {}'\n\n".format(site_name))
+    af.write(ADMIN_FILE_HEADER_TEMPLATE.format(site_name))
 
     for relation in relations:
         # Write admin information
 
-        af.write("\n\n@admin.register({})\n".format(relation["name"]))
-        af.write("class {}Admin(ExportCSVMixin, ImportCSVMixin, ExportLabelsMixin, ChartsMixin, "
-                 "AdminAdvancedFiltersMixin, VersionAdmin):\n".format(relation["name"]))
-        af.write("    change_list_template = 'admin/core/change_list.html'\n")
-        af.write("    actions = ('export_csv', 'export_labels')\n")
-
         # TODO: Improve this to show all length-limited text fields
-        list_display_fields = [r["name"] for r in relation["fields"]
-                               if r["data_type"] not in ("text", "auto key", "manual key") or "choices" in r]
-        key = [r["name"] for r in relation["fields"] if r["data_type"] in ("auto key", "manual key")]
-        list_display_fields = tuple(key + list_display_fields)
+
+        list_display_fields = (
+            *(r["name"] for r in relation["fields"] if r["data_type"] in ("auto key", "manual key")),  # Primary key
+            *(r["name"] for r in relation["fields"]
+              if (r["data_type"] not in ("text", "auto key", "manual key") or "choices" in r or
+                  r["data_type"] == "text" and len(r["additional_fields"]) >= 1))
+        )
 
         list_filter_fields = tuple(r["name"] for r in relation["fields"]
                                    if r["data_type"] in ("boolean",) or "choices" in r)
 
         advanced_filter_fields = tuple(r["name"] for r in relation["fields"])
 
-        if len(list_display_fields) > 1:
-            af.write("    list_display = ('{}',)\n".format("', '".join(list_display_fields)))
-
-        if len(list_filter_fields) > 0:
-            af.write("    list_filter = ('{}',)\n".format("', '".join(list_filter_fields)))
-
-        if len(advanced_filter_fields) > 0:
-            af.write("    advanced_filter_fields = ('{}',)\n".format("', '".join(advanced_filter_fields)))
+        af.write(MODEL_ADMIN_TEMPLATE.format(
+            relation_name=relation["name"],
+            list_display=("    list_display = ('{}',)\n".format("', '".join(list_display_fields))
+                          if len(list_display_fields) > 1 else ""),
+            list_filter=("    list_filter = ('{}',)\n".format("', '".join(list_filter_fields))
+                         if len(list_filter_fields) > 0 else ""),
+            advanced_filter_fields=("    advanced_filter_fields = ('{}',)\n".format("', '".join(advanced_filter_fields))
+                                    if len(advanced_filter_fields) > 0 else "")
+        ))
 
         af.flush()
 
@@ -287,19 +285,15 @@ def create_models(relations: List[Dict], gis_mode: bool) -> io.StringIO:
                                        models_path="django.contrib.gis.db" if gis_mode else "django.db"))
 
     for relation in relations:
-        mf.write("\n\n")
         mf.write(MODEL_TEMPLATE.format(
             name=relation["name"],
             fields=pprint.pformat(relation["fields"], indent=12, width=120, compact=True),
             label_name=relation["name"][len(PDT_RELATION_PREFIX):],
             id_type=relation["id_type"],
-            verbose_name=relation["name"][len(PDT_RELATION_PREFIX):]
+            verbose_name=relation["name"][len(PDT_RELATION_PREFIX):],
+            model_fields="\n".join("    {} = {}".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f))
+                                   for f in relation["fields"])
         ))
-        mf.write("\n\n")
-
-        for f in relation["fields"]:
-            mf.write("    {} = {}\n".format(f["name"], DJANGO_TYPE_FORMATTERS[f["data_type"]](f)))
-
         mf.flush()
 
     mf.seek(0)
@@ -318,34 +312,25 @@ def create_api(relations: List[Dict], site_name: str, gis_mode: bool) -> io.Stri
                                           relations=pprint.pformat(relations, indent=12, width=120, compact=True)))
 
     for relation in relations:
-        api_file.write("\n")
-        api_file.write("class {}Serializer(serializers.ModelSerializer):\n".format(relation["name"]))
-        api_file.write("    class Meta:\n")
-        api_file.write("        model = {}\n".format(relation["name"]))
-        api_file.write("        fields = ('{}',)\n".format("', '".join([f["name"] for f in relation["fields"]])))
+        api_file.write(MODEL_SERIALIZER_TEMPLATE.format(
+            relation_name=relation["name"],
+            fields="('{}',)".format("', '".join([f["name"] for f in relation["fields"]]))
+        ))
 
-        api_file.write("\n\n")
+        api_file.write(MODEL_VIEWSET_TEMPLATE.format(
+            relation_name=relation["name"],
+            categorical_fields="('{}',)".format(
+                "', '".join([f["name"] for f in relation["fields"] if "choices" in f])),
+            categorical_choices=pprint.pformat(
+                {f["name"]: f["choices"] + (("",) if f["nullable"] else ())
+                 for f in relation["fields"] if "choices" in f},
+                indent=12, width=120, compact=True)
+        ))
 
-        api_file.write("class {}ViewSet(viewsets.ModelViewSet):\n".format(relation["name"]))
-        api_file.write("    queryset = {}.objects.all()\n".format(relation["name"]))
-        api_file.write("    serializer_class = {}Serializer\n\n".format(relation["name"]))
-        api_file.write("    @action(detail=False)\n")
-        api_file.write("    def categorical_counts(self, _request):\n")
-        api_file.write("        categorical_fields = ('{}',)\n".format(
-            "', '".join([f["name"] for f in relation["fields"] if "choices" in f])))
-        api_file.write("        categorical_choices = {}\n".format(
-            pprint.pformat({f["name"]: f["choices"] + (("",) if f["nullable"] else ())
-                            for f in relation["fields"] if "choices" in f},
-                           indent=12, width=120, compact=True)))
-        api_file.write("        counts = {f: {c: 0 for c in categorical_choices[f]} for f in categorical_fields}\n")
-        api_file.write("        for row in {}.objects.values():\n".format(relation["name"]))
-        api_file.write("            for f in categorical_fields:\n")
-        api_file.write("                counts[f][row[f]] += 1\n")
-        api_file.write("        return Response(counts)\n")
-
-        api_file.write("\n\n")
-
-        api_file.write("api_router.register(r'data/{}', {}ViewSet)\n".format(relation["name_lower"], relation["name"]))
+        api_file.write(MODEL_ROUTER_REGISTRATION_TEMPLATE.format(
+            relation_name_lower=relation["name_lower"],
+            relation_name=relation["name"],
+        ))
 
         api_file.flush()
 
