@@ -1,7 +1,7 @@
-Django==2.2.6
-djangorestframework==3.10.3
-django-filter==2.2.0
-django-reversion==3.0.4
+Django>=2.2.8,<3.0
+djangorestframework>=3.10.3,<3.11
+django-filter>=2.2.0,<2.3
+django-reversion>=3.0.5,<3.1
 setuptools
 wheel
-django-advanced-filters==1.1.1
+django-advanced-filters>=1.1.1,<1.2
