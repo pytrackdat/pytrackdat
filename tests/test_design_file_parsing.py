@@ -19,7 +19,8 @@
 
 import unittest
 
-from pytrackdat.generation import design_to_relation_fields, GenerationError
+from pytrackdat.generation import design_to_relation_fields
+from pytrackdat.generation.errors import GenerationError
 
 
 class TestDesignFileParsing(unittest.TestCase):

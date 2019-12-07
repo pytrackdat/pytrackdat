@@ -19,7 +19,8 @@
 
 import unittest
 
-from pytrackdat.generation import GenerationError, sanitize_and_check_site_name
+from pytrackdat.generation import sanitize_and_check_site_name
+from pytrackdat.generation.errors import GenerationError
 
 
 class TestGenerationSiteName(unittest.TestCase):

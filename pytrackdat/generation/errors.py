@@ -17,24 +17,10 @@
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
 
-import unittest
-
-import pytrackdat.generation.formatters as pgf
-
-AUTO_KEY_FIELD = {
-    # TODO: FILL IN OTHER MISC. INFO
-    "description": "test \\'auto\\' key"
-}
+__all__ = [
+    "GenerationError",
+]
 
 
-class TestGenerationFormatters(unittest.TestCase):
-    def test_help_text_cleaner(self):
-        self.assertEqual(pgf.clean_field_help_text("\\"), "\\\\")
-        self.assertEqual(pgf.clean_field_help_text("'"), "\\'")
-        self.assertEqual(pgf.clean_field_help_text("\\'"), "\\\\\\'")
-
-    def test_auto_key_formatter(self):
-        self.assertEqual(
-            pgf.auto_key_formatter(AUTO_KEY_FIELD),
-            "models.AutoField(primary_key=True, help_text='test \\\\\\'auto\\\\\\' key')"
-        )
+class GenerationError(Exception):
+    pass

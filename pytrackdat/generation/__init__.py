@@ -33,26 +33,15 @@ import sys
 from decimal import Decimal
 from typing import Dict, IO, List, Optional, Tuple, Union
 
-from .common import *
+from ..common import *
 
+from . import constants
+from . import errors
+from . import formatters
 
-__all__ = ["GenerationError",
-           "clean_field_help_text",
-           "auto_key_formatter",
-           "manual_key_formatter",
-           "foreign_key_formatter",
-           "basic_number_formatter",
-           "decimal_formatter",
-           "boolean_formatter",
-           "get_choices_from_text_field",
-           "text_formatter",
-           "date_formatter",
-           "point_formatter",
-           "line_string_formatter",
-           "polygon_formatter",
-           "multi_point_formatter",
-           "multi_line_string_formatter",
-           "multi_polygon_formatter",
+__all__ = ["constants",
+           "errors",
+           "formatters",
            "get_default_from_csv_with_type",
            "design_to_relation_fields",
            "create_admin",
@@ -62,428 +51,6 @@ __all__ = ["GenerationError",
            "sanitize_and_check_site_name",
            "is_common_password",
            "main"]
-
-
-ADMIN_FILE_HEADER = """# Generated using PyTrackDat v{}
-from django.contrib import admin
-from advanced_filters.admin import AdminAdvancedFiltersMixin
-from reversion.admin import VersionAdmin
-
-from core.models import *
-from .export_csv import ExportCSVMixin
-from .import_csv import ImportCSVMixin
-from .export_labels import ExportLabelsMixin
-from .charts import ChartsMixin
-
-""".format(VERSION)
-
-SNAPSHOT_ADMIN_FILE = """# Generated using PyTrackDat v{}
-from django.contrib import admin
-from django.utils.html import format_html
-from advanced_filters.admin import AdminAdvancedFiltersMixin
-
-from snapshot_manager.models import *
-
-
-@admin.register(Snapshot)
-class SnapshotAdmin(admin.ModelAdmin):
-    exclude = ('snapshot_type', 'size', 'name', 'reason')
-    list_display = ('__str__', 'download_link', 'reason')
-
-    def download_link(self, obj):
-        return format_html('<a href="{{url}}">Download Database Snapshot</a>',
-                           url='/snapshots/' + str(obj.pk) + '/download/')
-        
-    download_link.short_description = 'Download Link'
-
-""".format(VERSION)
-
-MODELS_FILE_HEADER = """# Generated using PyTrackDat v{version}
-from {models_path} import models
-
-"""
-
-MODEL_TEMPLATE = """class {name}(models.Model):
-    @classmethod
-    def ptd_info(cls):
-        return {fields}
-
-    @classmethod
-    def get_label_name(cls):
-        return '{label_name}'
-
-    @classmethod
-    def get_id_type(cls):
-        return '{id_type}'
-
-    class Meta:
-        verbose_name = '{verbose_name}'
-
-    pdt_created_at = models.DateTimeField(auto_now_add=True, null=False)
-    pdt_modified_at = models.DateTimeField(auto_now=True, null=False)"""
-
-SNAPSHOT_MODEL = """import os
-import shutil
-from datetime import datetime
-
-import {site_name}.settings as settings
-
-from django.contrib.auth.decorators import login_required
-from django.db import transaction
-from django.db.models.signals import pre_delete
-from django.dispatch import receiver
-from django.http import HttpResponse, Http404
-
-
-class Snapshot(models.Model):
-    pdt_created_at = models.DateTimeField(auto_now_add=True, null=False)
-    pdt_modified_at = models.DateTimeField(auto_now=True, null=False)
-    snapshot_type = models.TextField(help_text='Created by whom?', max_length=6, default='manual',
-                                     choices=(('auto', 'Automatic'), ('manual', 'Manual')), null=False, blank=False)
-    name = models.TextField(help_text='Name of snapshot file', max_length=127, null=False, blank=False)
-    reason = models.TextField(help_text='Reason for snapshot creation', max_length=127, null=False, blank=True,
-                              default='Manually created')
-    size = models.IntegerField(help_text='Size of database (in bytes)', null=False)
-
-    def __str__(self):
-        return self.snapshot_type + " snapshot (" + str(self.name) + "; size: " + str(self.size) + " bytes)"
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            with transaction.atomic():
-                # TODO: THIS ONLY WORKS WITH SQLITE
-                # Newly-created snapshot
-
-                name = "snapshot-" + str(datetime.utcnow()).replace(" ", "_").replace(":", "-") + ".sqlite3"
-
-                shutil.copyfile(settings.DATABASES['default']['NAME'],
-                                os.path.join(settings.BASE_DIR, "snapshots", name))
-
-                self.name = name
-                self.size = os.path.getsize(os.path.join(settings.BASE_DIR, "snapshots", name))
-
-        super(Snapshot, self).save(*args, **kwargs)
-
-
-@receiver(pre_delete, sender=Snapshot)
-def delete_snapshot_file(sender, instance, **kwargs):
-    try:
-        os.remove(os.path.join(settings.BASE_DIR, "snapshots", instance.name))
-    except OSError:
-        print("Error deleting snapshot")
-        # TODO: prevent deletion in some way?
-
-
-@login_required
-def download_view(request, id):
-    try:
-        snapshot = Snapshot.objects.get(pk=id)
-        path = os.path.join(settings.BASE_DIR, 'snapshots', snapshot.name)
-        if os.path.exists(path):
-            # TODO
-            with open(path, 'rb') as f:
-                response = HttpResponse(f.read(), content_type='application/x-sqlite3')
-                response['Content-Disposition'] = 'inline; filename=' + snapshot.name
-                return response
-        else:
-            raise Http404('Snapshot file does not exist (database inconsistency!)')
-        
-    except Snapshot.DoesNotExist:
-        raise Http404('Snapshot does not exist')
-
-"""
-
-API_FILE_HEADER = """# Generated using PyTrackDat v{version}
-
-from rest_framework import serializers
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.routers import DefaultRouter
-
-from core.models import *
-from snapshot_manager.models import Snapshot
-
-api_router = DefaultRouter()
-
-
-class SnapshotSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Snapshot
-        fields = ['pdt_created_at', 'pdt_modified_at', 'snapshot_type', 'name', 'reason', 'size']
-
-
-class SnapshotViewSet(viewsets.ModelViewSet):
-    queryset = Snapshot.objects.all()
-    serializer_class = SnapshotSerializer
-    
-    
-api_router.register(r'snapshots', SnapshotViewSet)
-
-
-class MetaViewSet(viewsets.ViewSet):
-    def list(self, _request):
-        return Response({{
-            "site_name": "{site_name}",
-            "gis_mode": {gis_mode},
-            "relations": {relations}
-        }})
-
-
-api_router.register(r'meta', MetaViewSet, basename='meta')
-
-
-"""
-
-URL_OLD = """urlpatterns = [
-    path('admin/', admin.site.urls),
-]"""
-URL_NEW = """from django.urls import include
-
-from core.api import api_router
-from snapshot_manager.models import download_view
-
-urlpatterns = [
-    path('', admin.site.urls),
-    path('api/', include(api_router.urls)),
-    path('snapshots/<int:id>/download/', download_view, name='snapshot-download'),
-    path('advanced_filters/', include('advanced_filters.urls')),
-]"""
-
-DEBUG_OLD = "DEBUG = True"
-DEBUG_NEW = "DEBUG = not (os.getenv('DJANGO_ENV') == 'production')"
-
-ALLOWED_HOSTS_OLD = "ALLOWED_HOSTS = []"
-ALLOWED_HOSTS_NEW = "ALLOWED_HOSTS = ['127.0.0.1', '{}'] if (os.getenv('DJANGO_ENV') == 'production') else []"
-
-INSTALLED_APPS_OLD = """INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-]"""
-
-INSTALLED_APPS_NEW = """INSTALLED_APPS = [
-    'core.apps.CoreConfig',
-    'snapshot_manager.apps.SnapshotManagerConfig',
-
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'reversion',
-    'advanced_filters',
-    'rest_framework',
-]"""
-
-INSTALLED_APPS_NEW_GIS = INSTALLED_APPS_NEW.replace(
-    "'django.contrib.staticfiles',",
-    """'django.contrib.staticfiles',
-
-    'django.contrib.gis',"""
-)
-
-STATIC_OLD = "STATIC_URL = '/static/'"
-STATIC_NEW = """STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')"""
-
-REST_FRAMEWORK_SETTINGS = """
-REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated']}
-"""
-
-SPATIALITE_SETTINGS = """
-SPATIALITE_LIBRARY_PATH='{}' if (os.getenv('DJANGO_ENV') != 'production') else None
-"""
-
-DATABASE_ENGINE_NORMAL = "django.db.backends.sqlite3"
-DATABASE_ENGINE_GIS = "django.contrib.gis.db.backends.spatialite"
-
-DISABLE_MAX_FIELDS = "\nDATA_UPLOAD_MAX_NUMBER_FIELDS = None\n"
-
-BASIC_NUMBER_TYPES = {
-    "integer": "IntegerField",
-    "float": "FloatField",
-}
-
-
-class GenerationError(Exception):
-    pass
-
-
-def clean_field_help_text(d: str) -> str:
-    return d.replace("\\", "\\\\").replace("'", "\\'")
-
-
-def auto_key_formatter(f: Dict) -> str:
-    return "models.AutoField(primary_key=True, help_text='{}')".format(clean_field_help_text(f["description"]))
-
-
-def manual_key_formatter(f: Dict) -> str:
-    # TODO: Shouldn't be always text?
-    return "models.CharField(primary_key=True, max_length=127, " \
-           "help_text='{}')".format(clean_field_help_text(f["description"]))
-
-
-def foreign_key_formatter(f: Dict) -> str:
-    return (
-        "models.ForeignKey('{relation}', help_text='{help_text}', blank={nullable}, null={nullable}, "
-        "on_delete=models.{on_delete})".format(
-            relation=to_relation_name(f["additional_fields"][0]),
-            help_text=f["description"].replace("'", "\\'"),
-            nullable=str(f["nullable"]),
-            on_delete="SET_NULL" if f["nullable"] else "CASCADE"
-        ))
-
-
-def basic_number_formatter(f: Dict) -> str:
-    t = BASIC_NUMBER_TYPES[f["data_type"]]
-    return "models.{type}(help_text='{help_text}', blank={nullable}, null={nullable}{default})".format(
-        type=t,
-        help_text=clean_field_help_text(f["description"]),
-        nullable=str(f["nullable"]),
-        default="" if f["default"] is None else ", default={}".format(f["default"])
-    )
-
-
-def decimal_formatter(f: Dict) -> str:
-    return (
-        "models.DecimalField(help_text='{help_text}', max_digits={max_digits}, decimal_places={decimals}, "
-        "blank={nullable}, null={nullable}{default})".format(
-            help_text=clean_field_help_text(f["description"]),
-            max_digits=f["additional_fields"][0],
-            decimals=f["additional_fields"][1],
-            nullable=str(f["nullable"]),
-            default="" if f["default"] is None else ", default=Decimal({})".format(f["default"])
-        ))
-
-
-def boolean_formatter(f: Dict) -> str:
-    return "models.BooleanField(help_text='{help_text}', blank={nullable}, null={nullable}{default})".format(
-        help_text=clean_field_help_text(f["description"]),
-        nullable=str(f["nullable"]),
-        default="" if f["default"] is None else ", default={}".format(f["default"])
-    )
-
-
-def get_choices_from_text_field(f: Dict) -> Optional[Tuple[str]]:
-    if len(f["additional_fields"]) == 2:
-        # TODO: Choice human names
-        choice_names = tuple(str(c).strip() for c in f["additional_fields"][1].split(";") if str(c).strip() != "")
-        return choice_names if len(choice_names) > 0 else None
-    return None
-
-
-def text_formatter(f: Dict) -> str:
-    choices = ()
-    max_length = None
-
-    if len(f["additional_fields"]) >= 1:
-        try:
-            max_length = int(f["additional_fields"][0])
-        except ValueError:
-            pass
-
-    if len(f["additional_fields"]) == 2:
-        # TODO: Choice human names
-        choice_names = get_choices_from_text_field(f)
-        if choice_names is not None:
-            choices = tuple(zip(choice_names, choice_names))
-
-    return "models.{field_type}(help_text='{help_text}', blank={blank_value}{default}{choices}{length})".format(
-        field_type="TextField" if max_length is None else "CharField",
-        help_text=clean_field_help_text(f["description"]),
-        blank_value=str(len(choices) == 0 or f["nullable"]),
-
-        # TODO: Make sure default is cleaned
-        default="" if f["default"] is None else ", default='{}'".format(f["default"]),
-        choices="" if len(choices) == 0 else ", choices={}".format(str(choices)),
-        length="" if max_length is None else ", max_length={}".format(max_length)
-    )
-
-
-def date_formatter(f: Dict) -> str:
-    # TODO: standardize date formatting... I think this might already be standardized?
-    return "models.DateField(help_text='{help_text}', blank={nullable}, null={nullable}{default})".format(
-        help_text=clean_field_help_text(f["description"]),
-        nullable=str(f["nullable"]),
-        default="" if f["default"] is None else ", default=datetime.strptime('{}', '%Y-%m-%d')".format(
-            f["default"].strftime("%Y-%m-%d")
-        )
-    )
-
-
-# All spatial fields cannot be null.
-
-
-def point_formatter(f: Dict) -> str:
-    # TODO: WARN IF NULLABLE
-    # TODO: DO WE EVER MAKE THIS BLANK?
-    # TODO: FIGURE OUT POINT FORMAT FOR DEFAULTS / IN GENERAL
-    return "models.PointField(help_text='{}')".format(f["description"].replace("'", "\\'"))
-
-
-def line_string_formatter(f: Dict) -> str:
-    # TODO: WARN IF NULLABLE
-    # TODO: DO WE EVER MAKE THIS BLANK?
-    # TODO: FIGURE OUT LINE STRING FORMAT FOR DEFAULTS / IN GENERAL
-    return "models.LineStringField(help_text='{}')".format(f["description"].replace("'", "\\'"))
-
-
-def polygon_formatter(f: Dict) -> str:
-    # TODO: WARN IF NULLABLE
-    # TODO: DO WE EVER MAKE THIS BLANK?
-    # TODO: FIGURE OUT POLYGON FORMAT FOR DEFAULTS / IN GENERAL
-    return "models.PolygonField(help_text='{}')".format(f["description"].replace("'", "\\'"))
-
-
-def multi_point_formatter(f: Dict) -> str:
-    # TODO: WARN IF NULLABLE
-    # TODO: DO WE EVER MAKE THIS BLANK?
-    # TODO: FIGURE OUT POINT FORMAT FOR DEFAULTS / IN GENERAL
-    return "models.MultiPointField(help_text='{}')".format(f["description"].replace("'", "\\'"))
-
-
-def multi_line_string_formatter(f: Dict) -> str:
-    # TODO: WARN IF NULLABLE
-    # TODO: DO WE EVER MAKE THIS BLANK?
-    # TODO: FIGURE OUT LINE STRING FORMAT FOR DEFAULTS / IN GENERAL
-    return "models.MultiLineStringField(help_text='{}')".format(f["description"].replace("'", "\\'"))
-
-
-def multi_polygon_formatter(f: Dict) -> str:
-    # TODO: WARN IF NULLABLE
-    # TODO: DO WE EVER MAKE THIS BLANK?
-    # TODO: FIGURE OUT POLYGON FORMAT FOR DEFAULTS / IN GENERAL
-    return "models.MultiPolygonField(help_text='{}')".format(f["description"].replace("'", "\\'"))
-
-
-DJANGO_TYPE_FORMATTERS = {
-    # Standard PyTrackDat Fields
-    "auto key": auto_key_formatter,
-    "manual key": manual_key_formatter,
-    "foreign key": foreign_key_formatter,
-    "integer": basic_number_formatter,
-    "decimal": decimal_formatter,
-    "float": basic_number_formatter,
-    "boolean": boolean_formatter,
-    "text": text_formatter,
-    "date": date_formatter,
-
-    # PyTrackDat GeoDjango Fields
-    "point": point_formatter,
-    "line string": line_string_formatter,
-    "polygon": polygon_formatter,
-    "multi point": multi_point_formatter,
-    "multi line string": multi_line_string_formatter,
-    "multi polygon": multi_polygon_formatter,
-    
-    "unknown": text_formatter  # Default to text fields... TODO: Should give a warning
-}
 
 
 def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=False, null_values=()) \
@@ -565,7 +132,7 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                     data_type = standardize_data_type(current_field[2])
 
                     if not valid_data_type(data_type, gis_mode):
-                        raise GenerationError("Error: Unknown data type specified for field '{}': '{}'.".format(
+                        raise errors.GenerationError("Error: Unknown data type specified for field '{}': '{}'.".format(
                             field_name,
                             data_type
                         ))
@@ -574,7 +141,7 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                     null_values = tuple([n.strip() for n in current_field[4].split(";")])
 
                     if data_type in ("auto key", "manual key") and id_type != "":
-                        raise GenerationError(
+                        raise errors.GenerationError(
                             "Error: More than one primary key (auto/manual key) was specified for relation '{}'. "
                             "Please only specify one primary key.".format(python_relation_name)
                         )
@@ -801,8 +368,8 @@ def sanitize_and_check_site_name(site_name_raw: str) -> str:
     site_name = sanitize_python_identifier(site_name_stripped)
 
     if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]+$", site_name):
-        raise GenerationError("Error: Site name '{}' cannot be turned into a valid Python package name. \n"
-                              "       Please choose a different name.".format(site_name_stripped))
+        raise errors.GenerationError("Error: Site name '{}' cannot be turned into a valid Python package name. \n"
+                                     "       Please choose a different name.".format(site_name_stripped))
 
     if site_name != site_name_stripped:
         print("Warning: Site name '{}' is not a valid Python package name; \n"
@@ -810,8 +377,8 @@ def sanitize_and_check_site_name(site_name_raw: str) -> str:
 
     try:
         importlib.import_module(site_name)
-        raise GenerationError("Error: Site name '{}' conflicts with a Python package name. \n"
-                              "       Please choose a different name.".format(site_name))
+        raise errors.GenerationError("Error: Site name '{}' conflicts with a Python package name. \n"
+                                     "       Please choose a different name.".format(site_name))
     except ImportError:
         pass
 
@@ -968,12 +535,12 @@ def main():
         sf.seek(0)
 
         new_contents = (
-            old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW_GIS if gis_mode else INSTALLED_APPS_NEW)
-                        .replace(DEBUG_OLD, DEBUG_NEW)
-                        .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url))
-                        .replace(STATIC_OLD, STATIC_NEW)
-            + DISABLE_MAX_FIELDS
-            + REST_FRAMEWORK_SETTINGS
+                old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW_GIS if gis_mode else INSTALLED_APPS_NEW)
+                .replace(DEBUG_OLD, DEBUG_NEW)
+                .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url))
+                .replace(STATIC_OLD, STATIC_NEW)
+                + DISABLE_MAX_FIELDS
+                + REST_FRAMEWORK_SETTINGS
         )
 
         if gis_mode:
