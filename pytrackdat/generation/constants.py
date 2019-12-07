@@ -56,6 +56,9 @@ __all__ = [
 ]
 
 
+# Model-Relevant Templates
+
+
 ADMIN_FILE_HEADER_TEMPLATE = """# Generated using PyTrackDat v{}
 from django.contrib import admin
 from advanced_filters.admin import AdminAdvancedFiltersMixin
