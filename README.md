@@ -18,3 +18,14 @@ ensure that the database generated is maximally useful.
 
 The latest documentation is available on
 [ReadTheDocs](https://pytrackdat.readthedocs.io/en/latest/).
+
+
+## Notes
+
+### Using Spatialite for GIS on macOS
+
+To use Spatialite on macOS, it is suggested that `brew` is used to install
+the `spatialite-tools` and `gdal` packages.
+
+The built-in `python3` that ships with macOS does not have extension support
+enabled, and thus cannot be used to build the PyTrackDat site.
