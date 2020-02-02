@@ -115,7 +115,7 @@ class {name}(models.Model):
     pdt_created_at = models.DateTimeField(auto_now_add=True, null=False)
     pdt_modified_at = models.DateTimeField(auto_now=True, null=False)
 
-    {model_fields}
+{model_fields}
 """
 
 
