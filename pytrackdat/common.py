@@ -1,5 +1,5 @@
 # PyTrackDat is a utility for assisting in online database creation.
-# Copyright (C) 2018-2019 the PyTrackDat authors.
+# Copyright (C) 2018-2020 the PyTrackDat authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ __all__ = ["VERSION",
 
 
 VERSION = "0.2.1"
-COPYRIGHT_DATES = "2018-2019"
+COPYRIGHT_DATES = "2018-2020"
 
 PYTHON_KEYWORDS = ["False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue",
                    "def", "del", "else", "elif", "except", "finally", "for", "from", "global", "if", "import", "in",
