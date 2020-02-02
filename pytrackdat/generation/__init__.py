@@ -31,6 +31,7 @@ import sys
 
 from datetime import datetime
 from decimal import Decimal
+from pathlib import Path
 from typing import Dict, IO, List, Union
 
 from ..common import *
@@ -425,7 +426,7 @@ def main():
     args = sys.argv[1:]
 
     # TODO: Make path more robust
-    package_dir = os.path.dirname(__file__)
+    package_dir = Path(os.path.dirname(__file__)).parent
 
     design_file = args[0]  # File name for design file input
 
