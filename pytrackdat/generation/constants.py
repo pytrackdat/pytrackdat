@@ -146,8 +146,7 @@ SNAPSHOT_MODEL = """import os
 import shutil
 from datetime import datetime
 
-import {site_name}.settings as settings
-
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models.signals import pre_delete
