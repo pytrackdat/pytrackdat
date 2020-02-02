@@ -272,7 +272,7 @@ class {relation_name}ViewSet(viewsets.ModelViewSet):
     def categorical_counts(self, _request):
         categorical_fields = {categorical_fields}
         categorical_choices = {categorical_choices}
-        counts = {f: {c: 0 for c in categorical_choices[f]} for f in categorical_fields}
+        counts = {{f: {{c: 0 for c in categorical_choices[f]}} for f in categorical_fields}}
         for row in {relation_name}.objects.values():
             for f in categorical_fields:
                 counts[f][row[f]] += 1
