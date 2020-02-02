@@ -33,7 +33,7 @@ from io import TextIOWrapper
 
 from .common import *
 
-from snapshot_manager.models import Snapshot
+from pytrackdat_snapshot_manager.models import Snapshot
 
 # TODO: ACCEPT https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry FOR GIS
 # TODO: NEED TO CHECK NULL VALUES?

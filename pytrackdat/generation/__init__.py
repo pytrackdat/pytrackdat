@@ -488,7 +488,6 @@ def main():
     print()
 
     core_app_path = os.path.join(TEMP_DIRECTORY, django_site_name, "core")
-    snapshot_manager_path = os.path.join(TEMP_DIRECTORY, django_site_name, "snapshot_manager")
     django_site_path = os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name)
 
     with a_buf, m_buf, api_buf:
@@ -509,13 +508,6 @@ def main():
 
         # Write API specification file contents to disk
         copy_buf_to_path(api_buf, os.path.join(core_app_path, "api.py"))
-
-    with open(os.path.join(snapshot_manager_path, "models.py"), "w") as smf, \
-            open(os.path.join(snapshot_manager_path, "admin.py"), "w") as saf:
-        smf.write(MODELS_FILE_HEADER.format(version=VERSION, models_path="django.db"))
-        smf.write("\n")
-        smf.write(SNAPSHOT_MODEL.format(site_name=django_site_name))
-        saf.write(SNAPSHOT_ADMIN_FILE)
 
     with open(os.path.join(django_site_path, "settings.py"), "r+") as sf:
         old_contents = sf.read()

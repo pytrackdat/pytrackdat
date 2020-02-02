@@ -27,9 +27,6 @@ __all__ = [
     "MODELS_FILE_HEADER",
     "MODEL_TEMPLATE",
 
-    "SNAPSHOT_ADMIN_FILE",
-    "SNAPSHOT_MODEL",
-
     "API_FILE_HEADER",
     "MODEL_SERIALIZER_TEMPLATE",
     "MODEL_VIEWSET_TEMPLATE",
@@ -119,100 +116,6 @@ class {name}(models.Model):
 """
 
 
-# Snapshot Specification Code
-
-SNAPSHOT_ADMIN_FILE = """# Generated using PyTrackDat v{}
-from django.contrib import admin
-from django.utils.html import format_html
-from advanced_filters.admin import AdminAdvancedFiltersMixin
-
-from snapshot_manager.models import *
-
-
-@admin.register(Snapshot)
-class SnapshotAdmin(admin.ModelAdmin):
-    exclude = ('snapshot_type', 'size', 'name', 'reason')
-    list_display = ('__str__', 'download_link', 'reason')
-
-    def download_link(self, obj):
-        return format_html('<a href="{{url}}">Download Database Snapshot</a>',
-                           url='/snapshots/' + str(obj.pk) + '/download/')
-
-    download_link.short_description = 'Download Link'
-
-""".format(VERSION)
-
-SNAPSHOT_MODEL = """import os
-import shutil
-from datetime import datetime
-
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.db import transaction
-from django.db.models.signals import pre_delete
-from django.dispatch import receiver
-from django.http import HttpResponse, Http404
-
-
-class Snapshot(models.Model):
-    pdt_created_at = models.DateTimeField(auto_now_add=True, null=False)
-    pdt_modified_at = models.DateTimeField(auto_now=True, null=False)
-    snapshot_type = models.TextField(help_text='Created by whom?', max_length=6, default='manual',
-                                     choices=(('auto', 'Automatic'), ('manual', 'Manual')), null=False, blank=False)
-    name = models.TextField(help_text='Name of snapshot file', max_length=127, null=False, blank=False)
-    reason = models.TextField(help_text='Reason for snapshot creation', max_length=127, null=False, blank=True,
-                              default='Manually created')
-    size = models.IntegerField(help_text='Size of database (in bytes)', null=False)
-
-    def __str__(self):
-        return self.snapshot_type + " snapshot (" + str(self.name) + "; size: " + str(self.size) + " bytes)"
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            with transaction.atomic():
-                # TODO: THIS ONLY WORKS WITH SQLITE
-                # Newly-created snapshot
-
-                name = "snapshot-" + str(datetime.utcnow()).replace(" ", "_").replace(":", "-") + ".sqlite3"
-
-                shutil.copyfile(settings.DATABASES['default']['NAME'],
-                                os.path.join(settings.BASE_DIR, "snapshots", name))
-
-                self.name = name
-                self.size = os.path.getsize(os.path.join(settings.BASE_DIR, "snapshots", name))
-
-        super(Snapshot, self).save(*args, **kwargs)
-
-
-@receiver(pre_delete, sender=Snapshot)
-def delete_snapshot_file(sender, instance, **kwargs):
-    try:
-        os.remove(os.path.join(settings.BASE_DIR, "snapshots", instance.name))
-    except OSError:
-        print("Error deleting snapshot")
-        # TODO: prevent deletion in some way?
-
-
-@login_required
-def download_view(request, id):
-    try:
-        snapshot = Snapshot.objects.get(pk=id)
-        path = os.path.join(settings.BASE_DIR, 'snapshots', snapshot.name)
-        if os.path.exists(path):
-            # TODO
-            with open(path, 'rb') as f:
-                response = HttpResponse(f.read(), content_type='application/x-sqlite3')
-                response['Content-Disposition'] = 'inline; filename=' + snapshot.name
-                return response
-        else:
-            raise Http404('Snapshot file does not exist (database inconsistency!)')
-
-    except Snapshot.DoesNotExist:
-        raise Http404('Snapshot does not exist')
-
-"""
-
-
 # API Specification Code
 
 API_FILE_HEADER = """# Generated using PyTrackDat v{version}
@@ -224,15 +127,16 @@ from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 
 from core.models import *
-from snapshot_manager.models import Snapshot
+from pytrackdat_snapshot_manager.models import Snapshot
 
 api_router = DefaultRouter()
 
 
+# TODO: Move to snapshot app?
 class SnapshotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Snapshot
-        fields = ['pdt_created_at', 'pdt_modified_at', 'snapshot_type', 'name', 'reason', 'size']
+        fields = "__all__"
 
 
 class SnapshotViewSet(viewsets.ModelViewSet):
@@ -291,14 +195,13 @@ URL_OLD = """urlpatterns = [
 URL_NEW = """from django.urls import include
 
 from core.api import api_router
-from snapshot_manager.models import download_view
+from pytrackdat_snapshot_manager.views import urls
 
 urlpatterns = [
     path('', admin.site.urls),
     path('api/', include(api_router.urls)),
-    path('snapshots/<int:id>/download/', download_view, name='snapshot-download'),
     path('advanced_filters/', include('advanced_filters.urls')),
-]"""
+] + urls"""
 
 DEBUG_OLD = "DEBUG = True"
 DEBUG_NEW = "DEBUG = not (os.getenv('DJANGO_ENV') == 'production')"
@@ -316,15 +219,15 @@ INSTALLED_APPS_OLD = """INSTALLED_APPS = [
 ]"""
 
 INSTALLED_APPS_NEW = """INSTALLED_APPS = [
-    'core.apps.CoreConfig',
-    'snapshot_manager.apps.SnapshotManagerConfig',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'core.apps.CoreConfig',
+    'pytrackdat_snapshot_manager',
 
     'reversion',
     'advanced_filters',
