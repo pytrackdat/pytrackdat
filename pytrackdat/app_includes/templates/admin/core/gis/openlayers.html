@@ -1,0 +1,102 @@
+<!--
+Portions copyright (c) Django Software Foundation and individual contributors.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice,
+       this list of conditions and the following disclaimer.
+
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+
+    3. Neither the name of Django nor the names of its contributors may be used
+       to endorse or promote products derived from this software without
+       specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Portions copyright (C) 2018-2020 the PyTrackDat authors.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Contact information:
+    David Lougheed (david.lougheed@gmail.com)
+-->
+{% block extrastyle %}
+{% load i18n static %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<style type="text/css">
+  #{{ id }}_map { width: {{ map_width }}px; height: {{ map_height }}px; }
+  #{{ id }}_map .aligned label { float:inherit; }
+  #{{ id }}_admin_map { position: relative; vertical-align: top; float: {{ LANGUAGE_BIDI|yesno:"right,left" }}; }
+  {% if not display_wkt %}#{{ id }} { display: none; }{% endif %}
+  .olControlEditingToolbar .olControlModifyFeatureItemActive {
+     background-image: url("{% static "admin/img/gis/move_vertex_on.svg" %}");
+     background-repeat: no-repeat;
+  }
+  .olControlEditingToolbar .olControlModifyFeatureItemInactive {
+     background-image: url("{% static "admin/img/gis/move_vertex_off.svg" %}");
+     background-repeat: no-repeat;
+  }
+</style>
+<!--[if IE]>
+<style type="text/css">
+  /* This fixes the mouse offset issues in IE. */
+  #{{ id }}_admin_map { position: static; vertical-align: top; }
+  /* `font-size: 0` fixes the 1px border between tiles, but borks LayerSwitcher.
+      Thus, this is disabled until a better fix is found.
+  #{{ id }}_map { width: {{ map_width }}px; height: {{ map_height }}px; font-size: 0; } */
+</style>
+<![endif]-->
+{% endblock %}
+<span id="{{ id }}_admin_map">
+<script>
+//<![CDATA[
+{% block openlayers %}{% include "admin/core/gis/openlayers.js" %}{% endblock %}
+//]]>
+</script>
+<div id="{{ id }}_map"{% if LANGUAGE_BIDI %} dir="ltr"{% endif %}></div>
+{% if editable %}
+<a href="javascript:{{ module }}.clearFeatures()">Delete all Features</a>
+{% endif %}
+<fieldset>
+    <legend>Precise Editing (Well-Known Text format; WKT)</legend>
+    <div class="form-row field-name">
+        <div>
+            <label for="{{ id }}.srid">SRID</label>
+            <input readonly id="{{ id }}.srid" />
+        </div>
+    </div>
+    <div class="form-row field-name">
+        <div>
+            <label for="{{ id }}.value">Geometry (WKT)</label>
+            <textarea id="{{ id }}.value" cols="80" rows="3"></textarea>
+        </div>
+    </div>
+</fieldset>
+{% if display_wkt %}<p>WKT debugging window:</p>{% endif %}
+<textarea id="{{ id }}" class="vWKTField required" cols="150" rows="10" name="{{ name }}">{{ wkt }}</textarea>
+<script>{% block init_function %}{{ module }}.init();{% endblock %}</script>
+</span>

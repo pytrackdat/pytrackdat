@@ -265,6 +265,7 @@ def create_admin(relations: List[Dict], site_name: str, gis_mode: bool) -> io.St
 
         af.write(MODEL_ADMIN_TEMPLATE.format(
             relation_name=relation["name"],
+            admin_class="gis_admin.GeoModelAdmin" if gis_mode else "",
             list_display=("    list_display = ('{}',)\n".format("', '".join(list_display_fields))
                           if len(list_display_fields) > 1 else ""),
             list_filter=("    list_filter = ('{}',)\n".format("', '".join(list_filter_fields))

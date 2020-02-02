@@ -58,6 +58,8 @@ __all__ = [
 
 ADMIN_FILE_HEADER_TEMPLATE = """# Generated using PyTrackDat v{}
 from django.contrib import admin
+from django.contrib.gis import forms as gis_forms, admin as gis_admin
+from django.contrib.gis.db import models as gis_models
 from advanced_filters.admin import AdminAdvancedFiltersMixin
 from reversion.admin import VersionAdmin
 
@@ -79,8 +81,9 @@ class {relation_name}Admin(
     ExportLabelsMixin,
     ChartsMixin,
     AdminAdvancedFiltersMixin,
-    VersionAdmin
+    VersionAdmin, {admin_class}
 ):
+    map_template = "admin/core/gis/openlayers.html"
     change_list_template = 'admin/core/change_list.html'
     actions = ('export_csv', 'export_labels')
 {list_display}{list_filter}{advanced_filter_fields}
@@ -139,6 +142,7 @@ class SnapshotSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+# TODO: Move to snapshot app?
 class SnapshotViewSet(viewsets.ModelViewSet):
     queryset = Snapshot.objects.all()
     serializer_class = SnapshotSerializer
