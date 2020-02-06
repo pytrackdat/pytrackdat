@@ -60,12 +60,12 @@ __all__ = ["VERSION",
 VERSION = "0.2.1"
 COPYRIGHT_DATES = "2018-2020"
 
-PYTHON_KEYWORDS = ["False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue",
+PYTHON_KEYWORDS = ("False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue",
                    "def", "del", "else", "elif", "except", "finally", "for", "from", "global", "if", "import", "in",
-                   "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"]
+                   "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield")
 
-DATA_TYPES = ["auto key", "manual key", "integer", "float", "decimal", "boolean", "text", "date", "time", "foreign key"]
-GIS_DATA_TYPES = ["point", "line string", "polygon", "multi point", "multi line string", "multi polygon"]
+DATA_TYPES = ("auto key", "manual key", "integer", "float", "decimal", "boolean", "text", "date", "time", "foreign key")
+GIS_DATA_TYPES = ("point", "line string", "polygon", "multi point", "multi line string", "multi polygon")
 
 
 DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS = {
