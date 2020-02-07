@@ -36,7 +36,7 @@ ptd-analyze design/design_first.csv specimen data/specimens.csv site data/sites.
 This will yield the following output:
 
 ```
-PyTrackDat v0.3.0  Copyright (C) 2018-2019 the PyTrackDat authors.
+PyTrackDat v0.3.0  Copyright (C) 2018-2020 the PyTrackDat authors.
 This program comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
 
 Detecting types for fields in relation 'specimen'...
