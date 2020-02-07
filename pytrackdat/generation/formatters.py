@@ -176,23 +176,24 @@ def multi_polygon_formatter(f: Dict) -> str:
 
 DJANGO_TYPE_FORMATTERS = {
     # Standard PyTrackDat Fields
-    "auto key": auto_key_formatter,
-    "manual key": manual_key_formatter,
-    "foreign key": foreign_key_formatter,
-    "integer": basic_number_formatter,
-    "decimal": decimal_formatter,
-    "float": basic_number_formatter,
-    "boolean": boolean_formatter,
-    "text": text_formatter,
-    "date": date_formatter,
+    DT_AUTO_KEY: auto_key_formatter,
+    DT_MANUAL_KEY: manual_key_formatter,
+    DT_FOREIGN_KEY: foreign_key_formatter,
+    DT_INTEGER: basic_number_formatter,
+    DT_DECIMAL: decimal_formatter,
+    DT_FLOAT: basic_number_formatter,
+    DT_BOOLEAN: boolean_formatter,
+    DT_TEXT: text_formatter,
+    DT_DATE: date_formatter,
+    # TODO: Missing: time_formatter
 
     # PyTrackDat GeoDjango Fields
-    "point": point_formatter,
-    "line string": line_string_formatter,
-    "polygon": polygon_formatter,
-    "multi point": multi_point_formatter,
-    "multi line string": multi_line_string_formatter,
-    "multi polygon": multi_polygon_formatter,
+    DT_GIS_POINT: point_formatter,
+    DT_GIS_LINE_STRING: line_string_formatter,
+    DT_GIS_POLYGON: polygon_formatter,
+    DT_GIS_MULTI_POINT: multi_point_formatter,
+    DT_GIS_MULTI_LINE_STRING: multi_line_string_formatter,
+    DT_GIS_MULTI_POLYGON: multi_polygon_formatter,
 
     "unknown": text_formatter  # Default to text fields... TODO: Should give a warning
 }

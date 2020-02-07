@@ -270,6 +270,6 @@ DISABLE_MAX_FIELDS = "\nDATA_UPLOAD_MAX_NUMBER_FIELDS = None\n"
 # Other Constants
 
 BASIC_NUMBER_TYPES = {
-    "integer": "IntegerField",
-    "float": "FloatField",
+    DT_INTEGER: "IntegerField",
+    DT_FLOAT: "FloatField",
 }

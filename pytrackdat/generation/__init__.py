@@ -62,19 +62,19 @@ __all__ = [
 
 def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=False, null_values=()) \
         -> Union[None, int, float, Decimal, datetime, str, bool]:
-    if dv.strip() == "" and dt != "boolean":
+    if dv.strip() == "" and dt != DT_BOOLEAN:
         return None
 
-    if dt == "integer":
+    if dt == DT_INTEGER:
         return int(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv))
 
-    if dt == "float":
+    if dt == DT_FLOAT:
         return float(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.lower()))
 
-    if dt == "decimal":
+    if dt == DT_DECIMAL:
         return Decimal(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.lower()))
 
-    if dt == "date":
+    if dt == DT_DATE:
         # TODO: adjust format based on heuristics
         # TODO: Allow extra column setting with date format from python docs?
 
@@ -91,12 +91,12 @@ def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=F
 
         return dt_interpretations[0]
 
-    if dt == "time":
+    if dt == DT_TIME:
         # TODO: adjust format based on MORE heuristics
         # TODO: Allow extra column setting with time format from python docs?
         return datetime.strptime(dv, "%H:%M" if len(dv.split(":")) == 2 else "%H:%M:%S")
 
-    if dt == "boolean":
+    if dt == DT_BOOLEAN:
         if nullable and ((len(null_values) != 0 and dv.strip() in null_values) or (dv.strip() == "")):
             return None
 
@@ -144,16 +144,16 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                     nullable = current_field[3].strip().lower() in BOOLEAN_TRUE_VALUES
                     null_values = tuple([n.strip() for n in current_field[4].split(";")])
 
-                    if data_type in ("auto key", "manual key") and id_type != "":
+                    if data_type in KEY_TYPES and id_type != "":
                         raise errors.GenerationError(
                             "Error: More than one primary key (auto/manual key) was specified for relation '{}'. "
                             "Please only specify one primary key.".format(python_relation_name)
                         )
 
-                    if data_type == "auto key":
-                        id_type = "integer"
-                    elif data_type == "manual key":
-                        id_type = "text"
+                    if data_type == DT_AUTO_KEY:
+                        id_type = "integer"  # TODO: DT_ ?
+                    elif data_type == DT_MANUAL_KEY:
+                        id_type = "text"  # TODO: DT_ ?
 
                     csv_names = tuple(f.replace(r"\;", ";") for f in re.split(r";;\s*", current_field[0]))
                     if len(csv_names) > 1 and data_type != "":

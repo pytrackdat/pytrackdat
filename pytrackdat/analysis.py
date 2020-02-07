@@ -149,7 +149,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     elif decimal_values > 0 and len(non_numeric_values) in (0, 1):
         # Integer or decimal values -> use a decimal field.
         # TODO: Find number of digits!!!
-        detected_type = "decimal"
+        detected_type = DT_DECIMAL
         nullable = (len(non_numeric_values) == 1)
         max_length = max_seen_length + max_seen_decimals + 4
 

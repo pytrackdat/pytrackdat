@@ -18,43 +18,72 @@
 #     David Lougheed (david.lougheed@gmail.com)
 
 import re
+from typing import Optional, Tuple
 
 
-__all__ = ["VERSION",
-           "COPYRIGHT_DATES",
-           "PYTHON_KEYWORDS",
-           "DATA_TYPES",
-           "GIS_DATA_TYPES",
-           "DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS",
-           "RE_INTEGER",
-           "RE_INTEGER_HUMAN",
-           "RE_DECIMAL",
-           "RE_DECIMAL_HUMAN",
-           "RE_NUMBER_GROUP_SEPARATOR",
-           "RE_DATE_YMD_D",
-           "RE_DATE_YMD_S",
-           "RE_DATE_DMY_D",
-           "RE_DATE_DMY_S",
-           "RE_TIME_HH_MM_24",
-           "RE_TIME_HH_MM_SS_24",
-           "RE_MULTIPLE_UNDERSCORES",
-           "RE_NON_IDENTIFIER_CHARACTERS",
-           "RE_SEPARATOR_CHARACTERS",
-           "RE_MULTIPLE_WHITESPACE_CHARACTERS",
-           "BOOLEAN_TRUE_VALUES",
-           "BOOLEAN_FALSE_VALUES",
-           "BOOLEAN_TF_PAIRS",
-           "TIME_FORMATS",
-           "DATE_FORMATS",
-           "PDT_RELATION_PREFIX",
-           "valid_data_type",
-           "collapse_multiple_underscores",
-           "sanitize_python_identifier",
-           "field_to_py_code",
-           "standardize_data_type",
-           "to_relation_name",
-           "print_license",
-           "exit_with_error"]
+__all__ = [
+    "VERSION",
+    "COPYRIGHT_DATES",
+    "PYTHON_KEYWORDS",
+
+    "DT_AUTO_KEY",
+    "DT_MANUAL_KEY",
+    "DT_INTEGER",
+    "DT_FLOAT",
+    "DT_DECIMAL",
+    "DT_BOOLEAN",
+    "DT_TEXT",
+    "DT_DATE",
+    "DT_TIME",
+    "DT_FOREIGN_KEY",
+
+    "DT_GIS_POINT",
+    "DT_GIS_LINE_STRING",
+    "DT_GIS_POLYGON",
+    "DT_GIS_MULTI_POINT",
+    "DT_GIS_MULTI_LINE_STRING",
+    "DT_GIS_MULTI_POLYGON",
+
+    "KEY_TYPES",
+    "DATA_TYPES",
+    "GIS_DATA_TYPES",
+    "DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS",
+    "DESIGN_SEPARATOR",
+
+    "RE_INTEGER",
+    "RE_INTEGER_HUMAN",
+    "RE_DECIMAL",
+    "RE_DECIMAL_HUMAN",
+    "RE_NUMBER_GROUP_SEPARATOR",
+    "RE_DATE_YMD_D",
+    "RE_DATE_YMD_S",
+    "RE_DATE_DMY_D",
+    "RE_DATE_DMY_S",
+    "RE_TIME_HH_MM_24",
+    "RE_TIME_HH_MM_SS_24",
+    "RE_MULTIPLE_UNDERSCORES",
+    "RE_NON_IDENTIFIER_CHARACTERS",
+    "RE_SEPARATOR_CHARACTERS",
+    "RE_MULTIPLE_WHITESPACE_CHARACTERS",
+
+    "BOOLEAN_TRUE_VALUES",
+    "BOOLEAN_FALSE_VALUES",
+    "BOOLEAN_TF_PAIRS",
+
+    "TIME_FORMATS",
+    "DATE_FORMATS",
+
+    "PDT_RELATION_PREFIX",
+
+    "valid_data_type",
+    "collapse_multiple_underscores",
+    "sanitize_python_identifier",
+    "field_to_py_code",
+    "standardize_data_type",
+    "to_relation_name",
+    "print_license",
+    "exit_with_error",
+]
 
 
 VERSION = "0.2.1"
@@ -64,29 +93,70 @@ PYTHON_KEYWORDS = ("False", "None", "True", "and", "as", "assert", "async", "awa
                    "def", "del", "else", "elif", "except", "finally", "for", "from", "global", "if", "import", "in",
                    "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield")
 
-DATA_TYPES = ("auto key", "manual key", "integer", "float", "decimal", "boolean", "text", "date", "time", "foreign key")
-GIS_DATA_TYPES = ("point", "line string", "polygon", "multi point", "multi line string", "multi polygon")
+DT_AUTO_KEY = "auto key"
+DT_MANUAL_KEY = "manual key"
+DT_INTEGER = "integer"
+DT_FLOAT = "float"
+DT_DECIMAL = "decimal"
+DT_BOOLEAN = "boolean"
+DT_TEXT = "text"
+DT_DATE = "date"
+DT_TIME = "time"
+DT_FOREIGN_KEY = "foreign key"
+
+DT_GIS_POINT = "point"
+DT_GIS_LINE_STRING = "line string"
+DT_GIS_POLYGON = "polygon"
+DT_GIS_MULTI_POINT = "multi point"
+DT_GIS_MULTI_LINE_STRING = "multi line string"
+DT_GIS_MULTI_POLYGON = "multi polygon"
+
+KEY_TYPES = (DT_AUTO_KEY, DT_MANUAL_KEY)
+
+DATA_TYPES = (
+    DT_AUTO_KEY,
+    DT_MANUAL_KEY,
+    DT_INTEGER,
+    DT_FLOAT,
+    DT_DECIMAL,
+    DT_BOOLEAN,
+    DT_TEXT,
+    DT_DATE,
+    DT_TIME,
+    DT_FOREIGN_KEY,
+)
+
+GIS_DATA_TYPES = (
+    DT_GIS_POINT,
+    DT_GIS_LINE_STRING,
+    DT_GIS_POLYGON,
+    DT_GIS_MULTI_POINT,
+    DT_GIS_MULTI_LINE_STRING,
+    DT_GIS_MULTI_POLYGON,
+)
 
 
 DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS = {
-    "auto key": [],
-    "manual key": [],
-    "integer": [],
-    "float": [],
-    "decimal": ["max_length", "precision"],
-    "boolean": [],
-    "text": ["max_length", "options"],
-    "date": [],
-    "time": [],
-    "foreign key": ["target"],
+    DT_AUTO_KEY: [],
+    DT_MANUAL_KEY: [],
+    DT_INTEGER: [],
+    DT_FLOAT: [],
+    DT_DECIMAL: ["max_length", "precision"],
+    DT_BOOLEAN: [],
+    DT_TEXT: ["max_length", "options"],
+    DT_DATE: [],
+    DT_TIME: [],
+    DT_FOREIGN_KEY: ["target"],
 
-    "point": [],  # TODO: COORDINATE TYPE
-    "line string": [],  # TODO: COORDINATE TYPE
-    "polygon": [],  # TODO: COORDINATE TYPE
-    "multi point": [],  # TODO: COORDINATE TYPE
-    "multi line string": [],  # TODO: COORDINATE TYPE
-    "multi polygon": []  # TODO: COORDINATE TYPE
+    DT_GIS_POINT: [],  # TODO: COORDINATE TYPE
+    DT_GIS_LINE_STRING: [],  # TODO: COORDINATE TYPE
+    DT_GIS_POLYGON: [],  # TODO: COORDINATE TYPE
+    DT_GIS_MULTI_POINT: [],  # TODO: COORDINATE TYPE
+    DT_GIS_MULTI_LINE_STRING: [],  # TODO: COORDINATE TYPE
+    DT_GIS_MULTI_POLYGON: []  # TODO: COORDINATE TYPE
 }
+
+DESIGN_SEPARATOR = ";"
 
 
 RE_INTEGER = re.compile(r"^([-+]?[1-9]\d*|0)$")
