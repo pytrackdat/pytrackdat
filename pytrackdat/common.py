@@ -232,7 +232,7 @@ def standardize_data_type(dt: str) -> str:
 
 def to_relation_name(name: str) -> str:
     name_sanitized = collapse_multiple_underscores(sanitize_python_identifier(name))
-    python_relation_name = PDT_RELATION_PREFIX + "".join([n.capitalize() for n in name_sanitized.split("_")])
+    python_relation_name = PDT_RELATION_PREFIX + "".join(n.capitalize() for n in name_sanitized.split("_"))
 
     # Take care of plurals so they do not look dumb.
 
