@@ -19,7 +19,7 @@
 
 from typing import Dict
 
-from ..common import to_relation_name
+from ..common import *
 from .constants import BASIC_NUMBER_TYPES
 from .utils import get_choices_from_text_field
 
