@@ -26,7 +26,8 @@ def main():
 
     try:
         subprocess.run(
-            "/bin/bash -c 'cd {} && source site_env/bin/activate && ./manage.py runserver'".format(site_path),
+            ('cmd /c "cd {} && site_env\\Scripts\\activate.bat && python manage.py runserver"' if os.name == "nt"
+             else "/bin/bash -c 'cd {} && source site_env/bin/activate && ./manage.py runserver'").format(site_path),
             shell=True
         )
     except (subprocess.CalledProcessError, KeyboardInterrupt):
