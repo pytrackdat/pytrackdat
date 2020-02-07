@@ -297,7 +297,7 @@ def create_models(relations: List[Dict], gis_mode: bool) -> io.StringIO:
             fields=pprint.pformat(relation["fields"], indent=12, width=120, compact=True),
             label_name=relation["name"][len(PDT_RELATION_PREFIX):],
             id_type=relation["id_type"],
-            verbose_name=relation["name"][len(PDT_RELATION_PREFIX):],
+            short_name=relation["name"][len(PDT_RELATION_PREFIX):],
             model_fields="\n".join("    {} = {}".format(f["name"], formatters.DJANGO_TYPE_FORMATTERS[f["data_type"]](f))
                                    for f in relation["fields"])
         ))

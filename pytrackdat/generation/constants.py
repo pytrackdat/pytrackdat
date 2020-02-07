@@ -109,8 +109,12 @@ class {name}(models.Model):
     def get_id_type(cls):
         return '{id_type}'
 
+    def __str__(self):
+        return '{short_name}: {{}}'.format(self.pk)
+
     class Meta:
-        verbose_name = '{verbose_name}'
+        # Use short name as verbose name to not show the PyTrackDat prefix
+        verbose_name = '{short_name}'
 
     pdt_created_at = models.DateTimeField(auto_now_add=True, null=False)
     pdt_modified_at = models.DateTimeField(auto_now=True, null=False)
