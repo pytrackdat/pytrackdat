@@ -12,12 +12,13 @@ guide.
 
 ## Release Checklist
 
- - [ ] Check that `ptd-analyze` and `ptd-generate` work correctly
+ - [ ] Check that `ptd-analyze`, `ptd-generate`, and `ptd-test` work correctly
+       on Windows, Mac, and Linux.
  - [ ] Make sure all changes are in the changelog and any relevant
        documentation is added / updated.
  - [ ] Bump the version number in `pytrackdat/common.py`
    - If necessary, update the copyright dates.
  - [ ] Bump the version number in `setup.py`
  - [ ] Publish a release to the **test** PyPI repository.
- - [ ] Confirm the release works in a virtual environment.
+ - [ ] Confirm the release works in a virtual environment on Windows, Mac, and Linux.
  - [ ] Publish a release to PyPI.
