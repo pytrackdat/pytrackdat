@@ -123,24 +123,24 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     # Keys:
 
     if len(all_values) == len(col) and "" not in all_values and not key_found:
-        detected_type = "manual key"
+        detected_type = DT_MANUAL_KEY
         nullable = False
         is_key = True
 
     # Integers:
 
     elif integer_values == len(col):
-        detected_type = "integer"
+        detected_type = DT_INTEGER
         nullable = False
 
     elif integer_values > 0 and len(non_numeric_values) == 1 and decimal_values == 0 \
             and not (len(integer_values_set) == 2 and 0 in integer_values_set and 1 in integer_values_set):
-        detected_type = "integer"
+        detected_type = DT_INTEGER
         nullable = True
         # TODO: DO WE WANT NULL VALUES HERE?
 
     elif integer_values > 0 and len(non_numeric_values) > 1 and ((integer_values / len(col)) >= ALTERNATE_THRESHOLD):
-        detected_type = "integer"
+        detected_type = DT_INTEGER
         nullable = True
         include_alternate = True
 
@@ -157,30 +157,30 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
 
     elif float_values > 0 and len(non_numeric_values) in (0, 1):
         # Integer, decimal or float values in column -> use a float field.
-        detected_type = "float"
+        detected_type = DT_FLOAT
         nullable = (len(non_numeric_values) == 1)
 
     # Dates:
 
     elif date_values == len(col):
-        detected_type = "date"
+        detected_type = DT_DATE
         nullable = False
         # TODO: Detect date format and make additional settings with date format
 
     elif date_values > 0 and len(other_values) == 1:
-        detected_type = "date"
+        detected_type = DT_DATE
         nullable = True
         null_values = list(other_values)[0]
 
     # Times:
 
     elif time_values == len(col):
-        detected_type = "time"
+        detected_type = DT_TIME
         nullable = False
         # TODO: Detect time format and make additional settings with time format
 
     elif time_values > 0 and len(other_values) == 1:
-        detected_type = "time"
+        detected_type = DT_TIME
         nullable = True
         null_values = list(other_values)[0]
 
@@ -188,7 +188,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
 
     elif (len([a for a in all_values if a.strip() != ""]) < MAX_CHOICES and max_seen_length < MAX_CHOICE_LENGTH and
           sum(v for a, v in all_values_counts.items() if a.strip() != "") >= 2 * len(all_values)):
-        detected_type = "text"
+        detected_type = DT_TEXT
         nullable = ("" in all_values)
         choices = sorted(all_values)
         in_choices = {c.lower() for c in choices}
@@ -197,7 +197,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
         # Booleans:
         if (len(choices) == 2 or (len(choices) == 3 and nullable)) and any(tv in in_choices and fv in in_choices
                                                                            for tv, fv in BOOLEAN_TF_PAIRS):
-            detected_type = "boolean"
+            detected_type = DT_BOOLEAN
             null_values = [c for c in choices if c.lower() not in BOOLEAN_TRUE_VALUES + BOOLEAN_FALSE_VALUES]
 
     # Text
@@ -205,7 +205,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     # TODO: I don't like this logic
 
     elif integer_values < max(len(col) / 10, 10) or len(non_numeric_values) >= 10:
-        detected_type = "text"
+        detected_type = DT_TEXT
         nullable = False
         if max_seen_length <= CHAR_FIELD_MAX_LENGTH:
             max_length = CHAR_FIELD_LENGTH
