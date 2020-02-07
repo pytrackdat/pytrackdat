@@ -32,7 +32,7 @@ import sys
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Dict, IO, List, Union
+from typing import Dict, IO, List, Optional, Union
 
 from ..common import *
 from .constants import *
@@ -60,48 +60,69 @@ __all__ = [
 ]
 
 
-def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable=False, null_values=()) \
+def parse_dt_integer(dv: str):
+    return int(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.strip()))
+
+
+def parse_dt_float(dv: str):
+    return float(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.lower().strip()))
+
+
+def parse_dt_decimal(dv: str):
+    return Decimal(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.lower().strip()))
+
+
+def parse_dt_date(dv: str, field_name: str):
+    # TODO: adjust format based on heuristics
+    # TODO: Allow extra column setting with date format from python docs?
+
+    dt_interpretations = tuple(datetime.strptime(dv.strip(), df) for dr, df in DATE_FORMATS)
+    if len(dt_interpretations) == 0:
+        # TODO: Warning
+        print("Warning: Value '{}' the date-typed field '{}' does not match any PyTrackDat-compatible "
+              "formats.".format(dv.strip(), field_name))
+        return None
+
+    if re.match(RE_DATE_DMY_D, dv.strip()) or re.match(RE_DATE_DMY_S, dv.strip()):
+        print("Warning: Assuming d{sep}m{sep}Y date format for ambiguously-formatted date field '{field}'.".format(
+            sep="-" if "-" in dv.strip() else "/", field=field_name))
+
+    return dt_interpretations[0]
+
+
+def parse_dt_time(dv: str):
+    # TODO: adjust format based on MORE heuristics
+    # TODO: Allow extra column setting with time format from python docs?
+    return datetime.strptime(dv.strip(), "%H:%M" if len(dv.strip().split(":")) == 2 else "%H:%M:%S")
+
+
+def parse_dt_boolean(dv: str, _field_name: str, nullable: bool, null_values: tuple) -> Optional[bool]:
+    if nullable and ((len(null_values) != 0 and dv.strip() in null_values) or (dv.strip() == "")):
+        return None
+
+    return dv.strip().lower() in BOOLEAN_TRUE_VALUES
+
+
+# TODO: GIS default parsers
+DATA_TYPE_STRING_PARSERS = {
+    DT_INTEGER: parse_dt_integer,
+    DT_FLOAT: parse_dt_float,
+    DT_DECIMAL: parse_dt_decimal,
+    DT_DATE: parse_dt_date,
+    DT_TIME: parse_dt_time,
+    DT_BOOLEAN: parse_dt_boolean,
+}
+
+
+def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable: bool = False, null_values: tuple = ()) \
         -> Union[None, int, float, Decimal, datetime, str, bool]:
     if dv.strip() == "" and dt != DT_BOOLEAN:
         return None
 
-    if dt == DT_INTEGER:
-        return int(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv))
+    if dt in DATA_TYPE_STRING_PARSERS:
+        return DATA_TYPE_STRING_PARSERS[dt](dv, field_name, nullable, null_values)
 
-    if dt == DT_FLOAT:
-        return float(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.lower()))
-
-    if dt == DT_DECIMAL:
-        return Decimal(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.lower()))
-
-    if dt == DT_DATE:
-        # TODO: adjust format based on heuristics
-        # TODO: Allow extra column setting with date format from python docs?
-
-        dt_interpretations = tuple(datetime.strptime(dv, df) for dr, df in DATE_FORMATS)
-        if len(dt_interpretations) == 0:
-            # TODO: Warning
-            print("Warning: Default value '{}' the date-typed field '{}' does not match any "
-                  "PyTrackDat-compatible formats.".format(dv, field_name))
-            return None
-
-        if re.match(RE_DATE_DMY_D, dv) or re.match(RE_DATE_DMY_S, dv):
-            print("Warning: Assuming d{sep}m{sep}Y date format for ambiguously-formatted date field '{field}'.".format(
-                sep="-" if "-" in dv else "/", field=field_name))
-
-        return dt_interpretations[0]
-
-    if dt == DT_TIME:
-        # TODO: adjust format based on MORE heuristics
-        # TODO: Allow extra column setting with time format from python docs?
-        return datetime.strptime(dv, "%H:%M" if len(dv.split(":")) == 2 else "%H:%M:%S")
-
-    if dt == DT_BOOLEAN:
-        if nullable and ((len(null_values) != 0 and dv.strip() in null_values) or (dv.strip() == "")):
-            return None
-
-        return dv.lower() in BOOLEAN_TRUE_VALUES
-
+    # Otherwise, keep string version
     return dv
 
 
