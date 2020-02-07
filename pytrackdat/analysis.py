@@ -351,12 +351,10 @@ def main():
     try:
         with open(design_file, "w", newline="") as df:
             design_writer = csv.writer(df, delimiter=",")
-            max_length = max([len(r) for r in design_file_rows])
+            max_length = max(len(r) for r in design_file_rows)
 
             for r in design_file_rows:
-                while len(r) < max_length:
-                    r.append("")
-
+                r.extend([""] * (max_length - len(r)))  # Pad out row with blank columns if needed
                 design_writer.writerow(r)
 
             print("    Wrote design file to '{}'...\n".format(design_file))
