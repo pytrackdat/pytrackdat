@@ -18,7 +18,7 @@
 #     David Lougheed (david.lougheed@gmail.com)
 
 import re
-from typing import Optional, Tuple
+from typing import Optional, Sequence, Tuple
 
 
 __all__ = [
@@ -83,6 +83,9 @@ __all__ = [
     "to_relation_name",
     "print_license",
     "exit_with_error",
+
+    "RelationField",
+    "Relation",
 ]
 
 
@@ -262,3 +265,85 @@ def exit_with_error(message: str):
     print(message)
     print()
     exit(1)
+
+
+class RelationField:
+    def __init__(
+        self,
+        csv_names: Tuple,
+        name: str,
+        data_type: str,
+        nullable: bool,
+        null_values: Tuple,
+        default,
+        description: str,
+        show_in_table: bool,
+        additional_fields: Tuple,
+        choices: Optional[Tuple] = None,
+    ):
+        self.csv_names = csv_names
+        self.name = name
+        self.data_type = data_type
+        self.nullable = nullable
+        self.null_values = null_values
+        self.default = default
+        self.description = description
+        self.show_in_table = show_in_table
+        self.additional_fields = additional_fields
+        self.choices = choices
+
+    def as_design_file_row(self):
+        return [
+            ";;".join(self.csv_names),
+            self.name,
+            self.data_type,
+            str(self.nullable).lower(),
+            "; ".join(str(n) for n in self.null_values),
+            str(self.default),  # TODO: format / serialize
+            self.description,
+            str(self.show_in_table).lower(),
+            *self.additional_fields
+        ]
+
+    def make_alternate(self):
+        return RelationField(
+            self.csv_names,
+            self.name + "_alt",  # New field name (in database; alternate)
+            DT_TEXT,  # Alternate fields are always text, possibly with choices
+            False,  # Alt. fields cannot be null
+            (),  # No null values (since not nullable)
+            "",  # No default value
+            self.description,   # Description
+            self.show_in_table,  # Whether to show in the table view
+            (),  # No additional attributes
+            self.choices,  # Inherit choices (shouldn't be any normally)
+        )
+
+    def __iter__(self):
+        yield "csv_names", self.csv_names
+        yield "name", self.name
+        yield "data_type", self.data_type
+        yield "nullable", self.nullable
+        yield "null_values", self.null_values
+        yield "default", self.default
+        yield "description", self.description
+        yield "show_in_table", self.show_in_table
+        yield "additional_fields", self.additional_fields
+        yield "choices", self.choices
+
+
+class Relation:
+    def __init__(self, design_name: str, fields: Sequence[RelationField], id_type: str):
+        self.design_name = design_name.strip()
+        self.fields = fields
+        self.id_type = id_type
+
+    @property
+    def name(self):
+        # Python class-style name for the relation
+        return to_relation_name(self.design_name)
+
+    @property
+    def name_lower(self):
+        # Python variable-style (snake case) name for the relation
+        return field_to_py_code(self.design_name)

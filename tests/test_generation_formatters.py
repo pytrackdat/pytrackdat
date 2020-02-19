@@ -19,12 +19,20 @@
 
 import unittest
 
+import pytrackdat.common as pc
 import pytrackdat.generation.formatters as pgf
 
-AUTO_KEY_FIELD = {
-    # TODO: FILL IN OTHER MISC. INFO
-    "description": "test \\'auto\\' key"
-}
+AUTO_KEY_FIELD = pc.RelationField(
+    csv_names=(),
+    name="test_id",
+    data_type="auto key",
+    nullable=False,
+    null_values=(),
+    default="",
+    description="test \\'auto\\' key",
+    show_in_table=True,
+    additional_fields=(),  # no additional fields
+)
 
 
 class TestGenerationFormatters(unittest.TestCase):

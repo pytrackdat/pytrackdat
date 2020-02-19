@@ -19,7 +19,7 @@
 
 import unittest
 
-from pytrackdat.generation import design_to_relation_fields
+from pytrackdat.generation import design_to_relations
 from pytrackdat.generation.errors import GenerationError
 
 
@@ -27,19 +27,19 @@ class TestDesignFileParsing(unittest.TestCase):
     def test_two_primary_keys(self):
         with self.assertRaises(GenerationError):
             with open("./tests/design_files/two_primary_keys_1.csv") as tf:
-                design_to_relation_fields(tf, False)
+                design_to_relations(tf, False)
         with self.assertRaises(GenerationError):
             with open("./tests/design_files/two_primary_keys_2.csv") as tf:
-                design_to_relation_fields(tf, False)
+                design_to_relations(tf, False)
         with self.assertRaises(GenerationError):
             with open("./tests/design_files/two_primary_keys_3.csv") as tf:
-                design_to_relation_fields(tf, False)
+                design_to_relations(tf, False)
 
     def test_invalid_data_types(self):
         with self.assertRaises(GenerationError):
             with open("./tests/design_files/invalid_data_type.csv") as tf:
-                design_to_relation_fields(tf, False)
+                design_to_relations(tf, False)
 
             with open("./tests/design_files/point_field.csv") as tf:
                 # GIS mode is off, so an error should be raised.
-                design_to_relation_fields(tf, False)
+                design_to_relations(tf, False)

@@ -36,7 +36,7 @@ import csv
 import re
 import sys
 
-from typing import Dict, List
+from typing import Dict, List, Optional, Sequence, Tuple
 
 from .common import *
 
@@ -59,7 +59,12 @@ def strip_blank_fields(fields: tuple) -> tuple:
     return fields[:blank_tail]
 
 
-def infer_column_type(col: List[str], key_found: bool) -> Dict:
+def infer_column_type(
+    relation: str,
+    name: str,
+    col: Sequence[str],
+    keys: Optional[Dict[str, Tuple[str, Sequence]]] = None
+) -> Dict:
     detected_type = "unknown"
     nullable = False
     null_values = []
@@ -121,11 +126,15 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
         all_values_counts[str_v] = all_values_counts.get(str_v, 0) + 1
 
     # Keys:
+    #  - If keys aren't specified or this field is in fact the key, allow the key type to be inferred.
 
-    if len(all_values) == len(col) and "" not in all_values and not key_found:
+    if len(all_values) == len(col) and "" not in all_values and (keys is None or
+                                                                 keys.get(relation, (None, None))[0] == name):
         detected_type = DT_MANUAL_KEY
         nullable = False
         is_key = True
+
+    # TODO: Infer foreign keys for non-integers??? When do we infer foreign keys vs. ints?
 
     # Integers:
 
@@ -207,7 +216,7 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
     elif integer_values < max(len(col) / 10, 10) or len(non_numeric_values) >= 10:
         detected_type = DT_TEXT
         nullable = False
-        if max_seen_length <= CHAR_FIELD_MAX_LENGTH:
+        if max_seen_length <= CHAR_FIELD_MAX_LENGTH and "note" not in name and "comment" not in name:
             max_length = CHAR_FIELD_LENGTH
 
     return {
@@ -224,36 +233,64 @@ def infer_column_type(col: List[str], key_found: bool) -> Dict:
 
 
 def create_design_file_rows_from_inference(old_name: str, new_name: str, inference: Dict) -> List[List[str]]:
-    design_file_rows = [[
-        old_name,  # Old field name
-        new_name,  # New field name (in database)
-        inference["detected_type"],  # Detected data type
-        str(inference["nullable"]).lower(),  # Whether the field is nullable
-        "; ".join(inference["null_values"]),  # What value(s) will become null in the database
-        "",  # The default value for the field (optional, null/blank if left empty)
-        "!fill me in!",  # Field description
-        *[m for m in [max(inference["max_length"], 2), max(inference["max_seen_decimals"], 1)]
-          if inference["detected_type"] == "decimal"],
-        # IF TEXT/ENUM: max length:
-        *[m for m in [inference["max_length"]]
-          if inference["detected_type"] == "text" and inference["max_length"] > 0],
-        # IF ENUM: Choices:
-        *["; ".join([c for c in inference["choices"]
-                     if len(inference["choices"]) > 0 and inference["detected_type"] != "boolean"])],
-    ]]
+    f_type = inference["detected_type"]
 
+    choices = (inference["choices"] if len(inference["choices"]) > 0 and inference["detected_type"] != DT_BOOLEAN
+               else None)
+
+    inferred_field = RelationField(
+        csv_names=(old_name,),  # Old CSV / field name(s)
+        name=new_name,  # New field name (in database)
+        data_type=f_type,  # Detected data type
+        nullable=inference["nullable"],  # Whether the field is nullable
+        null_values=inference["null_values"],  # What value(s) will become null in the database
+        default="",  # The default value for the field (optional, null/blank if left empty)
+        description="!fill me in!",  # Field description
+        show_in_table=(f_type not in {DT_TEXT, *GIS_DATA_TYPES} or
+                       (f_type == DT_TEXT and (len(inference["choices"]) > 0 or inference["max_length"] > 0))),
+        additional_fields=(
+            # IF TEXT/ENUM: max length:
+            *((inference["max_length"],) if inference["detected_type"] == DT_TEXT and inference["max_length"] > 0
+              else ()),
+            # IF ENUM: Choices:
+            *(("{} ".format(DESIGN_SEPARATOR).join(choices),) if choices is not None else ()),
+        ),
+        choices=choices,  # Not used here?
+    )
+
+    design_file_rows = [inferred_field.as_design_file_row()]
     if inference["include_alternate"]:
-        design_file_rows.append([
-            old_name,
-            new_name + "_alt",  # New field name (in database; alternate)
-            "text",  # Alternate fields are always text, possibly with choices
-            "false",  # Alt. fields cannot be null
-            "",
-            "",
-            "!fill me in!"
-        ])
+        design_file_rows.append(inferred_field.make_alternate().as_design_file_row())
 
     return design_file_rows
+
+
+def extract_data_from_relation_file(rf):
+    data = []
+    with open(rf, "r", encoding="utf-8-sig") as ff:
+        data_reader = csv.reader(ff, delimiter=",")
+
+        # TODO: strip or no? might cause errors but could handle in import.
+        fields = strip_blank_fields(tuple(f for f in next(data_reader)))
+
+        if len(fields) == 0:
+            exit_with_error("Error: No fields detected")
+
+        d = next(data_reader)
+        while True:
+            try:
+                row = [x.strip() for x in d]
+                if any(c != "" for c in row):
+                    # Skip blank rows, they're likely CSV artifacts
+                    data.append(row)
+                d = next(data_reader)
+            except StopIteration:
+                break
+
+        if fields is None:
+            fields = []
+
+    return data, fields
 
 
 def main():
@@ -277,51 +314,63 @@ def main():
 
         exit(1)
 
+    keys = {}
+
+    # Pass 1: Find key candidates and possible foreign keys
+    for rn, rf in relations:
+        print("Finding keys for relation '{}'...".format(rn))
+
+        data, fields = extract_data_from_relation_file(rf)
+
+        for i, f in enumerate(fields):
+            new_name = field_to_py_code(f)
+
+            col = tuple(d[i] for d in data)
+            inference = infer_column_type(rn, new_name, col)
+
+            if inference["is_key"]:
+                keys[rn] = (new_name, col)
+                print("    Field '{}' identified as a key".format(new_name))
+                break
+
+        print()
+
+    # Pass 2: Determine other column data types
     design_file_rows = []
     for rn, rf in relations:
         print("Detecting types for fields in relation '{}'...".format(rn))
 
-        data = []
-        with open(rf, "r", encoding="utf-8-sig") as ff:
-            data_reader = csv.reader(ff, delimiter=",")
-
-            # TODO: strip or no? might cause errors but could handle in import.
-            fields = strip_blank_fields(tuple(f for f in next(data_reader)))
-
-            if len(fields) == 0:
-                exit_with_error("Error: No fields detected")
-
-            d = next(data_reader)
-            while True:
-                try:
-                    row = list(map(lambda x: x.strip(), d))
-                    if len([c for c in row if c != ""]) > 0:
-                        # Skip blank rows, they're likely CSV artifacts
-                        data.append(list(map(lambda x: x.strip(), d)))
-                    d = next(data_reader)
-                except StopIteration:
-                    break
-
-            if fields is None:
-                fields = []
-
-        if len(fields) == 0:
-            continue
+        data, fields = extract_data_from_relation_file(rf)
 
         design_file_rows.append([rn, "new field name", "data type", "nullable?", "null values", "default",
-                                 "description", "additional fields..."])
+                                 "description", "show in table?", "additional fields..."])
 
         new_design_file_rows = []
 
-        key_found = False
+        if rn not in keys:
+            print("\n    Warning: No primary key found for relation '{}'. If you have a field you "
+                  "\n             think should be the primary key (row identifier), this is an indication"
+                  "\n             that there may be duplicate values. \n"
+                  "\n             Adding an automatic key instead....".format(rn))  # TODO
 
-        for i, f in zip(range(len(fields)), fields):
+            # Add automatic primary key to design file
+            new_design_file_rows = [RelationField(
+                csv_names=(),  # CSV names (blank)
+                name="{}_id".format(rn),  # "new" (database) name
+                data_type=DT_AUTO_KEY,  # auto primary key type
+                nullable=False,  # not nullable - primary key
+                null_values=(),  # no null values
+                default="",  # no default value
+                description="Unique identifier automatically generated by the database",  # auto-generated description
+                show_in_table=True,  # show primary key in table list view
+                additional_fields=(),  # no additional fields
+            ).as_design_file_row()]
+
+        for i, f in enumerate(fields):
             new_name = field_to_py_code(f)
 
-            col = [d[i] for d in data]
-            inference = infer_column_type(col, key_found)
-
-            key_found = key_found or inference["is_key"]
+            col = tuple(d[i] for d in data)
+            inference = infer_column_type(rn, new_name, col, keys)
 
             design_file_row = create_design_file_rows_from_inference(f, new_name, inference)
             new_design_file_rows.extend(design_file_row)
@@ -333,16 +382,6 @@ def main():
                 "\n        Choices: {}".format(inference["choices"]) if len(inference["choices"]) > 0 else "",
                 "\n        With alternate" if inference["include_alternate"] else ""
             ))
-
-        if not key_found:
-            print("\n    Warning: No primary key found for relation '{}'. If you have a field you "
-                  "\n             think should be the primary key (row identifier), this is an indication"
-                  "\n             that there may be duplicate values. \n"
-                  "\n             Adding an automatic key instead....".format(rn))  # TODO
-
-            new_design_file_rows = [["", "{}_id".format(rn), "auto key", "false", "", "",
-                                     "Unique identifier automatically generated by the database"],
-                                    *new_design_file_rows]
 
         new_design_file_rows.append([])
         design_file_rows.extend(new_design_file_rows)

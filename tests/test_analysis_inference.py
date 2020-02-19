@@ -29,10 +29,12 @@ REPEATED_INT_LIST = ["999"] * 20
 UNIQUE_CONSISTENT_DECIMAL_LIST = ["{}.{}".format(i, j) for i, j in zip(range(10, 51), range(51, 100))]
 MIXED_INTS_AND_DECIMALS = ("1", "1.1", "1.20", "2", "2.1", "2.20", "2.300")
 
+EXISTING_KEY = {"rel": ("key", [])}
+
 
 class TestAnalysisInference(unittest.TestCase):
     def test_manual_key_inference(self):
-        inference = pa.infer_column_type(UNIQUE_INT_LIST, False)
+        inference = pa.infer_column_type("rel", "test", UNIQUE_INT_LIST, None)
         self.assertDictEqual(inference, {
             "detected_type": "manual key",
             "nullable": False,
@@ -45,7 +47,7 @@ class TestAnalysisInference(unittest.TestCase):
         })
 
     def test_unique_int_inference_with_existing_key(self):
-        inference = pa.infer_column_type(UNIQUE_INT_LIST, True)
+        inference = pa.infer_column_type("rel", "test", UNIQUE_INT_LIST, EXISTING_KEY)
         self.assertDictEqual(inference, {
             "detected_type": "integer",
             "nullable": False,
@@ -58,7 +60,7 @@ class TestAnalysisInference(unittest.TestCase):
         })
 
     def test_nullable_int(self):
-        inference = pa.infer_column_type(NULL_INT_LIST, True)
+        inference = pa.infer_column_type("rel", "test", NULL_INT_LIST, EXISTING_KEY)
         self.assertDictEqual(inference, {
             "detected_type": "integer",
             "nullable": True,
@@ -71,7 +73,7 @@ class TestAnalysisInference(unittest.TestCase):
         })
 
     def test_repeated_int(self):
-        inference = pa.infer_column_type(REPEATED_INT_LIST, False)
+        inference = pa.infer_column_type("rel", "test", REPEATED_INT_LIST, EXISTING_KEY)
         self.assertDictEqual(inference, {
             "detected_type": "integer",
             "nullable": False,
@@ -84,7 +86,7 @@ class TestAnalysisInference(unittest.TestCase):
         })
 
     def test_consistent_decimal(self):
-        inference = pa.infer_column_type(UNIQUE_CONSISTENT_DECIMAL_LIST, True)
+        inference = pa.infer_column_type("rel", "test", UNIQUE_CONSISTENT_DECIMAL_LIST, EXISTING_KEY)
         self.assertDictEqual(inference, {
             "detected_type": "decimal",
             "nullable": False,
@@ -97,7 +99,7 @@ class TestAnalysisInference(unittest.TestCase):
         })
 
     def test_mix_of_ints_and_decimals(self):
-        inference = pa.infer_column_type(MIXED_INTS_AND_DECIMALS, True)
+        inference = pa.infer_column_type("rel", "test", MIXED_INTS_AND_DECIMALS, EXISTING_KEY)
         self.assertDictEqual(inference, {
             "detected_type": "decimal",
             "nullable": False,

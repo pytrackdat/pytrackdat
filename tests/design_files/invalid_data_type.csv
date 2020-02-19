@@ -1,2 +1,2 @@
-entry,new field name,data type,nullable?,null values,default,description,additional fields...,
-Field 1,field_1,asdf,FALSE,,,first field,,
+entry,new field name,data type,nullable?,null values,default,description,show in table?,additional fields...,
+Field 1,field_1,asdf,FALSE,,,first field,true,,

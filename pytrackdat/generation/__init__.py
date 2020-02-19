@@ -32,7 +32,7 @@ import sys
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Dict, IO, List, Optional, Union
+from typing import IO, List, Optional, Union
 
 from ..common import *
 from .constants import *
@@ -49,7 +49,7 @@ __all__ = [
     "formatters",
     "utils",
     "get_default_from_csv_with_type",
-    "design_to_relation_fields",
+    "design_to_relations",
     "create_admin",
     "create_models",
     "create_api",
@@ -126,21 +126,20 @@ def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable: 
     return dv
 
 
-def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
+def design_to_relations(df: IO, gis_mode: bool) -> List[Relation]:
     """
-    Validates the design file into relations and their fields.
+    Validates the design file and converts it into relations and their fields.
     """
 
     relations = []
 
     design_reader = csv.reader(df)
-    relation_name = next(design_reader)
+    relation_name_and_headers = next(design_reader)
 
     end_loop = False
 
     while not end_loop:
-        python_relation_name = to_relation_name(relation_name[0])
-        python_relation_name_lower = field_to_py_code(relation_name[0])
+        design_relation_name = relation_name_and_headers[0]
 
         relation_fields = []
         id_type = ""
@@ -163,12 +162,13 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                         ))
 
                     nullable = current_field[3].strip().lower() in BOOLEAN_TRUE_VALUES
+                    # TODO: Covert to correct type?
                     null_values = tuple([n.strip() for n in current_field[4].split(";")])
 
                     if data_type in KEY_TYPES and id_type != "":
                         raise errors.GenerationError(
                             "Error: More than one primary key (auto/manual key) was specified for relation '{}'. "
-                            "Please only specify one primary key.".format(python_relation_name)
+                            "Please only specify one primary key.".format(design_relation_name)
                         )
 
                     if data_type == DT_AUTO_KEY:
@@ -177,52 +177,73 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                         id_type = "text"  # TODO: DT_ ?
 
                     csv_names = tuple(f.replace(r"\;", ";") for f in re.split(r";;\s*", current_field[0]))
-                    if len(csv_names) > 1 and data_type != "":
+                    if len(csv_names) > 1 and data_type != "":  # TODO: Specify permissible data types here
                         # TODO: Codify this better
                         raise errors.GenerationError(
                             "Error: Cannot take more than one column as input for field '{field}' with data type "
                             "{data_type}.".format(field=current_field[0], data_type=data_type))
 
+                    # TODO: Have blank mean a default inference instead of False
+                    show_in_table = current_field[7].strip().lower() in BOOLEAN_TRUE_VALUES
+                    if data_type in KEY_TYPES and not show_in_table:
+                        print("Warning: Primary key '{}' must be shown in table; overriding false-like value...".format(
+                            field_name))
+                        show_in_table = True
+
+                    default_str = current_field[5].strip()
+                    default = get_default_from_csv_with_type(field_name, default_str, data_type, nullable, null_values)
+
                     # TODO: This handling of additional_fields could eventually cause trouble, because it can shift
                     #  positions of additional fields if a blank additional field occurs before a valued one.
-                    current_field_data = {
-                        "name": field_name,
-                        "csv_names": csv_names,
-                        "data_type": data_type,
-                        "nullable": nullable,
-                        "null_values": null_values,
-                        "default": get_default_from_csv_with_type(field_name, current_field[5].strip(), data_type,
-                                                                  nullable, null_values),
-                        "description": current_field[6].strip(),
-                        "additional_fields": [f for f in current_field[7:] if f.strip() != ""]
-                    }
+                    current_field_obj = RelationField(
+                        csv_names=csv_names,
+                        name=field_name,
+                        data_type=data_type,
+                        nullable=nullable,
+                        null_values=null_values,
+                        default=default,
+                        description=current_field[6].strip(),
+                        show_in_table=show_in_table,
+                        additional_fields=tuple(f for f in current_field[8:] if f.strip() != "")
+                    )
 
-                    if (len(current_field_data["additional_fields"]) >
+                    if (len(current_field_obj.additional_fields) >
                             len(DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS[data_type])):
-                        print(
-                            "Warning: More additional settings specified for field '{field}' than can be used.\n"
-                            "         Available settings: '{settings}' \n".format(
-                                field=field_name,
-                                settings="', '".join(DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS[data_type])
+                        if data_type in KEY_TYPES and len(current_field_obj.additional_fields) == 2 and \
+                                DESIGN_SEPARATOR in current_field_obj.additional_fields[1]:
+                            # Looks like user tried to specify choices for a key-type
+                            # TODO: This is heuristic-based, and should be re-examined if additional_fields changes
+                            #  for the key types.
+                            exit_with_error(
+                                "Error: Choices aren't valid for a primary key (auto or manual.) If this was\n"
+                                "       specifyable, there could only be as many rows as choices, and the choices\n"
+                                "       would not be modifyable after the database is constructed."
                             )
-                        )
 
-                    if data_type == "text":
-                        choices = formatters.get_choices_from_text_field(current_field_data)
-                        if choices is not None and current_field[5].strip() != "" and \
-                                current_field[5].strip() not in choices:
+                        else:
+                            print(
+                                "Warning: More additional settings specified for field '{field}' than can be used.\n"
+                                "         Available settings: '{settings}' \n".format(
+                                    field=field_name,
+                                    settings="', '".join(DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS[data_type])
+                                )
+                            )
+
+                    if data_type == DT_TEXT:
+                        choices = formatters.get_choices_from_text_field(current_field_obj)
+                        if choices is not None and default_str != "" and default_str not in choices:
                             raise errors.GenerationError(
-                                "Error: Default value for field '{field}' in relation '{relation}' does not match any "
-                                "available choices for the field. Available choices: {choices}".format(
+                                "Error: Default value for field '{field}' in relation '{relation}' does not match \n"
+                                "       any available choices for the field. \n"
+                                "       Available choices: {choices}".format(
                                     field=current_field[1],
-                                    relation=python_relation_name,
+                                    relation=design_relation_name,
                                     choices=", ".join(choices)
                                 ))
 
-                        if choices is not None and len(choices) > 1:
-                            current_field_data["choices"] = choices
+                        current_field_obj.choices = choices if choices is not None and len(choices) > 1 else None
 
-                    relation_fields.append(current_field_data)
+                    relation_fields.append(current_field_obj)
 
                     current_field = next(design_reader)
 
@@ -231,24 +252,18 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
                     end_loop = True
                     break
 
-                # Otherwise, save the relation information.
-
-            relations.append({
-                "name": python_relation_name,
-                "name_lower": python_relation_name_lower,
-                "fields": relation_fields,
-                "id_type": id_type
-            })
+            # Otherwise, save the relation information.
+            relations.append(Relation(design_name=design_relation_name, fields=relation_fields, id_type=id_type))
 
             # Find the next relation.
 
-            relation_name = ""
+            relation_name_and_headers = ()
 
             try:
-                while not relation_name or "".join(relation_name).strip() == "":
+                while "".join(relation_name_and_headers).strip() == "":
                     rel = next(design_reader)
                     if len(rel) > 0:
-                        relation_name = rel
+                        relation_name_and_headers = rel
                         end_inner_loop = True
 
             except StopIteration:
@@ -258,7 +273,7 @@ def design_to_relation_fields(df: IO, gis_mode: bool) -> List[Dict]:
     return relations
 
 
-def create_admin(relations: List[Dict], site_name: str, gis_mode: bool) -> io.StringIO:
+def create_admin(relations: List[Relation], site_name: str, gis_mode: bool) -> io.StringIO:
     """
     Creates the contents of the admin.py file for the Django data application.
     """
@@ -270,22 +285,14 @@ def create_admin(relations: List[Dict], site_name: str, gis_mode: bool) -> io.St
     for relation in relations:
         # Write admin information
 
-        # TODO: Improve this to show all length-limited text fields
+        list_display_fields = tuple(f.name for f in relation.fields if f.show_in_table)
+        list_filter_fields = tuple(f.name for f in relation.fields
+                                   if f.data_type == DT_BOOLEAN or f.choices is not None)
 
-        list_display_fields = (
-            *(r["name"] for r in relation["fields"] if r["data_type"] in ("auto key", "manual key")),  # Primary key
-            *(r["name"] for r in relation["fields"]
-              if (r["data_type"] not in ("text", "auto key", "manual key") or "choices" in r or
-                  r["data_type"] == "text" and len(r["additional_fields"]) >= 1))
-        )
-
-        list_filter_fields = tuple(r["name"] for r in relation["fields"]
-                                   if r["data_type"] in ("boolean",) or "choices" in r)
-
-        advanced_filter_fields = tuple(r["name"] for r in relation["fields"])
+        advanced_filter_fields = tuple(r.name for r in relation.fields)
 
         af.write(MODEL_ADMIN_TEMPLATE.format(
-            relation_name=relation["name"],
+            relation_name=relation.name,
             admin_class="gis_admin.GeoModelAdmin" if gis_mode else "",
             list_display=("    list_display = ('{}',)\n".format("', '".join(list_display_fields))
                           if len(list_display_fields) > 1 else ""),
@@ -302,7 +309,7 @@ def create_admin(relations: List[Dict], site_name: str, gis_mode: bool) -> io.St
     return af
 
 
-def create_models(relations: List[Dict], gis_mode: bool) -> io.StringIO:
+def create_models(relations: List[Relation], gis_mode: bool) -> io.StringIO:
     """
     Creates the contents of the model.py file for the Django data application.
     """
@@ -314,13 +321,13 @@ def create_models(relations: List[Dict], gis_mode: bool) -> io.StringIO:
 
     for relation in relations:
         mf.write(MODEL_TEMPLATE.format(
-            name=relation["name"],
-            fields=pprint.pformat(relation["fields"], indent=12, width=120, compact=True),
-            label_name=relation["name"][len(PDT_RELATION_PREFIX):],
-            id_type=relation["id_type"],
-            short_name=relation["name"][len(PDT_RELATION_PREFIX):],
-            model_fields="\n".join("    {} = {}".format(f["name"], formatters.DJANGO_TYPE_FORMATTERS[f["data_type"]](f))
-                                   for f in relation["fields"])
+            name=relation.name,
+            # TODO: Pretty-print serialize field objects?
+            fields=pprint.pformat([dict(f) for f in relation.fields], indent=12, width=120, compact=True),
+            id_type=relation.id_type,
+            short_name=relation.name[len(PDT_RELATION_PREFIX):],
+            model_fields="\n".join("    {} = {}".format(f.name, formatters.DJANGO_TYPE_FORMATTERS[f.data_type](f))
+                                   for f in relation.fields)
         ))
         mf.flush()
 
@@ -329,7 +336,7 @@ def create_models(relations: List[Dict], gis_mode: bool) -> io.StringIO:
     return mf
 
 
-def create_api(relations: List[Dict], site_name: str, gis_mode: bool) -> io.StringIO:
+def create_api(relations: List[Relation], site_name: str, gis_mode: bool) -> io.StringIO:
     """
     Creates the contents of the API specification file.
     """
@@ -341,23 +348,23 @@ def create_api(relations: List[Dict], site_name: str, gis_mode: bool) -> io.Stri
 
     for relation in relations:
         api_file.write(MODEL_SERIALIZER_TEMPLATE.format(
-            relation_name=relation["name"],
-            fields="('{}',)".format("', '".join([f["name"] for f in relation["fields"]]))
+            relation_name=relation.name,
+            fields="('{}',)".format("', '".join(f.name for f in relation.fields))
         ))
 
         api_file.write(MODEL_VIEWSET_TEMPLATE.format(
-            relation_name=relation["name"],
+            relation_name=relation.name,
             categorical_fields="('{}',)".format(
-                "', '".join([f["name"] for f in relation["fields"] if "choices" in f])),
+                "', '".join(f.name for f in relation.fields if f.choices is not None)),
             categorical_choices=pprint.pformat(
-                {f["name"]: f["choices"] + (("",) if f["nullable"] else ())
-                 for f in relation["fields"] if "choices" in f},
+                {f.name: f.choices + (("",) if f.nullable else ())
+                 for f in relation.fields if f.choices is not None},
                 indent=12, width=120, compact=True)
         ))
 
         api_file.write(MODEL_ROUTER_REGISTRATION_TEMPLATE.format(
-            relation_name_lower=relation["name_lower"],
-            relation_name=relation["name"],
+            relation_name_lower=relation.name_lower,
+            relation_name=relation.name,
         ))
 
         api_file.flush()
@@ -475,7 +482,7 @@ def main():
     try:
         with open(os.path.join(os.getcwd(), design_file), "r") as df:
             try:
-                relations = design_to_relation_fields(df, gis_mode)
+                relations = design_to_relations(df, gis_mode)
             except errors.GenerationError as e:
                 exit_with_error(str(e))
 

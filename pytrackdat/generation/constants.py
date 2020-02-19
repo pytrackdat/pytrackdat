@@ -103,7 +103,7 @@ class {name}(models.Model):
 
     @classmethod
     def get_label_name(cls):
-        return '{label_name}'
+        return '{short_name}'
 
     @classmethod
     def get_id_type(cls):
