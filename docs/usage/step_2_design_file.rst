@@ -9,15 +9,15 @@ files passed to the script. Blocks are separated by blank lines.
 
 A single block may look like this:
 
-+-----------+----------------+-------------+-----------+-------------+---------+----------------------------------+----------------------+
-| my_sample | new field name | data type   | nullable? | null values | default | description                      | additional fields... |
-+===========+================+=============+===========+=============+=========+==================================+======================+
-| Date      | date           | integer     | false     |             |         | Date the sample was collected.   |                      |
-+-----------+----------------+-------------+-----------+-------------+---------+----------------------------------+----------------------+
-| Site ID   | site_id        | foreign key | false     |             |         | Site where the sample was found. |                      |
-+-----------+----------------+-------------+-----------+-------------+---------+----------------------------------+----------------------+
-| ...                                                                                                                                    |
-+-----------+----------------+-------------+-----------+-------------+---------+----------------------------------+----------------------+
++-----------+----------------+-------------+-----------+-------------+---------+----------------------------------+----------------+----------------------+
+| my_sample | new field name | data type   | nullable? | null values | default | description                      | show in table? | additional fields... |
++===========+================+=============+===========+=============+=========+==================================+================+======================+
+| Date      | date           | integer     | false     |             |         | Date the sample was collected.   | true           |                      |
++-----------+----------------+-------------+-----------+-------------+---------+----------------------------------+----------------+----------------------+
+| Site ID   | site_id        | foreign key | false     |             |         | Site where the sample was found. | true           |                      |
++-----------+----------------+-------------+-----------+-------------+---------+----------------------------------+----------------+----------------------+
+| ...                                                                                                                                                     |
++-----------+----------------+-------------+-----------+-------------+---------+----------------------------------+----------------+----------------------+
 
 Design files should **not** be left as-is after generation via ``ptd-analyze``.
 The script does its best to infer data types from the columns, but is not
@@ -89,9 +89,9 @@ Each database field corresponds to each one of these rows in the design file.
 
 The generic format for a design file field description row is the following:
 
-+-----------------+---------------------+-----------+-----------+-------------+---------+-------------+----------------------+
-| CSV Column Name | Database Field Name | Data Type | Nullable? | Null Values | Default | Description | Additional fields... |
-+-----------------+---------------------+-----------+-----------+-------------+---------+-------------+----------------------+
++-----------------+---------------------+-----------+-----------+-------------+---------+-------------+----------------+----------------------+
+| CSV Column Name | Database Field Name | Data Type | Nullable? | Null Values | Default | Description | Show in Table? | Additional fields... |
++-----------------+---------------------+-----------+-----------+-------------+---------+-------------+----------------+----------------------+
 
 Each of these columns in the field description row has specific acceptable
 values which directly decide the resulting database structure. As such, it is
@@ -185,6 +185,13 @@ explanations of possible values if non-obvious.
 
 It is also used to display help text below the fields in the database
 single-item entry GUI.
+
+Show in Table?
+""""""""""""""
+
+This cell contains a boolean (true or false) value which specifies whether the
+field in question should appear in the table list view (where a list of all
+rows is shown.) If left blank, the cell will **not** appear.
 
 Type-Specific Settings
 """"""""""""""""""""""

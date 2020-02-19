@@ -2,11 +2,31 @@
 Step 4: Testing
 ===============
 
+The Quick Way
+-------------
+
+PyTrackDat provides a script which helps test newly-created sites from the root
+PyTrackDat working directory. To test a site named ``site_name_here``, run the
+following command:
+
+.. code-block:: bash
+
+   ptd-test site_name_here
+
+
+The Manual Way
+--------------
+
+If for some reason the method above fails, the following manual procedure can
+be employed to test a PyTrackDat site.
+
 To test the web application from the PyTrackDat directory, first change to the
 site directory within the temporary work directory, ``tmp``, which PyTrackDat
 will create, replacing ``site_name_here`` with the site name that you assigned in
 the previous (generator) step. Then, activate the Python virtual environment.
 These actions can be done with the following commands:
+
+
 
 **macOS/Linux:**
 
@@ -42,6 +62,18 @@ command, and navigate to the application in your web browser at
    python manage.py runserver
 
 
+Afterwards, when testing is finished, to deactivate the site's virtual
+environment, run the following command:
+
+.. code-block:: bash
+
+   deactivate
+
+
+
+When the Server is Running
+--------------------------
+
 While the development server is running, you can explore the site the same way
 you will be able to once it is finalized and deployed on a server. This is the
 time to check and make sure the data format is correct, importing and exporting
@@ -67,10 +99,3 @@ version of the application
 
 Once you are done verifying, the server can be stopped. To do this, press
 ``Ctrl-C`` in the terminal window where the server is running.
-
-Afterwards, to deactivate the site's virtual environment, type in the following
-command:
-
-.. code-block:: bash
-
-   deactivate
