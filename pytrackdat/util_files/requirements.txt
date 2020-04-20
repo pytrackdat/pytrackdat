@@ -1,7 +1,7 @@
-Django>=2.2.9,<3.0
+Django>=2.2.12,<3.0
 djangorestframework>=3.11.0,<3.12
 django-filter>=2.2.0,<2.3
-django-reversion>=3.0.5,<3.1
+django-reversion>=3.0.7,<3.1
 setuptools
 wheel
 django-advanced-filters>=1.1.1,<1.2
