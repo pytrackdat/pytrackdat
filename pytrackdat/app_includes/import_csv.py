@@ -63,6 +63,8 @@ class ImportCSVMixin:
                 ptd_info = self.model.ptd_info()
                 headers = [h.strip() for h in reader.fieldnames if h != ""]
 
+                # TODO: This logic might break with auto keys...
+
                 header_fields_1 = {h: tuple(f for f in ptd_info if h in f["csv_names"]) for h in headers
                                    if len([f for f in ptd_info if h in f["csv_names"]]) > 0}
                 header_fields_2 = {h.lower(): tuple(f for f in ptd_info if h.lower() == f["name"]) for h in headers

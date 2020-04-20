@@ -89,7 +89,7 @@ __all__ = [
 ]
 
 
-VERSION = "0.2.1"
+VERSION = "0.3.0"
 COPYRIGHT_DATES = "2018-2020"
 
 PYTHON_KEYWORDS = ("False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue",
