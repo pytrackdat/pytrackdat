@@ -344,7 +344,8 @@ def create_api(relations: List[Relation], site_name: str, gis_mode: bool) -> io.
     api_file = io.StringIO()
 
     api_file.write(API_FILE_HEADER.format(version=VERSION, site_name=site_name, gis_mode=gis_mode,
-                                          relations=pprint.pformat(relations, indent=12, width=120, compact=True)))
+                                          relations=pprint.pformat(tuple(dict(r) for r in relations), indent=12,
+                                                                   width=120, compact=True)))
 
     for relation in relations:
         api_file.write(MODEL_SERIALIZER_TEMPLATE.format(

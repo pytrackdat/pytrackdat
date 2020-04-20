@@ -347,3 +347,9 @@ class Relation:
     def name_lower(self):
         # Python variable-style (snake case) name for the relation
         return field_to_py_code(self.design_name)
+
+    def __iter__(self):
+        yield "name", self.name
+        yield "name_lower", self.name_lower
+        yield "fields", tuple(dict(f) for f in self.fields)
+        yield "id_type", self.id_type
