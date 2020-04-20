@@ -249,7 +249,10 @@ def create_design_file_rows_from_inference(old_name: str, new_name: str, inferen
         show_in_table=(f_type not in {DT_TEXT, *GIS_DATA_TYPES} or
                        (f_type == DT_TEXT and (len(inference["choices"]) > 0 or inference["max_length"] > 0))),
         additional_fields=(
-            # IF TEXT/ENUM: max length:
+            # IF DECIMAL: Max length and decimal placement:
+            *((inference["max_length"], inference["max_seen_decimals"]) if inference["detected_type"] == DT_DECIMAL
+              else ()),
+            # IF TEXT/ENUM: Max length:
             *((inference["max_length"],) if inference["detected_type"] == DT_TEXT and inference["max_length"] > 0
               else ()),
             # IF ENUM: Choices:
