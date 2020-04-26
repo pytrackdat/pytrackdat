@@ -82,6 +82,12 @@ class ImportCSVMixin:
 
                 for row in reader:
                     object_data = {}
+
+                    values = set(v.strip() for v in row.values())
+                    if len(values) == 1 and "" in values:
+                        # Skip blank rows
+                        continue
+
                     for h in header_fields:
                         str_v = row[h].strip()
                         for f in header_fields[h]:
