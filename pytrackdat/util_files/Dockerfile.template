@@ -7,7 +7,7 @@ ADD install_dependencies.R /install_dependencies.R
 
 RUN set -ex \
     && apk --update add --no-cache --virtual build-deps \
-        autoconf automake gcc g++ make libc-dev bzip2-dev file musl-dev linux-headers pcre pcre-dev \
+        autoconf automake gcc g++ git make libc-dev bzip2-dev file musl-dev linux-headers pcre pcre-dev \
     && apk add --no-cache R R-dev \
     && pip install -U pip \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir -r /requirements.txt" \
