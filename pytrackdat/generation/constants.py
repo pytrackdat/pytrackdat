@@ -58,8 +58,6 @@ __all__ = [
 
 ADMIN_FILE_HEADER_TEMPLATE = """# Generated using PyTrackDat v{}
 from django.contrib import admin
-from django.contrib.gis import forms as gis_forms, admin as gis_admin
-from django.contrib.gis.db import models as gis_models
 from advanced_filters.admin import AdminAdvancedFiltersMixin
 from reversion.admin import VersionAdmin
 
@@ -69,7 +67,11 @@ from .import_csv import ImportCSVMixin
 from .export_labels import ExportLabelsMixin
 from .charts import ChartsMixin
 
-admin.site.site_header = "PyTrackDat: {{}}"
+if {{gis_mode}}:
+    from django.contrib.gis import forms as gis_forms, admin as gis_admin
+    from django.contrib.gis.db import models as gis_models
+
+admin.site.site_header = "PyTrackDat: {{site_name}}"
 
 """.format(VERSION)
 
