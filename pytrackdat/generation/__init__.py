@@ -176,7 +176,7 @@ def design_to_relations(df: IO, gis_mode: bool) -> List[Relation]:
                     elif data_type == DT_MANUAL_KEY:
                         id_type = "text"  # TODO: DT_ ?
 
-                    csv_names = tuple(f.replace(r"\;", ";") for f in re.split(r";;\s*", current_field[0]))
+                    csv_names = tuple(re.split(r";\s*", current_field[0]))
                     if len(csv_names) > 1 and data_type != "":  # TODO: Specify permissible data types here
                         # TODO: Codify this better
                         raise errors.GenerationError(
