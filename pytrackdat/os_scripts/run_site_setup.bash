@@ -15,3 +15,8 @@ echo "from django.contrib.auth.models import User; User.objects.create_superuser
   | ./manage.py shell > /dev/null
 fi
 deactivate
+
+# Remove virtual environment if this is a production build
+if [[ "$8" == "True" ]]; then
+  rm -rf ./site_env 2> /dev/null
+fi

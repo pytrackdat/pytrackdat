@@ -14,3 +14,8 @@ if "%~4" == "" (
     powershell -Command "echo ""from django.contrib.auth.models import User; User.objects.create_superuser('%4', '%5', '%6')"" | Out-File Dockerfile"
 )
 deactivate
+
+rem Remove virtual environment if this is a production build
+if "%~8" == "True" (
+    rmdir /Q /S site_env > nul 2> nul
+)
