@@ -295,7 +295,7 @@ Use Docker Compose to build and start the application:
 
 .. code-block:: bash
 
-   docker-compose up --build --detach
+   docker-compose up --build -d
 
 
 And finally, allow the site to be accessed externally by adding a rule to the
