@@ -116,7 +116,7 @@ class ImportCSVMixin:
                                 if re.match(RE_DECIMAL, str_v.lower()):
                                     n_str_v = re.sub(RE_NUMBER_GROUP_SEPARATOR, "", str_v.lower())
                                     object_data[f["name"]][h] = (float(n_str_v) if f["data_type"] == "float"
-                                                              else Decimal(n_str_v))
+                                                                 else Decimal(n_str_v))
                                     break
                                 elif f["nullable"]:
                                     # TODO: This assumes null if not integer-like, might be wrong
@@ -205,12 +205,19 @@ class ImportCSVMixin:
 
                             elif f["data_type"] == DT_GIS_POINT:
                                 # WKT Point
-                                if re.match(r"^POINT\s*{}$".format(POINT_REGEX), str_v.upper()):
+                                if len(f["csv_names"]) == 1 and \
+                                        re.match(r"^POINT\s*{}$".format(POINT_REGEX), str_v.upper()):
                                     object_data[f["name"]] = str_v.upper()
-                                elif re.match(r"^\(?-?\d+(\.\d+)?,?\s+-?\d+(\.\d+)?\)?$", str_v):
+                                elif len(f["csv_names"]) == 1 and \
+                                        re.match(r"^\(?-?\d+(\.\d+)?,?\s+-?\d+(\.\d+)?\)?$", str_v):
                                     # Coerce (5 7), (5, 7), etc. to WKT format
                                     object_data[f["name"]][h] = "POINT ({})".format(
                                         str_v.replace(",", "").replace("(", "").replace(")", ""))
+                                elif len(f["csv_names"]) == 2 and re.match(r"^-?\d+(\.\d+)?$", str_v) and len(h) == 1:
+                                    # One component of coordinates
+                                    object_data[f["name"]][h] = str_v
+                                elif str_v == "":  # POINTs cannot be Null, so assume (0, 0)
+                                    object_data[f["name"]][h] = "0"
                                 else:
                                     # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
                                     raise ValueError("Incorrect value for point field {}: {}".format(f["name"],
@@ -274,7 +281,7 @@ class ImportCSVMixin:
                             # TODO: More systematic / nicer way of doing this
                             object_data[f["name"]] = "POINT ({})".format(" ".join(c[1] for c in sorted(
                                 ((k, v) for k, v in object_data[f["name"]].items()),
-                                key=lambda c: object_data[f["csv_names"]].index(c[0]))))
+                                key=lambda c: f["csv_names"].index(c[0]))))
 
                     model_objects.append(self.model(**object_data))
 

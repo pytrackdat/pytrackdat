@@ -280,7 +280,7 @@ def create_admin(relations: List[Relation], site_name: str, gis_mode: bool) -> i
 
     af = io.StringIO()
 
-    af.write(ADMIN_FILE_HEADER_TEMPLATE.format(site_name))
+    af.write(ADMIN_FILE_HEADER_TEMPLATE.format(site_name=site_name, gis_mode=gis_mode))
 
     for relation in relations:
         # Write admin information
@@ -473,6 +473,7 @@ def main():
         exit_with_error("Unsupported platform.")
 
     site_url = "localhost"
+    is_production_build = False
 
     # Process and validate design file, get contents of admin and models files
 
@@ -504,12 +505,16 @@ def main():
 
     try:
         prod_build = input("Is this a production build? (y/n): ")
+
         if prod_build.lower() in BOOLEAN_TRUE_VALUES:
-            site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
+            site_url = input(PRODUCTION_SITE_URL_PROMPT)
             while "http:" in site_url or "https:" in site_url or "/www." in site_url:
-                site_url = input("Please enter the production site URL, without 'www.' or 'http://': ")
+                site_url = input(PRODUCTION_SITE_URL_PROMPT)
+
         elif prod_build.lower() not in BOOLEAN_FALSE_VALUES:
             print("Invalid answer '{}', assuming 'n'...".format(prod_build))
+
+        is_production_build = prod_build.lower() in BOOLEAN_TRUE_VALUES
 
     except KeyboardInterrupt:
         print("\nExiting...\n")
@@ -615,8 +620,15 @@ def main():
     try:
         # TODO: Make path more robust
         subprocess.run((
-            os.path.join(package_dir, "os_scripts", get_script_file_name("run_site_setup")), package_dir,
-            django_site_name, TEMP_DIRECTORY, admin_username, admin_email, admin_password, site_url
+            os.path.join(package_dir, "os_scripts", get_script_file_name("run_site_setup")),
+            package_dir,  # $1
+            django_site_name,  # $2
+            TEMP_DIRECTORY,  # $3
+            admin_username,  # $4
+            admin_email,  # $5
+            admin_password,  # $6
+            site_url,  # $7
+            str(is_production_build),  # $8
         ), check=True)
 
     except subprocess.CalledProcessError:

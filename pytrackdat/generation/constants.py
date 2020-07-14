@@ -21,6 +21,8 @@ from ..common import *
 
 
 __all__ = [
+    "PRODUCTION_SITE_URL_PROMPT",
+
     "ADMIN_FILE_HEADER_TEMPLATE",
     "MODEL_ADMIN_TEMPLATE",
 
@@ -51,6 +53,11 @@ __all__ = [
 
     "BASIC_NUMBER_TYPES",
 ]
+
+
+# Prompts
+
+PRODUCTION_SITE_URL_PROMPT = "Please enter the production site URL, without 'www.' or 'http://': "
 
 
 # Model-Relevant Templates
