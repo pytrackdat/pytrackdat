@@ -246,16 +246,18 @@ INSTALLED_APPS_NEW = """INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'pytrackdat_snapshot_manager',
 
-    'reversion',
     'advanced_filters',
     'rest_framework',
+    'reversion',
 ]"""
 
 INSTALLED_APPS_NEW_GIS = INSTALLED_APPS_NEW.replace(
     "'django.contrib.staticfiles',",
     """'django.contrib.staticfiles',
 
-    'django.contrib.gis',"""
+    'django.contrib.gis',
+
+    'rest_framework_gis',"""
 )
 
 STATIC_OLD = "STATIC_URL = '/static/'"

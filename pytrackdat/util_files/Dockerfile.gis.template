@@ -3,6 +3,7 @@ FROM osgeo/gdal:alpine-normal-latest
 ENV PYTHONUNBUFFERED 1
 
 ADD requirements.txt /requirements.txt
+ADD requirements_gis.txt /requirements_gis.txt
 ADD install_dependencies.R /install_dependencies.R
 
 RUN set -ex \

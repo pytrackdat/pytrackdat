@@ -8,6 +8,9 @@ if errorlevel 1 (
 )
 call site_env\Scripts\activate.bat
 pip install -r requirements.txt
+if "%~9" == "True" (
+    pip install -r requirements_gis.txt
+)
 python manage.py makemigrations
 python manage.py migrate
 if "%~4" == "" (

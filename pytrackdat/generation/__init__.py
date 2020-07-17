@@ -629,6 +629,7 @@ def main():
             admin_password,  # $6
             site_url,  # $7
             str(is_production_build),  # $8
+            str(gis_mode),  # $9
         ), check=True)
 
     except subprocess.CalledProcessError:
