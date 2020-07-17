@@ -80,7 +80,7 @@ class ImportCSVMixin:
 
                 model_objects = []
 
-                for row in reader:
+                for i, row in enumerate(reader, 1):
                     object_data = {}
 
                     values = set(v.strip() for v in row.values())
@@ -109,8 +109,8 @@ class ImportCSVMixin:
                                     # TODO: This assumes null if not integer-like, might be wrong
                                     object_data[f["name"]][h] = None
                                 else:
-                                    raise ValueError("Incorrect value for integer field {}: {}".format(f["name"],
-                                                                                                       str_v))
+                                    raise ValueError("Line {}: Incorrect value for integer field {}: {}".format(
+                                        i, f["name"], str_v))
 
                             elif f["data_type"] in (DT_FLOAT, DT_DECIMAL):
                                 if re.match(RE_DECIMAL, str_v.lower()):
@@ -122,8 +122,8 @@ class ImportCSVMixin:
                                     # TODO: This assumes null if not integer-like, might be wrong
                                     object_data[f["name"]][h] = None
                                 else:
-                                    raise ValueError("Incorrect value for float field {}: {}".format(f["name"],
-                                                                                                     str_v.lower()))
+                                    raise ValueError("Line {}: Incorrect value for float field {}: {}".format(
+                                        i, f["name"], str_v.lower()))
 
                             elif f["data_type"] == DT_BOOLEAN:
                                 if str_v.lower() in BOOLEAN_TRUE_VALUES + BOOLEAN_FALSE_VALUES:
@@ -132,8 +132,8 @@ class ImportCSVMixin:
                                 elif f["nullable"]:
                                     object_data[f["name"]][h] = None
                                 else:
-                                    raise ValueError("Incorrect value for boolean field {}: {}".format(f["name"],
-                                                                                                       str_v.lower()))
+                                    raise ValueError("Line {}: Incorrect value for boolean field {}: {}".format(
+                                        i, f["name"], str_v.lower()))
 
                             elif f["data_type"] == DT_TEXT:
                                 max_length = -1
@@ -149,17 +149,18 @@ class ImportCSVMixin:
                                         choices = [c.strip() for c in additional_fields[1].split(";")]
 
                                 if 0 < max_length < len(str_v):
-                                    raise ValueError("Value for text field {} exceeded maximum length: "
-                                                     "{}".format(f["name"], max_length))
+                                    raise ValueError("Line {}: Value for text field {} exceeded maximum length: "
+                                                     "{}".format(i, f["name"], max_length))
 
                                 if len(choices) > 0 and str_v not in choices:
                                     if f["nullable"]:
                                         # TODO: This assumes null if not integer-like, might be wrong
                                         object_data[f["name"]][h] = None
                                     else:
-                                        raise ValueError("Value for text field {} in model {} is not one of the "
-                                                         "available choices {}: {}".format(f["name"], model_name,
-                                                                                           tuple(choices), str_v))
+                                        raise ValueError(
+                                            "Line {}: Value for text field {} in model {} is not one of the available "
+                                            "choices {}: {}".format(
+                                                i, f["name"], model_name, tuple(choices), str_v))
 
                                 object_data[f["name"]][h] = str_v
                                 break
@@ -179,8 +180,8 @@ class ImportCSVMixin:
                                     break
 
                                 if not f["nullable"]:
-                                    raise ValueError("Incorrect value for date field {} in model {}: "
-                                                     "{}".format(f["name"], model_name, str_v))
+                                    raise ValueError("Line {}: Incorrect value for date field {} in model {}: "
+                                                     "{}".format(i, f["name"], model_name, str_v))
 
                                 object_data[f["name"]][h] = None
 
@@ -190,16 +191,16 @@ class ImportCSVMixin:
                                 rel_id_data_type = models[rel_name].get_id_type()
 
                                 if rel_id_data_type == "":
-                                    raise ValueError("Target model for foreign key field {} in model {} has no "
-                                                     "primary key.".format(f["name"], model_name))
+                                    raise ValueError("Line {}: Target model for foreign key field {} in model {} has "
+                                                     "no primary key.".format(i, f["name"], model_name))
 
                                 foreign_key_value = str_v
                                 if rel_id_data_type == "integer":
                                     foreign_key_value = int(foreign_key_value)
 
                                 if rel_name not in models:
-                                    raise ValueError("Unavailable model reference for foreign key field "
-                                                     "{} in model {}: {}".format(f["name"], model_name, rel_name))
+                                    raise ValueError("Line {}: Unavailable model reference for foreign key field "
+                                                     "{} in model {}: {}".format(i, f["name"], model_name, rel_name))
                                 object_data[f["name"]][h] = models[rel_name].objects.get(pk=foreign_key_value)
                                 # TODO!
 
@@ -220,8 +221,8 @@ class ImportCSVMixin:
                                     object_data[f["name"]][h] = "0"
                                 else:
                                     # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
-                                    raise ValueError("Incorrect value for point field {}: {}".format(f["name"],
-                                                                                                     str_v.upper()))
+                                    raise ValueError("Line {}: Incorrect value for point field {}: {}".format(
+                                        i, f["name"], str_v.upper()))
 
                             elif f["data_type"] == DT_GIS_LINE_STRING:
                                 # WKT Line String
@@ -230,8 +231,8 @@ class ImportCSVMixin:
                                     object_data[f["name"]][h] = str_v.upper()
                                 else:
                                     # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
-                                    raise ValueError("Incorrect value for line string field {}: {}".format(
-                                        f["name"], str_v.upper()))
+                                    raise ValueError("Line {}: Incorrect value for line string field {}: {}".format(
+                                        i, f["name"], str_v.upper()))
 
                             elif f["data_type"] == DT_GIS_POLYGON:
                                 # WKT Polygon
@@ -240,8 +241,8 @@ class ImportCSVMixin:
                                     object_data[f["name"]][h] = str_v.upper()
                                 else:
                                     # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
-                                    raise ValueError("Incorrect value for polygon field {}: {}".format(
-                                        f["name"], str_v.upper()))
+                                    raise ValueError("Line {}: Incorrect value for polygon field {}: {}".format(
+                                        i, f["name"], str_v.upper()))
 
                             elif f["data_type"] == DT_GIS_MULTI_POINT:
                                 # WKT Multi Point
@@ -250,8 +251,8 @@ class ImportCSVMixin:
                                     object_data[f["name"]][h] = str_v.upper()
                                 else:
                                     # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
-                                    raise ValueError("Incorrect value for multi point field {}: {}".format(
-                                        f["name"], str_v.upper()))
+                                    raise ValueError("Line {}: Incorrect value for multi point field {}: {}".format(
+                                        i, f["name"], str_v.upper()))
 
                             elif f["data_type"] == DT_GIS_MULTI_LINE_STRING:
                                 if re.match(r"MULTILINESTRING\s*\(({ls},\s*)*{ls}\s*\)".format(ls=LINE_STRING_REGEX),
@@ -259,8 +260,8 @@ class ImportCSVMixin:
                                     object_data[f["name"]][h] = str_v.upper()
                                 else:
                                     # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
-                                    raise ValueError("Incorrect value for multi line string field {}: {}".format(
-                                        f["name"], str_v.upper()))
+                                    raise ValueError("Line {}: Incorrect value for multi line string field {}: "
+                                                     "{}".format(i, f["name"], str_v.upper()))
 
                             elif f["data_type"] == DT_GIS_MULTI_POLYGON:
                                 if re.match(r"MULTIPOLYGON\s*\(({p},\s*)*{p}\s*\)".format(p=POLYGON_REGEX),
@@ -268,8 +269,8 @@ class ImportCSVMixin:
                                     object_data[f["name"]][h] = str_v.upper()
                                 else:
                                     # TODO: NEED TO HANDLE NULLABLE (DONT THINK IT IS NULLABLE) OR BLANK...
-                                    raise ValueError("Incorrect value for multi polygon field {}: {}".format(
-                                        f["name"], str_v.upper()))
+                                    raise ValueError("Line {}: Incorrect value for multi polygon field {}: {}".format(
+                                        i, f["name"], str_v.upper()))
 
                             else:
                                 raise ValueError("Invalid data type: {}".format(f["data_type"]))
