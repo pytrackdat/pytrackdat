@@ -17,7 +17,7 @@
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
 
-from ..common import *
+from ..common import DT_INTEGER, DT_FLOAT, VERSION
 
 
 __all__ = [
