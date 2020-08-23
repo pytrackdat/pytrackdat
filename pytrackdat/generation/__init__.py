@@ -177,7 +177,8 @@ def design_to_relations(df: IO, gis_mode: bool) -> List[Relation]:
                         id_type = "text"  # TODO: DT_ ?
 
                     csv_names = tuple(re.split(r";\s*", current_field[0]))
-                    if len(csv_names) > 1 and data_type != "":  # TODO: Specify permissible data types here
+                    # TODO: Specify more permissible data types here
+                    if len(csv_names) > 1 and data_type not in (DT_GIS_POINT,):
                         # TODO: Codify this better
                         raise errors.GenerationError(
                             "Error: Cannot take more than one column as input for field '{field}' with data type "
