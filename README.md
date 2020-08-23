@@ -22,10 +22,27 @@ The latest documentation is available on
 
 ## Notes
 
-### Using Spatialite for GIS on macOS
+### Enabling GIS mode
+
+To enable experimental GIS support, add the following to the shell environment:
+```
+PTD_GIS=true
+```
+
+The `SPATIALITE_LIBRARY_PATH` environment variable must also be configured to 
+point to the Spatialite library instance in some cases (if Django cannot find 
+it automatically).
+
+#### Using Spatialite for GIS on macOS
 
 To use Spatialite on macOS, it is suggested that `brew` is used to install
 the `spatialite-tools` and `gdal` packages.
+
+`SPATIALITE_LIBRARY_PATH` on macOS should be the following:
+
+```
+SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
+```
 
 The built-in `python3` that ships with macOS does not have extension support
 enabled, and thus cannot be used to build the PyTrackDat site.
