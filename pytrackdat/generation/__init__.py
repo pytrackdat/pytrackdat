@@ -337,6 +337,25 @@ def create_models(relations: List[Relation], gis_mode: bool) -> io.StringIO:
     return mf
 
 
+API_FILTERABLE_FIELD_TYPES = {
+    DT_AUTO_KEY: ["exact", "in"],
+    DT_MANUAL_KEY: ["exact", "in"],
+
+    DT_INTEGER: ["exact", "lt", "lte", "gt", "gte", "in"],
+    DT_FLOAT: ["exact", "lt", "lte", "gt", "gte"],
+    DT_DECIMAL: ["exact", "lt", "lte", "gt", "gte", "in"],
+
+    DT_BOOLEAN: ["exact"],
+
+    DT_TEXT: ["exact", "iexact", "contains", "icontains", "in"],
+
+    DT_DATE: ["exact", "lt", "lte", "gt", "gte", "in"],
+    DT_TIME: ["exact", "lt", "lte", "gt", "gte", "in"],
+
+    DT_FOREIGN_KEY: ["exact", "in"],
+}
+
+
 def create_api(relations: List[Relation], site_name: str, gis_mode: bool) -> io.StringIO:
     """
     Creates the contents of the API specification file.
@@ -356,12 +375,16 @@ def create_api(relations: List[Relation], site_name: str, gis_mode: bool) -> io.
 
         api_file.write(MODEL_VIEWSET_TEMPLATE.format(
             relation_name=relation.name,
+            filterset_fields=pprint.pformat(
+                {f.name: API_FILTERABLE_FIELD_TYPES[f.data_type]
+                 for f in relation.fields if f.data_type in API_FILTERABLE_FIELD_TYPES},
+                indent=12, width=120, compact=True),
             categorical_fields="('{}',)".format(
                 "', '".join(f.name for f in relation.fields if f.choices is not None)),
             categorical_choices=pprint.pformat(
                 {f.name: f.choices + (("",) if f.nullable else ())
                  for f in relation.fields if f.choices is not None},
-                indent=12, width=120, compact=True)
+                indent=12, width=120, compact=True),
         ))
 
         api_file.write(MODEL_ROUTER_REGISTRATION_TEMPLATE.format(

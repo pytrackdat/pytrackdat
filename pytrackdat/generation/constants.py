@@ -189,6 +189,7 @@ MODEL_VIEWSET_TEMPLATE = """
 class {relation_name}ViewSet(viewsets.ModelViewSet):
     queryset = {relation_name}.objects.all()
     serializer_class = {relation_name}Serializer
+    filterset_fields = {filterset_fields}
     @action(detail=False)
     def categorical_counts(self, _request):
         categorical_fields = {categorical_fields}
