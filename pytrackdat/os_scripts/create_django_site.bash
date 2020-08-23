@@ -17,6 +17,7 @@ python ./tmp_env/bin/django-admin startproject "$2"
 
 # Copy pre-built files to the site folder
 cp "$1/util_files/requirements.txt" "$2/"
+cp "$1/util_files/requirements_gis.txt" "$2/"  # May go unused
 cp "$1/util_files/$4" "$2/"
 cp "$1/util_files/docker-compose.yml" "$2/"
 cp "$1/util_files/nginx.conf" "$2/"

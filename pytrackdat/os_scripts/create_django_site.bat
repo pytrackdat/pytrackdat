@@ -18,6 +18,8 @@ rem Start the Django site
 
 rem Copy pre-built files to the site folder
 copy /B "%1\util_files\requirements.txt" "%2\"
+rem The GIS requirements file may go unused
+copy /B "%1\util_files\requirements_gis.txt" "%2\"
 copy /B "%1\util_files\%4" "%2\"
 copy /B "%1\util_files\docker-compose.yml" "%2\"
 copy /B "%1\util_files\nginx.conf" "%2\"
