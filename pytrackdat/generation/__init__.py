@@ -1,5 +1,5 @@
 # PyTrackDat is a utility for assisting in online database creation.
-# Copyright (C) 2018-2020 the PyTrackDat authors.
+# Copyright (C) 2018-2021 the PyTrackDat authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
 
-import csv
 import getpass
 import gzip
 import importlib
@@ -29,13 +28,13 @@ import shutil
 import subprocess
 import sys
 
-from datetime import datetime
-from decimal import Decimal
 from pathlib import Path
-from typing import IO, List, Optional, Union
+from typing import List
 
 from ..common import *
 from .constants import *
+
+from pytrackdat.design_file import design_to_relations
 
 from . import constants
 from . import errors
@@ -48,266 +47,14 @@ __all__ = [
     "errors",
     "formatters",
     "utils",
-    "get_default_from_csv_with_type",
-    "design_to_relations",
-    "create_admin",
     "create_models",
     "create_api",
     "print_usage",
     "sanitize_and_check_site_name",
     "is_common_password",
-    "main"
+    "main",
+    "API_FILTERABLE_FIELD_TYPES"
 ]
-
-
-def parse_dt_integer(dv: str):
-    return int(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.strip()))
-
-
-def parse_dt_float(dv: str):
-    return float(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.lower().strip()))
-
-
-def parse_dt_decimal(dv: str):
-    return Decimal(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", dv.lower().strip()))
-
-
-def parse_dt_date(dv: str, field_name: str):
-    # TODO: adjust format based on heuristics
-    # TODO: Allow extra column setting with date format from python docs?
-
-    dt_interpretations = tuple(datetime.strptime(dv.strip(), df) for dr, df in DATE_FORMATS)
-    if len(dt_interpretations) == 0:
-        # TODO: Warning
-        print("Warning: Value '{}' the date-typed field '{}' does not match any PyTrackDat-compatible "
-              "formats.".format(dv.strip(), field_name))
-        return None
-
-    if re.match(RE_DATE_DMY_D, dv.strip()) or re.match(RE_DATE_DMY_S, dv.strip()):
-        print("Warning: Assuming d{sep}m{sep}Y date format for ambiguously-formatted date field '{field}'.".format(
-            sep="-" if "-" in dv.strip() else "/", field=field_name))
-
-    return dt_interpretations[0]
-
-
-def parse_dt_time(dv: str):
-    # TODO: adjust format based on MORE heuristics
-    # TODO: Allow extra column setting with time format from python docs?
-    return datetime.strptime(dv.strip(), "%H:%M" if len(dv.strip().split(":")) == 2 else "%H:%M:%S")
-
-
-def parse_dt_boolean(dv: str, _field_name: str, nullable: bool, null_values: tuple) -> Optional[bool]:
-    if nullable and ((len(null_values) != 0 and dv.strip() in null_values) or (dv.strip() == "")):
-        return None
-
-    return dv.strip().lower() in BOOLEAN_TRUE_VALUES
-
-
-# TODO: GIS default parsers
-DATA_TYPE_STRING_PARSERS = {
-    DT_INTEGER: parse_dt_integer,
-    DT_FLOAT: parse_dt_float,
-    DT_DECIMAL: parse_dt_decimal,
-    DT_DATE: parse_dt_date,
-    DT_TIME: parse_dt_time,
-    DT_BOOLEAN: parse_dt_boolean,
-}
-
-
-def get_default_from_csv_with_type(field_name: str, dv: str, dt: str, nullable: bool = False, null_values: tuple = ()) \
-        -> Union[None, int, float, Decimal, datetime, str, bool]:
-    if dv.strip() == "" and dt != DT_BOOLEAN:
-        return None
-
-    if dt in DATA_TYPE_STRING_PARSERS:
-        return DATA_TYPE_STRING_PARSERS[dt](dv, field_name, nullable, null_values)
-
-    # Otherwise, keep string version
-    return dv
-
-
-def design_to_relations(df: IO, gis_mode: bool) -> List[Relation]:
-    """
-    Validates the design file and converts it into relations and their fields.
-    """
-
-    relations = []
-
-    design_reader = csv.reader(df)
-    relation_name_and_headers = next(design_reader)
-
-    end_loop = False
-
-    while not end_loop:
-        design_relation_name = relation_name_and_headers[0]
-
-        relation_fields = []
-        id_type = ""
-
-        end_inner_loop = False
-
-        while not end_inner_loop:
-            try:
-                current_field = next(design_reader)
-                while current_field and "".join(current_field).strip() != "":
-                    # TODO: Process
-
-                    field_name = field_to_py_code(current_field[1])
-                    data_type = standardize_data_type(current_field[2])
-
-                    if not valid_data_type(data_type, gis_mode):
-                        raise errors.GenerationError("Error: Unknown data type specified for field '{}': '{}'.".format(
-                            field_name,
-                            data_type
-                        ))
-
-                    nullable = current_field[3].strip().lower() in BOOLEAN_TRUE_VALUES
-                    # TODO: Covert to correct type?
-                    null_values = tuple([n.strip() for n in current_field[4].split(";")])
-
-                    if data_type in KEY_TYPES and id_type != "":
-                        raise errors.GenerationError(
-                            "Error: More than one primary key (auto/manual key) was specified for relation '{}'. "
-                            "Please only specify one primary key.".format(design_relation_name)
-                        )
-
-                    if data_type == DT_AUTO_KEY:
-                        id_type = "integer"  # TODO: DT_ ?
-                    elif data_type == DT_MANUAL_KEY:
-                        id_type = "text"  # TODO: DT_ ?
-
-                    csv_names = tuple(re.split(r";\s*", current_field[0]))
-                    # TODO: Specify more permissible data types here
-                    if len(csv_names) > 1 and data_type not in (DT_GIS_POINT,):
-                        # TODO: Codify this better
-                        raise errors.GenerationError(
-                            "Error: Cannot take more than one column as input for field '{field}' with data type "
-                            "{data_type}.".format(field=current_field[0], data_type=data_type))
-
-                    # TODO: Have blank mean a default inference instead of False
-                    show_in_table = current_field[7].strip().lower() in BOOLEAN_TRUE_VALUES
-                    if data_type in KEY_TYPES and not show_in_table:
-                        print("Warning: Primary key '{}' must be shown in table; overriding false-like value...".format(
-                            field_name))
-                        show_in_table = True
-
-                    default_str = current_field[5].strip()
-                    default = get_default_from_csv_with_type(field_name, default_str, data_type, nullable, null_values)
-
-                    # TODO: This handling of additional_fields could eventually cause trouble, because it can shift
-                    #  positions of additional fields if a blank additional field occurs before a valued one.
-                    current_field_obj = RelationField(
-                        csv_names=csv_names,
-                        name=field_name,
-                        data_type=data_type,
-                        nullable=nullable,
-                        null_values=null_values,
-                        default=default,
-                        description=current_field[6].strip(),
-                        show_in_table=show_in_table,
-                        additional_fields=tuple(f for f in current_field[8:] if f.strip() != "")
-                    )
-
-                    if (len(current_field_obj.additional_fields) >
-                            len(DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS[data_type])):
-                        if data_type in KEY_TYPES and len(current_field_obj.additional_fields) == 2 and \
-                                DESIGN_SEPARATOR in current_field_obj.additional_fields[1]:
-                            # Looks like user tried to specify choices for a key-type
-                            # TODO: This is heuristic-based, and should be re-examined if additional_fields changes
-                            #  for the key types.
-                            exit_with_error(
-                                "Error: Choices aren't valid for a primary key (auto or manual.) If this was\n"
-                                "       specifyable, there could only be as many rows as choices, and the choices\n"
-                                "       would not be modifyable after the database is constructed."
-                            )
-
-                        else:
-                            print(
-                                "Warning: More additional settings specified for field '{field}' than can be used.\n"
-                                "         Available settings: '{settings}' \n".format(
-                                    field=field_name,
-                                    settings="', '".join(DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS[data_type])
-                                )
-                            )
-
-                    if data_type == DT_TEXT:
-                        choices = formatters.get_choices_from_text_field(current_field_obj)
-                        if choices is not None and default_str != "" and default_str not in choices:
-                            raise errors.GenerationError(
-                                "Error: Default value for field '{field}' in relation '{relation}' does not match \n"
-                                "       any available choices for the field. \n"
-                                "       Available choices: {choices}".format(
-                                    field=current_field[1],
-                                    relation=design_relation_name,
-                                    choices=", ".join(choices)
-                                ))
-
-                        current_field_obj.choices = choices if choices is not None and len(choices) > 1 else None
-
-                    relation_fields.append(current_field_obj)
-
-                    current_field = next(design_reader)
-
-            except StopIteration:
-                if len(relation_fields) == 0:
-                    end_loop = True
-                    break
-
-            # Otherwise, save the relation information.
-            relations.append(Relation(design_name=design_relation_name, fields=relation_fields, id_type=id_type))
-
-            # Find the next relation.
-
-            relation_name_and_headers = ()
-
-            try:
-                while "".join(relation_name_and_headers).strip() == "":
-                    rel = next(design_reader)
-                    if len(rel) > 0:
-                        relation_name_and_headers = rel
-                        end_inner_loop = True
-
-            except StopIteration:
-                end_loop = True
-                break
-
-    return relations
-
-
-def create_admin(relations: List[Relation], site_name: str, gis_mode: bool) -> io.StringIO:
-    """
-    Creates the contents of the admin.py file for the Django data application.
-    """
-
-    af = io.StringIO()
-
-    af.write(ADMIN_FILE_HEADER_TEMPLATE.format(site_name=site_name, gis_mode=gis_mode))
-
-    for relation in relations:
-        # Write admin information
-
-        list_display_fields = tuple(f.name for f in relation.fields if f.show_in_table)
-        list_filter_fields = tuple(f.name for f in relation.fields
-                                   if f.data_type == DT_BOOLEAN or f.choices is not None)
-
-        advanced_filter_fields = tuple(r.name for r in relation.fields)
-
-        af.write(MODEL_ADMIN_TEMPLATE.format(
-            relation_name=relation.name,
-            admin_class="gis_admin.GeoModelAdmin" if gis_mode else "",
-            list_display=("    list_display = ('{}',)\n".format("', '".join(list_display_fields))
-                          if len(list_display_fields) > 1 else ""),
-            list_filter=("    list_filter = ('{}',)\n".format("', '".join(list_filter_fields))
-                         if len(list_filter_fields) > 0 else ""),
-            advanced_filter_fields=("    advanced_filter_fields = ('{}',)\n".format("', '".join(advanced_filter_fields))
-                                    if len(advanced_filter_fields) > 0 else "")
-        ))
-
-        af.flush()
-
-    af.seek(0)
-
-    return af
 
 
 def create_models(relations: List[Relation], gis_mode: bool) -> io.StringIO:
@@ -453,7 +200,7 @@ def clean_up(package_dir: str, django_site_name: str):
 
 
 def get_script_file_name(name: str):
-    return "{}.{}".format(name, "bat" if os.name == "nt" else "bash")
+    return f"{name}.{'bat' if os.name == 'nt' else 'bash'}"
 
 
 # TODO: TIMEZONES
@@ -521,7 +268,7 @@ def main():
     if len(relations) == 0:
         exit_with_error("Error: No relations detected.")
 
-    a_buf = create_admin(relations, django_site_name, gis_mode)
+    # a_buf = create_admin(relations, django_site_name, gis_mode)
     m_buf = create_models(relations, gis_mode)
     api_buf = create_api(relations, django_site_name, gis_mode)
 
@@ -549,7 +296,7 @@ def main():
     core_app_path = os.path.join(TEMP_DIRECTORY, django_site_name, "core")
     django_site_path = os.path.join(TEMP_DIRECTORY, django_site_name, django_site_name)
 
-    with a_buf, m_buf, api_buf:
+    with m_buf, api_buf:
         # Clean up any old remnants
         clean_up(package_dir, django_site_name)
 
@@ -559,8 +306,8 @@ def main():
             package_dir, django_site_name, TEMP_DIRECTORY, "Dockerfile{}.template".format(".gis" if gis_mode else "")
         ), check=True)
 
-        # Write admin file contents to disk
-        copy_buf_to_path(a_buf, os.path.join(core_app_path, "admin.py"))
+        # # Write admin file contents to disk
+        # copy_buf_to_path(a_buf, os.path.join(core_app_path, "admin.py"))
 
         # Write model file contents to disk
         copy_buf_to_path(m_buf, os.path.join(core_app_path, "models.py"))
@@ -573,13 +320,17 @@ def main():
 
         sf.seek(0)
 
+        # TODO: GIS mode stuff and site url stuff should be done in runtime
+
         new_contents = (
-                old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW_GIS if gis_mode else INSTALLED_APPS_NEW)
+                old_contents.replace(INSTALLED_APPS_OLD, INSTALLED_APPS_NEW.format(gis_mode=gis_mode))
+                .replace(MIDDLEWARE_OLD, MIDDLEWARE_NEW)
                 .replace(DEBUG_OLD, DEBUG_NEW)
-                .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url))
+                .replace(ALLOWED_HOSTS_OLD, ALLOWED_HOSTS_NEW.format(site_url=site_url))
                 .replace(STATIC_OLD, STATIC_NEW)
                 + DISABLE_MAX_FIELDS
                 + REST_FRAMEWORK_SETTINGS
+                + CORS_SETTINGS.format(site_url=site_url)
         )
 
         if gis_mode:

@@ -90,7 +90,7 @@ __all__ = [
 
 
 VERSION = "0.3.0"
-COPYRIGHT_DATES = "2018-2020"
+COPYRIGHT_DATES = "2018-2021"
 
 PYTHON_KEYWORDS = ("False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue",
                    "def", "del", "else", "elif", "except", "finally", "for", "from", "global", "if", "import", "in",
@@ -342,6 +342,11 @@ class Relation:
     def name(self):
         # Python class-style name for the relation
         return to_relation_name(self.design_name)
+
+    @property
+    def short_name(self):
+        # Python class-style name for the relation, sans prefix
+        return self.name[len(PDT_RELATION_PREFIX):]
 
     @property
     def name_lower(self):

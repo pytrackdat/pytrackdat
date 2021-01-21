@@ -1,5 +1,5 @@
 # PyTrackDat is a utility for assisting in online database creation.
-# Copyright (C) 2018-2020 the PyTrackDat authors.
+# Copyright (C) 2018-2021 the PyTrackDat authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
 
+from django.db.models import IntegerField, FloatField
 from ..common import DT_INTEGER, DT_FLOAT, VERSION
 
 
@@ -42,16 +43,19 @@ __all__ = [
     "ALLOWED_HOSTS_NEW",
     "INSTALLED_APPS_OLD",
     "INSTALLED_APPS_NEW",
-    "INSTALLED_APPS_NEW_GIS",
+    "MIDDLEWARE_OLD",
+    "MIDDLEWARE_NEW",
     "STATIC_OLD",
     "STATIC_NEW",
     "REST_FRAMEWORK_SETTINGS",
+    "CORS_SETTINGS",
     "SPATIALITE_SETTINGS",
     "DATABASE_ENGINE_NORMAL",
     "DATABASE_ENGINE_GIS",
     "DISABLE_MAX_FIELDS",
 
     "BASIC_NUMBER_TYPES",
+    "BASIC_NUMBER_FIELD_CLASSES",
 ]
 
 
@@ -161,7 +165,7 @@ class SnapshotViewSet(viewsets.ModelViewSet):
     serializer_class = SnapshotSerializer
 
 
-api_router.register(r'snapshots', SnapshotViewSet)
+api_router.register('snapshots', SnapshotViewSet)
 
 
 class MetaViewSet(viewsets.ViewSet):
@@ -173,7 +177,7 @@ class MetaViewSet(viewsets.ViewSet):
         }})
 
 
-api_router.register(r'meta', MetaViewSet, basename='meta')
+api_router.register('meta', MetaViewSet, basename='meta')
 
 
 """
@@ -202,7 +206,7 @@ class {relation_name}ViewSet(viewsets.ModelViewSet):
 """
 
 MODEL_ROUTER_REGISTRATION_TEMPLATE = """
-api_router.register(r'data/{relation_name_lower}', {relation_name}ViewSet)
+api_router.register('data/{relation_name_lower}', {relation_name}ViewSet)
 """
 
 # Settings Code
@@ -225,7 +229,7 @@ DEBUG_OLD = "DEBUG = True"
 DEBUG_NEW = "DEBUG = not (os.getenv('DJANGO_ENV') == 'production')"
 
 ALLOWED_HOSTS_OLD = "ALLOWED_HOSTS = []"
-ALLOWED_HOSTS_NEW = "ALLOWED_HOSTS = ['127.0.0.1', '{}'] if (os.getenv('DJANGO_ENV') == 'production') else []"
+ALLOWED_HOSTS_NEW = "ALLOWED_HOSTS = ['127.0.0.1', '{site_url}'] if (os.getenv('DJANGO_ENV') == 'production') else []"
 
 INSTALLED_APPS_OLD = """INSTALLED_APPS = [
     'django.contrib.admin',
@@ -243,23 +247,22 @@ INSTALLED_APPS_NEW = """INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+] + ([
+    'django.contrib.gis',
+    'rest_framework_gis',
+] if {gis_mode} else []) + [
     'core.apps.CoreConfig',
     'pytrackdat_snapshot_manager',
 
     'advanced_filters',
     'rest_framework',
     'reversion',
+    'corsheaders',
 ]"""
 
-INSTALLED_APPS_NEW_GIS = INSTALLED_APPS_NEW.replace(
-    "'django.contrib.staticfiles',",
-    """'django.contrib.staticfiles',
-
-    'django.contrib.gis',
-
-    'rest_framework_gis',"""
-)
+MIDDLEWARE_OLD = "MIDDLEWARE = ["
+MIDDLEWARE_NEW = """MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',"""
 
 STATIC_OLD = "STATIC_URL = '/static/'"
 STATIC_NEW = """STATIC_URL = '/static/'
@@ -277,6 +280,10 @@ REST_FRAMEWORK = {
 }
 """
 
+CORS_SETTINGS = """
+CORS_ALLOWED_ORIGINS = ["http://localhost:8000", "http://localhost:8080"] if DEBUG else ["{site_url}"]
+"""
+
 SPATIALITE_SETTINGS = """
 SPATIALITE_LIBRARY_PATH='{}' if (os.getenv('DJANGO_ENV') != 'production') else None
 """
@@ -292,4 +299,9 @@ DISABLE_MAX_FIELDS = "\nDATA_UPLOAD_MAX_NUMBER_FIELDS = None\n"
 BASIC_NUMBER_TYPES = {
     DT_INTEGER: "IntegerField",
     DT_FLOAT: "FloatField",
+}
+
+BASIC_NUMBER_FIELD_CLASSES = {
+    DT_INTEGER: IntegerField,
+    DT_FLOAT: FloatField,
 }

@@ -1,10 +1,10 @@
-FROM osgeo/gdal:alpine-normal-3.2.0
+FROM osgeo/gdal:alpine-normal-3.2.1
 
 ENV PYTHONUNBUFFERED 1
 
-ADD requirements.txt /requirements.txt
-ADD requirements_gis.txt /requirements_gis.txt
-ADD install_dependencies.R /install_dependencies.R
+RUN mkdir /pytrackdat/
+WORKDIR /pytrackdat/
+ADD . /pytrackdat/
 
 RUN set -ex \
     && apk add --no-cache --virtual build-deps \
@@ -14,18 +14,19 @@ RUN set -ex \
     && apk add libspatialite --repository http://nl.alpinelinux.org/alpine/edge/testing \
     && ln -s /usr/lib/mod_spatialite.so.7 /usr/lib/mod_spatialite.so \
     && pip3 install -U pip \
-    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir -r /requirements.txt" \
-    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir -r /requirements_gis.txt" \
+    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir .pytrackdat[gis]" \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir uwsgi==2.0.18" \
     && chmod -R a+w /usr/lib/R/library \
-    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "Rscript /install_dependencies.R" \
+    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "Rscript /pytrackdat/util_files/install_dependencies.R" \
     && apk del build-deps
-RUN mkdir /code/
-WORKDIR /code/
-ADD . /code/
+
+RUN useradd --home-dir /home/ptd_user --create-home ptd_user
+WORKDIR /home/ptd_user
+USER ptd_user
 
 EXPOSE 8000
 
+ENV DJANGO_SETTINGS_MODULE=pytrackdat.ptd_site.ptd_site.settings
 ENV DJANGO_ENV=production
 ENV UWSGI_WSGI_FILE=SITE_NAME/wsgi.py UWSGI_SOCKET=0.0.0.0:8000 UWSGI_MASTER=1 UWSGI_WORKERS=2 UWSGI_THREADS=8
 ENV UWSGI_UID=1000 UWSGI_GID=2000 UWSGI_LAZY_APPS=1 UWSGI_WSGI_ENV_BEHAVIOR=holy

@@ -1,5 +1,5 @@
 # PyTrackDat is a utility for assisting in online database creation.
-# Copyright (C) 2018-2020 the PyTrackDat authors.
+# Copyright (C) 2018-2021 the PyTrackDat authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
 
-import csv
 import os
 import shutil
 import subprocess
@@ -34,9 +33,9 @@ class ExportLabelsMixin:
 
         response = HttpResponse(status=500)
 
-        for f in os.listdir("."):
+        for f in os.listdir("../../app_includes"):
             if f.startswith("labels-"):
-                os.remove(os.path.join(".", f))
+                os.remove(os.path.join("../../app_includes", f))
 
         if have_r:
             # TODO: Prefix for IDs
