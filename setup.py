@@ -16,6 +16,7 @@ setup(
         "django-cors-headers>=3.6.0,<3.7",
         "django-filter>=2.4.0,<2.5",
         "djangorestframework>=3.12.2,<3.13",
+        "djangorestframework-simplejwt==4.6.0",
         "django-reversion>=3.0.8,<3.1",
     ],
     extras_require={
