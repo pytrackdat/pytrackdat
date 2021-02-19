@@ -24,8 +24,10 @@ from django.db import models
 from rest_framework import serializers
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
+from typing import List
 
 from pytrackdat.common import PDT_RELATION_PREFIX, Relation
 from pytrackdat.generation import API_FILTERABLE_FIELD_TYPES
@@ -38,31 +40,7 @@ __all__ = ["api_router"]
 api_router = DefaultRouter()
 
 
-# TODO: Maybe put this in the snapshot app...
-class SnapshotSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Snapshot
-        fields = "__all__"
-
-
-# TODO: Maybe put this in the snapshot app...
-class SnapshotViewSet(viewsets.ModelViewSet):
-    queryset = Snapshot.objects.all()
-    serializer_class = SnapshotSerializer
-
-
-# noinspection PyMethodMayBeStatic
-class MetaViewSet(viewsets.ViewSet):
-    def list(self, _request):
-        return Response({{
-            "site_name": settings.PTD_SITE_NAME,
-            "gis_mode": settings.PTD_GIS_MODE,
-            "relations": ""  # TODO: List all relations
-        }})
-
-
-api_router.register("snapshots", SnapshotViewSet)
-api_router.register("meta", MetaViewSet, basename="meta")
+relations: List[Relation] = []
 
 for name in dir(core_models):
     Cls = getattr(core_models, name)
@@ -70,7 +48,9 @@ for name in dir(core_models):
         continue
 
     # noinspection PyUnresolvedReferences
-    relation: Relation = Cls.ptd_relation  # TODO: Abstract mixin for this stuff
+    relation: Relation = Cls.ptd_relation
+    relations.append(relation)
+    # TODO: Abstract mixin for this stuff
 
     serializer_name = f"{name}Serializer"
     NewSerializerMeta = type("Meta", (object,), {"model": Cls, "fields": "__all__"})
@@ -104,3 +84,33 @@ for name in dir(core_models):
     setattr(sys.modules[__name__], viewset_name, NewViewSet)
 
     api_router.register(f"data/{relation.name_lower}", NewViewSet)
+
+
+# TODO: Maybe put this in the snapshot app...
+class SnapshotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Snapshot
+        fields = "__all__"
+
+
+# TODO: Maybe put this in the snapshot app...
+class SnapshotViewSet(viewsets.ModelViewSet):
+    queryset = Snapshot.objects.all()
+    serializer_class = SnapshotSerializer
+
+
+# noinspection PyMethodMayBeStatic
+class MetaViewSet(viewsets.ViewSet):
+    permission_classes = [AllowAny]
+
+    def list(self, request):
+        return Response({
+            "site_name": settings.PTD_SITE_NAME,
+            "gis_mode": settings.PTD_GIS_MODE,
+            # TODO: Filter relations by permission of individual
+            **({"relations": [dict(r) for r in relations]} if request.user and not request.user.is_anonymous else {}),
+        })
+
+
+api_router.register("snapshots", SnapshotViewSet)
+api_router.register("meta", MetaViewSet, basename="meta")
