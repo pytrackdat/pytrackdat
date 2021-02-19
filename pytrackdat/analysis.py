@@ -1,5 +1,5 @@
 # PyTrackDat is a utility for assisting in online database creation.
-# Copyright (C) 2018-2020 the PyTrackDat authors.
+# Copyright (C) 2018-2021 the PyTrackDat authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ import sys
 
 from typing import Dict, List, Optional, Sequence, Tuple
 
-from .common import *
+from pytrackdat import common as c
 
 
 __all__ = ["infer_column_type", "create_design_file_rows_from_inference", "main"]
@@ -94,15 +94,15 @@ def infer_column_type(
     for v in col:
         str_v = str(v).strip()
 
-        if re.match(RE_INTEGER, str_v) or re.match(RE_INTEGER_HUMAN, str_v):
+        if re.match(c.RE_INTEGER, str_v) or re.match(c.RE_INTEGER_HUMAN, str_v):
             integer_values += 1
-            integer_values_set.add(int(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", str_v)))
+            integer_values_set.add(int(re.sub(c.RE_NUMBER_GROUP_SEPARATOR, "", str_v)))
 
-        elif re.match(RE_DECIMAL, str_v.lower()) or re.match(RE_DECIMAL_HUMAN, str_v.lower()):
+        elif re.match(c.RE_DECIMAL, str_v.lower()) or re.match(c.RE_DECIMAL_HUMAN, str_v.lower()):
             decimal_values += 1
             max_seen_decimals = max(
                 max_seen_decimals,
-                (len(re.sub(RE_NUMBER_GROUP_SEPARATOR, "", str_v).split(".")[-1].split("e")[0])
+                (len(re.sub(c.RE_NUMBER_GROUP_SEPARATOR, "", str_v).split(".")[-1].split("e")[0])
                  if "." in str_v else -1)
             )
 
@@ -112,10 +112,10 @@ def infer_column_type(
         else:
             non_numeric_values.add(str_v)
 
-            if any(re.match(df[0], str_v) is not None for df in DATE_FORMATS):
+            if any(re.match(df[0], str_v) is not None for df in c.DATE_FORMATS):
                 date_values += 1
 
-            elif any(re.match(df[0], str_v) is not None for df in TIME_FORMATS):
+            elif any(re.match(df[0], str_v) is not None for df in c.TIME_FORMATS):
                 time_values += 1
 
             else:
@@ -130,7 +130,7 @@ def infer_column_type(
 
     if len(all_values) == len(col) and "" not in all_values and (keys is None or
                                                                  keys.get(relation, (None, None))[0] == name):
-        detected_type = DT_MANUAL_KEY
+        detected_type = c.DT_MANUAL_KEY
         nullable = False
         is_key = True
 
@@ -139,17 +139,17 @@ def infer_column_type(
     # Integers:
 
     elif integer_values == len(col):
-        detected_type = DT_INTEGER
+        detected_type = c.DT_INTEGER
         nullable = False
 
     elif integer_values > 0 and len(non_numeric_values) == 1 and decimal_values == 0 \
             and not (len(integer_values_set) == 2 and 0 in integer_values_set and 1 in integer_values_set):
-        detected_type = DT_INTEGER
+        detected_type = c.DT_INTEGER
         nullable = True
         # TODO: DO WE WANT NULL VALUES HERE?
 
     elif integer_values > 0 and len(non_numeric_values) > 1 and ((integer_values / len(col)) >= ALTERNATE_THRESHOLD):
-        detected_type = DT_INTEGER
+        detected_type = c.DT_INTEGER
         nullable = True
         include_alternate = True
 
@@ -158,7 +158,7 @@ def infer_column_type(
     elif decimal_values > 0 and len(non_numeric_values) in (0, 1):
         # Integer or decimal values -> use a decimal field.
         # TODO: Find number of digits!!!
-        detected_type = DT_DECIMAL
+        detected_type = c.DT_DECIMAL
         nullable = (len(non_numeric_values) == 1)
         max_length = max_seen_length + max_seen_decimals + 4
 
@@ -166,30 +166,30 @@ def infer_column_type(
 
     elif float_values > 0 and len(non_numeric_values) in (0, 1):
         # Integer, decimal or float values in column -> use a float field.
-        detected_type = DT_FLOAT
+        detected_type = c.DT_FLOAT
         nullable = (len(non_numeric_values) == 1)
 
     # Dates:
 
     elif date_values == len(col):
-        detected_type = DT_DATE
+        detected_type = c.DT_DATE
         nullable = False
         # TODO: Detect date format and make additional settings with date format
 
     elif date_values > 0 and len(other_values) == 1:
-        detected_type = DT_DATE
+        detected_type = c.DT_DATE
         nullable = True
         null_values = list(other_values)[0]
 
     # Times:
 
     elif time_values == len(col):
-        detected_type = DT_TIME
+        detected_type = c.DT_TIME
         nullable = False
         # TODO: Detect time format and make additional settings with time format
 
     elif time_values > 0 and len(other_values) == 1:
-        detected_type = DT_TIME
+        detected_type = c.DT_TIME
         nullable = True
         null_values = list(other_values)[0]
 
@@ -197,24 +197,24 @@ def infer_column_type(
 
     elif (len([a for a in all_values if a.strip() != ""]) < MAX_CHOICES and max_seen_length < MAX_CHOICE_LENGTH and
           sum(v for a, v in all_values_counts.items() if a.strip() != "") >= 2 * len(all_values)):
-        detected_type = DT_TEXT
-        nullable = ("" in all_values)
+        detected_type = c.DT_TEXT
+        nullable = "" in all_values
         choices = sorted(all_values)
-        in_choices = {c.lower() for c in choices}
+        in_choices = {ch.lower() for ch in choices}
         max_length = max_seen_length * 2
 
         # Booleans:
         if (len(choices) == 2 or (len(choices) == 3 and nullable)) and any(tv in in_choices and fv in in_choices
-                                                                           for tv, fv in BOOLEAN_TF_PAIRS):
-            detected_type = DT_BOOLEAN
-            null_values = [c for c in choices if c.lower() not in BOOLEAN_TRUE_VALUES + BOOLEAN_FALSE_VALUES]
+                                                                           for tv, fv in c.BOOLEAN_TF_PAIRS):
+            detected_type = c.DT_BOOLEAN
+            null_values = [ch for ch in choices if ch.lower() not in c.BOOLEAN_TRUE_VALUES + c.BOOLEAN_FALSE_VALUES]
 
     # Text
 
     # TODO: I don't like this logic
 
     elif integer_values < max(len(col) / 10, 10) or len(non_numeric_values) >= 10:
-        detected_type = DT_TEXT
+        detected_type = c.DT_TEXT
         nullable = False
         if max_seen_length <= CHAR_FIELD_MAX_LENGTH and "note" not in name and "comment" not in name:
             max_length = CHAR_FIELD_LENGTH
@@ -235,10 +235,9 @@ def infer_column_type(
 def create_design_file_rows_from_inference(old_name: str, new_name: str, inference: Dict) -> List[List[str]]:
     f_type = inference["detected_type"]
 
-    choices = (inference["choices"] if len(inference["choices"]) > 0 and inference["detected_type"] != DT_BOOLEAN
-               else None)
+    choices = (inference["choices"] if inference["choices"] and f_type != c.DT_BOOLEAN else None)
 
-    inferred_field = RelationField(
+    inferred_field = c.RelationField(
         csv_names=(old_name,),  # Old CSV / field name(s)
         name=new_name,  # New field name (in database)
         data_type=f_type,  # Detected data type
@@ -246,17 +245,16 @@ def create_design_file_rows_from_inference(old_name: str, new_name: str, inferen
         null_values=inference["null_values"],  # What value(s) will become null in the database
         default="",  # The default value for the field (optional, null/blank if left empty)
         description="!fill me in!",  # Field description
-        show_in_table=(f_type not in {DT_TEXT, *GIS_DATA_TYPES} or
-                       (f_type == DT_TEXT and (len(inference["choices"]) > 0 or inference["max_length"] > 0))),
+        show_in_table=(f_type not in {c.DT_TEXT, *c.GIS_DATA_TYPES} or
+                       (f_type == c.DT_TEXT and (inference["choices"] or inference["max_length"] > 0))),
         additional_fields=(
             # IF DECIMAL: Max length and decimal placement:
-            *((inference["max_length"], inference["max_seen_decimals"]) if inference["detected_type"] == DT_DECIMAL
+            *((inference["max_length"], inference["max_seen_decimals"]) if f_type == c.DT_DECIMAL
               else ()),
             # IF TEXT/ENUM: Max length:
-            *((inference["max_length"],) if inference["detected_type"] == DT_TEXT and inference["max_length"] > 0
-              else ()),
+            *((inference["max_length"],) if f_type == c.DT_TEXT and inference["max_length"] > 0 else ()),
             # IF ENUM: Choices:
-            *(("{} ".format(DESIGN_SEPARATOR).join(choices),) if choices is not None else ()),
+            *((f"{c.DESIGN_SEPARATOR} ".join(choices),) if choices is not None else ()),
         ),
         choices=choices,  # Not used here?
     )
@@ -277,13 +275,13 @@ def extract_data_from_relation_file(rf):
         fields = strip_blank_fields(tuple(f for f in next(data_reader)))
 
         if len(fields) == 0:
-            exit_with_error("Error: No fields detected")
+            c.exit_with_error("Error: No fields detected")
 
         d = next(data_reader)
         while True:
             try:
                 row = [x.strip() for x in d]
-                if any(c != "" for c in row):
+                if any(cell != "" for cell in row):
                     # Skip blank rows, they're likely CSV artifacts
                     data.append(row)
                 d = next(data_reader)
@@ -297,7 +295,7 @@ def extract_data_from_relation_file(rf):
 
 
 def main():
-    print_license()
+    c.print_license()
 
     args = sys.argv[1:]
 
@@ -313,7 +311,7 @@ def main():
 
         duplicates = set(r for r in args[1::2] if len([r2 for r2 in args[1::2] if r2 == r]) > 1)
         for r in duplicates:
-            print("\t{}".format(r))
+            print(f"\t{r}")
 
         exit(1)
 
@@ -321,19 +319,19 @@ def main():
 
     # Pass 1: Find key candidates and possible foreign keys
     for rn, rf in relations:
-        print("Finding keys for relation '{}'...".format(rn))
+        print(f"Finding keys for relation '{rn}'...")
 
         data, fields = extract_data_from_relation_file(rf)
 
         for i, f in enumerate(fields):
-            new_name = field_to_py_code(f)
+            new_name = c.field_to_py_code(f)
 
             col = tuple(d[i] for d in data)
             inference = infer_column_type(rn, new_name, col)
 
             if inference["is_key"]:
                 keys[rn] = (new_name, col)
-                print("    Field '{}' identified as a key".format(new_name))
+                print(f"    Field '{new_name}' identified as a key")
                 break
 
         print()
@@ -341,7 +339,7 @@ def main():
     # Pass 2: Determine other column data types
     design_file_rows = []
     for rn, rf in relations:
-        print("Detecting types for fields in relation '{}'...".format(rn))
+        print(f"Detecting types for fields in relation '{rn}'...")
 
         data, fields = extract_data_from_relation_file(rf)
 
@@ -351,16 +349,16 @@ def main():
         new_design_file_rows = []
 
         if rn not in keys:
-            print("\n    Warning: No primary key found for relation '{}'. If you have a field you "
-                  "\n             think should be the primary key (row identifier), this is an indication"
-                  "\n             that there may be duplicate values. \n"
-                  "\n             Adding an automatic key instead....".format(rn))  # TODO
+            print(f"\n    Warning: No primary key found for relation '{rn}'. If you have a field you "
+                  f"\n             think should be the primary key (row identifier), this is an indication"
+                  f"\n             that there may be duplicate values. \n"
+                  f"\n             Adding an automatic key instead....")  # TODO
 
             # Add automatic primary key to design file
-            new_design_file_rows = [RelationField(
+            new_design_file_rows = [c.RelationField(
                 csv_names=(),  # CSV names (blank)
-                name="{}_id".format(rn),  # "new" (database) name
-                data_type=DT_AUTO_KEY,  # auto primary key type
+                name=f"{rn}_id",  # "new" (database) name
+                data_type=c.DT_AUTO_KEY,  # auto primary key type
                 nullable=False,  # not nullable - primary key
                 null_values=(),  # no null values
                 default="",  # no default value
@@ -370,7 +368,7 @@ def main():
             ).as_design_file_row()]
 
         for i, f in enumerate(fields):
-            new_name = field_to_py_code(f)
+            new_name = c.field_to_py_code(f)
 
             col = tuple(d[i] for d in data)
             inference = infer_column_type(rn, new_name, col, keys)
@@ -382,7 +380,7 @@ def main():
                 f,
                 inference["detected_type"],
                 inference["nullable"],
-                "\n        Choices: {}".format(inference["choices"]) if len(inference["choices"]) > 0 else "",
+                f"\n        Choices: {inference['choices']}" if inference["choices"] else "",
                 "\n        With alternate" if inference["include_alternate"] else ""
             ))
 
@@ -399,9 +397,9 @@ def main():
                 r.extend([""] * (max_length - len(r)))  # Pad out row with blank columns if needed
                 design_writer.writerow(r)
 
-            print("    Wrote design file to '{}'...\n".format(design_file))
+            print(f"    Wrote design file to '{design_file}'...\n")
 
-        print("Analyzed {} relations.".format(len(relations)))
+        print(f"Analyzed {len(relations)} relations.")
 
     except IOError:
         print("\nError: Could not write to design file.\n")
