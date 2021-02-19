@@ -1,5 +1,5 @@
 # PyTrackDat is a utility for assisting in online database creation.
-# Copyright (C) 2018-2020 the PyTrackDat authors.
+# Copyright (C) 2018-2021 the PyTrackDat authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
 #     David Lougheed (david.lougheed@gmail.com)
 
 import re
+
+# TODO: py3.9: Use other Tuple typing
 from typing import Optional, Sequence, Tuple
 
 
@@ -238,26 +240,27 @@ def to_relation_name(name: str) -> str:
     python_relation_name = PDT_RELATION_PREFIX + "".join(n.capitalize() for n in name_sanitized.split("_"))
 
     # Take care of plurals so they do not look dumb.
+    # TODO: Internationalization
 
     if python_relation_name[-3:] == "ies":
         old_name = python_relation_name
         python_relation_name = python_relation_name[:-3] + "y"
-        print("Warning: Auto-detected incorrect plural relation name.\n"
-              "         Changing {} to {}.\n"
-              "         To avoid this, specify singular names.".format(old_name, python_relation_name))
+        print(f"Warning: Auto-detected incorrect plural relation name.\n"
+              f"         Changing {old_name} to {python_relation_name}.\n"
+              f"         To avoid this, specify singular names.")
     elif python_relation_name[-1] == "s":
         old_name = python_relation_name
         python_relation_name = python_relation_name[:-1]
-        print("Warning: Auto-detected incorrect plural relation name.\n         Altering from "
-              "{} to {}.\n         To avoid this, specify singular names.".format(old_name, python_relation_name))
+        print(f"Warning: Auto-detected incorrect plural relation name.\n         Altering from "
+              f"{old_name} to {python_relation_name}.\n         To avoid this, specify singular names.")
 
     return python_relation_name
 
 
 def print_license() -> None:
-    print("""PyTrackDat v{}  Copyright (C) {} the PyTrackDat authors.
+    print(f"""PyTrackDat v{VERSION}  Copyright (C) {COPYRIGHT_DATES} the PyTrackDat authors.
 This program comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
-""".format(VERSION, COPYRIGHT_DATES))
+""")
 
 
 def exit_with_error(message: str):
