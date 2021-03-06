@@ -1,0 +1,43 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      matrix:
+        os:
+          - 'macos-10.15'
+          # still in private preview, see actions/virtual-environments#2486
+          # - 'macos-11.0'
+          - 'ubuntu-20.04'
+          - 'ubuntu-16.04'
+          - 'windows-2019'
+          - 'windows-2016'
+        python-version:
+          - '3.5'
+          - '3.6'
+          - '3.7'
+          - '3.8'
+          - '3.9'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+
+      - name: Package installation
+        run: pip install .
+
+      - name: Run tests
+        run: python setup.py test
