@@ -9,7 +9,7 @@ setup(
     name="pytrackdat",
     version="0.3.0",
 
-    python_requires="~=3.6",
+    python_requires="~=3.7",
     install_requires=[
         "Django>=2.2.20,<3",
         "django-advanced-filters>=1.3.0,<1.4"
