@@ -50,9 +50,9 @@ jobs:
         run:  |
           conda install -c conda-forge gdal
           conda --version
-          dir C:\Miniconda
-          dir C:\Miniconda\Library\bin
-          dir C:\
+          dir C:\\Miniconda
+          dir C:\\Miniconda\\Library\\bin
+          dir C:
         if: runner.os == 'Windows'
 
       - name: Package installation
