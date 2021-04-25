@@ -1,5 +1,5 @@
 # PyTrackDat is a utility for assisting in online database creation.
-# Copyright (C) 2018-2020 the PyTrackDat authors.
+# Copyright (C) 2018-2021 the PyTrackDat authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,19 +17,24 @@
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
 
-from typing import Optional, Tuple
-from ..common import DESIGN_SEPARATOR, RelationField
-
+import gzip
+import os
 
 __all__ = [
-    "get_choices_from_text_field",
+    "is_common_password",
 ]
 
 
-def get_choices_from_text_field(f: RelationField) -> Optional[Tuple[str, ...]]:
-    if len(f.additional_fields) == 2:
-        # TODO: Choice human names
-        choice_names = tuple(str(c).strip() for c in f.additional_fields[1].split(DESIGN_SEPARATOR)
-                             if str(c).strip() != "")
-        return choice_names if len(choice_names) > 0 else None
-    return None
+def is_common_password(password: str, package_dir: str) -> bool:
+    # Try to use password list created by Royce Williams and adapted for the Django project:
+    # https://gist.github.com/roycewilliams/281ce539915a947a23db17137d91aeb7
+
+    common_passwords = {"password", "123456", "12345678"}  # Fallbacks if file not present
+    try:
+        with gzip.open(os.path.join(package_dir, "common-passwords.txt.gz")) as f:
+            common_passwords = {p.strip() for p in f.read().decode().splitlines()
+                                if len(p.strip()) >= 8}  # Don't bother including too-short passwords
+    except OSError:
+        pass
+
+    return password.lower().strip() in common_passwords

@@ -20,7 +20,7 @@
 import unittest
 
 import pytrackdat.common as pc
-import pytrackdat.generation.formatters as pgf
+import pytrackdat.design_file.formatters as pf
 
 from django.db import models
 
@@ -39,7 +39,7 @@ AUTO_KEY_FIELD = pc.RelationField(
 
 class TestGenerationFormatters(unittest.TestCase):
     def test_auto_key_formatter(self):
-        i = pgf.auto_key_formatter(AUTO_KEY_FIELD)
+        i = pf.auto_key_formatter(AUTO_KEY_FIELD)
         assert isinstance(i, models.AutoField)
         assert i.primary_key
         assert i.help_text == AUTO_KEY_FIELD.description

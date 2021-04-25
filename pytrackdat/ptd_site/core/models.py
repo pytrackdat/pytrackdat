@@ -23,7 +23,7 @@ from django.conf import settings
 from django.db import models
 
 from pytrackdat.design_file import design_to_relations
-from pytrackdat.generation.formatters import DJANGO_TYPE_FORMATTERS
+from pytrackdat.design_file.formatters import DJANGO_TYPE_FORMATTERS
 
 
 all_exports = []

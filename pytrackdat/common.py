@@ -77,6 +77,8 @@ __all__ = [
 
     "PDT_RELATION_PREFIX",
 
+    "API_FILTERABLE_FIELD_TYPES",
+
     "valid_data_type",
     "collapse_multiple_underscores",
     "sanitize_python_identifier",
@@ -207,6 +209,25 @@ DATE_FORMATS = (
 
 
 PDT_RELATION_PREFIX = "PyTrackDat"
+
+
+API_FILTERABLE_FIELD_TYPES = {
+    DT_AUTO_KEY: ["exact", "in"],
+    DT_MANUAL_KEY: ["exact", "in"],
+
+    DT_INTEGER: ["exact", "lt", "lte", "gt", "gte", "in"],
+    DT_FLOAT: ["exact", "lt", "lte", "gt", "gte"],
+    DT_DECIMAL: ["exact", "lt", "lte", "gt", "gte", "in"],
+
+    DT_BOOLEAN: ["exact"],
+
+    DT_TEXT: ["exact", "iexact", "contains", "icontains", "in"],
+
+    DT_DATE: ["exact", "lt", "lte", "gt", "gte", "in"],
+    DT_TIME: ["exact", "lt", "lte", "gt", "gte", "in"],
+
+    DT_FOREIGN_KEY: ["exact", "in"],
+}
 
 
 def valid_data_type(data_type: str, gis_mode: bool) -> bool:

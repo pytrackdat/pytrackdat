@@ -19,8 +19,9 @@
 
 from django.db import models
 from django.contrib.gis.db import models as gis_models
+
 from pytrackdat import common as c
-from .constants import BASIC_NUMBER_FIELD_CLASSES
+
 from .utils import get_choices_from_text_field
 
 
@@ -33,6 +34,12 @@ __all__ = [
     "boolean_formatter",
     "DJANGO_TYPE_FORMATTERS",
 ]
+
+
+BASIC_NUMBER_FIELD_CLASSES = {
+    c.DT_INTEGER: models.IntegerField,
+    c.DT_FLOAT: models.FloatField,
+}
 
 
 def auto_key_formatter(f: c.RelationField) -> models.Field:
@@ -74,7 +81,6 @@ def decimal_formatter(f: c.RelationField) -> models.Field:
 
 
 def boolean_formatter(f: c.RelationField) -> models.Field:
-
     return models.BooleanField(
         help_text=f.description,
         blank=f.nullable,

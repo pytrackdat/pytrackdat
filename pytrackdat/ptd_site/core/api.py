@@ -29,8 +29,7 @@ from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 from typing import List
 
-from pytrackdat.common import PDT_RELATION_PREFIX, Relation
-from pytrackdat.generation import API_FILTERABLE_FIELD_TYPES
+from pytrackdat.common import PDT_RELATION_PREFIX, API_FILTERABLE_FIELD_TYPES, Relation
 from pytrackdat.ptd_site.core import models as core_models
 from pytrackdat.ptd_site.snapshot_manager.models import Snapshot
 

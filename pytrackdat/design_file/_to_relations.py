@@ -5,9 +5,14 @@ import re
 from typing import IO, List
 
 from pytrackdat import common as c
-from pytrackdat.generation import formatters  # TODO: Shouldn't need
+from . import formatters
 from .errors import DesignFileError
 from .utils import get_default_from_csv_with_type
+
+# TODO: TIMEZONES
+# TODO: Multiple date formats
+# TODO: More ways for custom validation
+# TODO: More customization options
 
 
 def design_to_relations(df: IO, gis_mode: bool) -> List[c.Relation]:
