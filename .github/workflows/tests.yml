@@ -47,7 +47,7 @@ jobs:
 
       - name: Install Windows dependencies
         run:  conda install -c conda-forge gdal
-        if: runner.ois == 'Windows'
+        if: runner.os == 'Windows'
 
       - name: Package installation
         run: pip install .[gis]
