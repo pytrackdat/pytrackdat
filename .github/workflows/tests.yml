@@ -53,15 +53,15 @@ jobs:
           dir C:\\Miniconda\\Library\\bin
         if: runner.os == 'Windows'
 
-      - name: Package installation (Windows)
+      - name: Package installation
         run: pip install .[gis]
+
+      - name: Run tests (Windows)
+        run: python -m unittest discover -v tests
         env:
           GDAL_LIBRARY_PATH: "C:\\Miniconda\\Library\\bin\\gdal302.dll"
         if: runner.os == 'Windows'
 
-      - name: Package installation (UNIX-like)
-        run: pip install .[gis]
-        if: runner.os != 'Windows'
-
-      - name: Run tests
+      - name: Run tests (UNIX-Like)
         run: python -m unittest discover -v tests
+        if: runner.os != 'Windows'
