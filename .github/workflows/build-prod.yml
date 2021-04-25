@@ -3,6 +3,10 @@ name: Publish production Docker image
 on:
   release:
     types: [published]
+  push:
+    branches:
+      - master
+      - develop
 
 jobs:
   push_to_registry:
