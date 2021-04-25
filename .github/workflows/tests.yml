@@ -35,6 +35,7 @@ jobs:
         uses: s-weigand/setup-conda@v1
         with:
           activate-conda: false
+          update-conda: true
         if: runner.os == 'Windows'
 
       - name: Install apt dependencies
@@ -46,7 +47,12 @@ jobs:
         if: runner.os == 'macOS'
 
       - name: Install Windows dependencies
-        run:  conda install -c conda-forge gdal
+        run:  |
+          conda install -c conda-forge gdal
+          conda --version
+          dir C:\Miniconda
+          dir C:\Miniconda\Library\bin
+          dir C:\
         if: runner.os == 'Windows'
 
       - name: Package installation
