@@ -17,12 +17,18 @@
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
 
-import unittest
+import os
+
+from django.test import TestCase as DjangoTestCase
+from django.db import models
 
 import pytrackdat.common as pc
 import pytrackdat.design_file.formatters as pf
 
-from django.db import models
+os.environ["DJANGO_SETTINGS_MODULE"] = os.environ.get(
+    "DJANGO_SETTINGS_MODULE", "pytrackdat.ptd_site.ptd_site.settings")
+
+os.environ["PTD_DESIGN_FILE"] = "./tests/design_files/dummy.csv"
 
 AUTO_KEY_FIELD = pc.RelationField(
     csv_names=(),
@@ -37,7 +43,7 @@ AUTO_KEY_FIELD = pc.RelationField(
 )
 
 
-class TestGenerationFormatters(unittest.TestCase):
+class TestGenerationFormatters(DjangoTestCase):
     def test_auto_key_formatter(self):
         i = pf.auto_key_formatter(AUTO_KEY_FIELD)
         assert isinstance(i, models.AutoField)
