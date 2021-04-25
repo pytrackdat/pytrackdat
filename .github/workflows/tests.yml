@@ -34,7 +34,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install apt dependencies
-        run: sudo apt install gdal
+        run: sudo apt install libgdal-dev
 
       - name: Package installation
         run: pip install .[gis]
