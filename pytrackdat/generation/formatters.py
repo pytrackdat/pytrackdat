@@ -25,7 +25,6 @@ from .utils import get_choices_from_text_field
 
 
 __all__ = [
-    "clean_field_help_text",
     "auto_key_formatter",
     "manual_key_formatter",
     "foreign_key_formatter",
@@ -34,10 +33,6 @@ __all__ = [
     "boolean_formatter",
     "DJANGO_TYPE_FORMATTERS",
 ]
-
-
-def clean_field_help_text(d: str) -> str:
-    return d.replace("\\", "\\\\").replace("'", "\\'")
 
 
 def auto_key_formatter(f: c.RelationField) -> models.Field:
@@ -50,8 +45,6 @@ def manual_key_formatter(f: c.RelationField) -> models.Field:
         primary_key=True,
         max_length=127,
         help_text=f.description)
-    # return "models.CharField(primary_key=True, max_length=127, " \
-    #        "help_text='{}')".format(clean_field_help_text(f.description))
 
 
 def foreign_key_formatter(f: c.RelationField) -> models.Field:

@@ -36,11 +36,6 @@ AUTO_KEY_FIELD = pc.RelationField(
 
 
 class TestGenerationFormatters(unittest.TestCase):
-    def test_help_text_cleaner(self):
-        self.assertEqual(pgf.clean_field_help_text("\\"), "\\\\")
-        self.assertEqual(pgf.clean_field_help_text("'"), "\\'")
-        self.assertEqual(pgf.clean_field_help_text("\\'"), "\\\\\\'")
-
     def test_auto_key_formatter(self):
         self.assertEqual(
             pgf.auto_key_formatter(AUTO_KEY_FIELD),
