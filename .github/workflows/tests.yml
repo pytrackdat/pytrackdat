@@ -39,16 +39,17 @@ jobs:
           activate-conda: false
         if: runner.os == 'Windows'
 
-      - name: Install system dependencies
-        run: |
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
-            sudo apt install libgdal-dev
-          elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            conda install -c conda-forge gdal
-          else
-            # macOS
-            brew install gdal
-          end
+      - name: Install apt dependencies
+        run: sudo apt install libgdal-dev
+        if: runner.os == 'Linux'
+
+      - name: Install brew dependencies
+        run: brew install gdal
+        if: runner.os == 'macOS'
+
+      - name: Install Windows dependencies
+        run:  conda install -c conda-forge gdal
+        if: runner.ois == 'Windows'
 
       - name: Package installation
         run: pip install .[gis]
