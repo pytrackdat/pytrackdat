@@ -1,7 +1,7 @@
 # PyTrackDat — A pipeline for online data collection and management
 
 [![PyPI version](https://badge.fury.io/py/pytrackdat.svg)](https://badge.fury.io/py/pytrackdat)
-[![Build Status](https://travis-ci.org/pytrackdat/pytrackdat.svg?branch=master)](https://travis-ci.org/pytrackdat/pytrackdat)
+[![Build Status](https://github.com/pytrackdat/pytrackdat/workflows/Tests/badge.svg?branch=master)](https://github.com/pytrackdat/pytrackdat/actions?query=workflow%3ATests+branch%3Amaster)
 
 
 ## Overview
