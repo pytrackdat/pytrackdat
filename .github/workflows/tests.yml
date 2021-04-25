@@ -59,9 +59,12 @@ jobs:
       - name: Run tests (Windows)
         run: python -m unittest discover -v tests
         env:
+          DJANGO_SETTINGS_MODULE: "pytrackdat.ptd_site.ptd_site.settings"
           GDAL_LIBRARY_PATH: "C:\\Miniconda\\Library\\bin\\gdal302.dll"
         if: runner.os == 'Windows'
 
       - name: Run tests (UNIX-Like)
         run: python -m unittest discover -v tests
         if: runner.os != 'Windows'
+        env:
+          DJANGO_SETTINGS_MODULE: "pytrackdat.ptd_site.ptd_site.settings"
