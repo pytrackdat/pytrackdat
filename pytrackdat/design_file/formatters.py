@@ -17,11 +17,20 @@
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
 
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-from django.contrib.gis.db import models as gis_models
+
+try:
+    from django.contrib.gis.db import models as gis_models
+except ImproperlyConfigured:
+    # No GDAL or something similar; GIS isn't configured / is misconfigured, so disable GIS support
+    gis_models = None
+
+from functools import wraps
 
 from pytrackdat import common as c
 
+from .errors import GISNotConfiguredError
 from .utils import get_choices_from_text_field
 
 
@@ -122,9 +131,21 @@ def date_formatter(f: c.RelationField) -> models.Field:
         **({} if f.default is None else {"default": f.default}))
 
 
+def require_gis(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if gis_models is None:
+            raise GISNotConfiguredError(
+                "GIS was not configured correctly; check the GDAL_LIBRARY_PATH and SPATIALITE_LIBRARY_PATH environment "
+                "variables")
+        func(*args, **kwargs)
+    return wrapper
+
+
 # All spatial fields cannot be null.
 
 
+@require_gis
 def point_formatter(f: c.RelationField) -> models.Field:
     # TODO: WARN IF NULLABLE
     # TODO: DO WE EVER MAKE THIS BLANK?
@@ -132,6 +153,7 @@ def point_formatter(f: c.RelationField) -> models.Field:
     return gis_models.PointField(help_text=f.description)
 
 
+@require_gis
 def line_string_formatter(f: c.RelationField) -> models.Field:
     # TODO: WARN IF NULLABLE
     # TODO: DO WE EVER MAKE THIS BLANK?
@@ -139,6 +161,7 @@ def line_string_formatter(f: c.RelationField) -> models.Field:
     return gis_models.LineStringField(help_text=f.description)
 
 
+@require_gis
 def polygon_formatter(f: c.RelationField) -> models.Field:
     # TODO: WARN IF NULLABLE
     # TODO: DO WE EVER MAKE THIS BLANK?
@@ -146,6 +169,7 @@ def polygon_formatter(f: c.RelationField) -> models.Field:
     return gis_models.PolygonField(help_text=f.description)
 
 
+@require_gis
 def multi_point_formatter(f: c.RelationField) -> models.Field:
     # TODO: WARN IF NULLABLE
     # TODO: DO WE EVER MAKE THIS BLANK?
@@ -153,6 +177,7 @@ def multi_point_formatter(f: c.RelationField) -> models.Field:
     return gis_models.MultiPointField(help_text=f.description)
 
 
+@require_gis
 def multi_line_string_formatter(f: c.RelationField) -> models.Field:
     # TODO: WARN IF NULLABLE
     # TODO: DO WE EVER MAKE THIS BLANK?
@@ -160,6 +185,7 @@ def multi_line_string_formatter(f: c.RelationField) -> models.Field:
     return gis_models.MultiLineStringField(help_text=f.description)
 
 
+@require_gis
 def multi_polygon_formatter(f: c.RelationField) -> models.Field:
     # TODO: WARN IF NULLABLE
     # TODO: DO WE EVER MAKE THIS BLANK?
