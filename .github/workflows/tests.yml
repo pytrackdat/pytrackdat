@@ -21,9 +21,7 @@ jobs:
           # still in private preview, see actions/virtual-environments#2486
           # - 'macos-11.0'
           - 'ubuntu-20.04'
-          - 'ubuntu-16.04'
           - 'windows-2019'
-          - 'windows-2016'
         python-version: [3.6, 3.9]
     steps:
       - uses: actions/checkout@v2
