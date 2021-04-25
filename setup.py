@@ -11,16 +11,16 @@ setup(
 
     python_requires="~=3.6",
     install_requires=[
-        "Django>=2.2.17,<3",
-        "django-advanced-filters>=1.2.0,<1.3"
-        "django-cors-headers>=3.6.0,<3.7",
+        "Django>=2.2.20,<3",
+        "django-advanced-filters>=1.3.0,<1.4"
+        "django-cors-headers>=3.7.0,<3.8",
         "django-filter>=2.4.0,<2.5",
-        "djangorestframework>=3.12.2,<3.13",
+        "djangorestframework>=3.12.4,<3.13",
         "djangorestframework-simplejwt==4.6.0",
-        "django-reversion>=3.0.8,<3.1",
+        "django-reversion>=3.0.9,<3.1",
     ],
     extras_require={
-        "gis": ["djangorestframework-gis>=0.16.0,<0.17"],
+        "gis": ["djangorestframework-gis>=0.17.0,<0.18"],
     },
 
     description="A utility for assisting in the creation of online "
