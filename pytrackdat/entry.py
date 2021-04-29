@@ -51,14 +51,20 @@ def main():
     print_license()
 
     parser = argparse.ArgumentParser(description="A tool for generating online databases and data portals.")
-    subparsers = parser.add_subparsers(help="TODO")  # TODO
+    subparsers = parser.add_subparsers(
+        title="action",
+        dest="action",
+        help="PyTrackDat action to perform (analyzing a CSV, testing a site, or sending commands to the internal "
+             "Django project)",
+        required=True)  # TODO
 
     for action, action_data in ACTIONS.items():
         action_parser = subparsers.add_parser(action, help=action_data["help"])
         for arg, opts_dict in action_data["args"]:
             action_parser.add_argument(arg, **opts_dict)
 
-    parser.parse_args()
+    args = parser.parse_args()
+    ACTIONS[args.action]["fn"](args)
 
 
 if __name__ == "__main__":
