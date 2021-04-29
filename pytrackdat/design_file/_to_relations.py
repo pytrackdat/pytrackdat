@@ -45,10 +45,8 @@ def design_to_relations(df: IO, gis_mode: bool) -> List[c.Relation]:
                     data_type = c.standardize_data_type(current_field[2])
 
                     if not c.valid_data_type(data_type, gis_mode):
-                        raise DesignFileError("Error: Unknown data type specified for field '{}': '{}'.".format(
-                            field_name,
-                            data_type
-                        ))
+                        raise DesignFileError(
+                            f"Error: Unknown data type specified for field '{field_name}': '{data_type}'.")
 
                     nullable = current_field[3].strip().lower() in c.BOOLEAN_TRUE_VALUES
                     # TODO: Covert to correct type?
@@ -70,14 +68,14 @@ def design_to_relations(df: IO, gis_mode: bool) -> List[c.Relation]:
                     if len(csv_names) > 1 and data_type not in (c.DT_GIS_POINT,):
                         # TODO: Codify this better
                         raise DesignFileError(
-                            "Error: Cannot take more than one column as input for field '{field}' with data type "
-                            "{data_type}.".format(field=current_field[0], data_type=data_type))
+                            f"Error: Cannot take more than one column as input for field '{current_field[0]}' with "
+                            f"data type {data_type}.")
 
                     # TODO: Have blank mean a default inference instead of False
                     show_in_table = current_field[7].strip().lower() in c.BOOLEAN_TRUE_VALUES
                     if data_type in c.KEY_TYPES and not show_in_table:
-                        print("Warning: Primary key '{}' must be shown in table; overriding false-like value...".format(
-                            field_name))
+                        print(f"Warning: Primary key '{field_name}' must be shown in table; overriding false-like "
+                              f"value...")
                         show_in_table = True
 
                     default_str = current_field[5].strip()
