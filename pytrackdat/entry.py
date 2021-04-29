@@ -21,26 +21,28 @@ ACTIONS = {
             ("name-file-pairs", {
                 "nargs": "+",
                 "help": "Alternating pairs of file name and relation (table) name for the CSVs to analyze.",
-                "required": True,
-            })
+            }),
         ),
     },
     "test": {
         "fn": test_site,
-        "help": "Starts a site (using the specified design file) in test mode.",
-        "args": ("design_file", {
-            "type": str,
-            "help": "Path to the design file to test.",
-            "required": True,
-        }),
+        "help": "Runs a server for a site (using the specified design file) in test mode.",
+        "args": (
+            ("design_file", {
+                "type": str,
+                "help": "Path to the design file to test.",
+            }),
+        ),
     },
     "django-manage": {
         "fn": lambda args: django_manage(args.args),
         "help": "Runs site commands using the Django application's management script.",
-        "args": ("args", {
-            "nargs": "*",
-            "help": "Arguments to pass to the Django manage.py script.",  # TODO
-        }),  # TODO: Arbitrary?
+        "args": (
+            ("args", {
+                "nargs": "*",
+                "help": "Arguments to pass to the Django manage.py script.",  # TODO
+            }),
+        ),  # TODO: Arbitrary?
     },
 
     # TODO: User creation wizard
@@ -56,7 +58,7 @@ def main():
         dest="action",
         help="PyTrackDat action to perform (analyzing a CSV, testing a site, or sending commands to the internal "
              "Django project)",
-        required=True)  # TODO
+        required=True)
 
     for action, action_data in ACTIONS.items():
         action_parser = subparsers.add_parser(action, help=action_data["help"])
