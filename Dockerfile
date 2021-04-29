@@ -1,4 +1,4 @@
-FROM osgeo/gdal:alpine-normal-3.2.1
+FROM osgeo/gdal:alpine-normal-3.2.2
 
 ENV PYTHONUNBUFFERED 1
 
@@ -15,7 +15,7 @@ RUN set -ex \
     && ln -s /usr/lib/mod_spatialite.so.7 /usr/lib/mod_spatialite.so \
     && pip3 install -U pip \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir .pytrackdat[gis]" \
-    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir uwsgi==2.0.18" \
+    && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip3 install --no-cache-dir uwsgi==2.0.19.1" \
     && chmod -R a+w /usr/lib/R/library \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "Rscript /pytrackdat/util_files/install_dependencies.R" \
     && apk del build-deps
