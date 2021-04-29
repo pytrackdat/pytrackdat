@@ -14,11 +14,16 @@ PTD_SITE_NAME = os.getenv("PTD_SITE_NAME", "My Database")
 PTD_GIS_MODE = os.getenv("PTD_GIS_MODE", "false").strip().lower() == "true"
 
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'c47tr0d5njmt7e%d3ez#3i-p!*3&e6a0t&&x+x25u5-nre)him'
+DEBUG_SECRET_KEY = "SET_ME_IN_PRODUCTION_foh2849L#T*ohgZG$"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = not (os.getenv("DJANGO_ENV") == "production")
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", DEBUG_SECRET_KEY if DEBUG else None)
+
+if not SECRET_KEY:
+    exit_with_error("DJANGO_SECRET_KEY must be set, or the site must be in debug mode.")
 
 ALLOWED_HOSTS = ['127.0.0.1', PTD_SITE_URL] if not DEBUG else []
 
