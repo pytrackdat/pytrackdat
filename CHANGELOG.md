@@ -2,15 +2,20 @@
 
 ## Version 0.3.0 (TBD)
 
+ * Completely revamp how sites work
+    * Rely on Python metaprogramming for code generation
+    * No longer requires a generation step
+ * `ptd-analyze` -> `pytrackdat analyze`
+    * Improve output style for analysis
+    * Improve analysis performance
  * Add snapshot downloads
  * Add automatic pre-import snapshots
  * Add **experimental** (optional) GIS data support
  * Add search area for barcode contents (#6)
- * Improve output style for `ptd-analyze`
- * Improved analysis performance from `ptd-analyze`
  * Improve error and warning reporting
  * Revise documentation
- * Update Django to 2.2.17
+ * Update Django to 2.2.20
+ * Remove support for Python 3.6
 
 ## Version 0.2.1 (2019-05-13)
 
