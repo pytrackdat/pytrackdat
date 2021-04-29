@@ -32,16 +32,20 @@
 
 # LIMITATION: memory must be enough to ingest the CSV file to analyze
 
+import argparse
 import csv
 import re
-import sys
 
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from pytrackdat import common as c
 
 
-__all__ = ["infer_column_type", "create_design_file_rows_from_inference", "main"]
+__all__ = [
+    "infer_column_type",
+    "create_design_file_rows_from_inference",
+    "analyze_entry",
+]
 
 
 ALTERNATE_THRESHOLD = 0.5
@@ -294,22 +298,27 @@ def extract_data_from_relation_file(rf):
     return data, fields
 
 
-def main():
+def analyze_entry(args: argparse.Namespace):
     c.print_license()
 
-    args = sys.argv[1:]
+    design_file = args.design_out
+    name_file_pairs = args.name_file_pairs
 
-    if len(args) % 2 != 1 or len(args) < 3:
-        print("Usage: ptd-analyze design_out.csv relation_1_name file1.csv [relation_2_name file2.csv] ...")
+    # args = sys.argv[1:]
+
+    if len(name_file_pairs) % 2 or len(name_file_pairs) < 2:
+        print("Usage: pytrackdat analyze --design-out design_out.csv relation_1_name file1.csv "
+              "[relation_2_name file2.csv] ...")
         exit(1)
 
-    design_file = args[0]  # Name for output
-    relations = tuple(zip(args[1::2], map(str.lower, args[2::2])))  # Split pairs of file name, relation name
+    # Split pairs of file name, relation name
+    relation_names = name_file_pairs[::2]
+    relations = tuple(zip(map(str.lower, relation_names), name_file_pairs[1::2]))
 
-    if len(set(args[1::2])) < len(args[1::2]):
+    if len(set(relation_names)) < len(relation_names):
         print("Error: You cannot use the same relation name(s) for more than one table:")
 
-        duplicates = set(r for r in args[1::2] if len([r2 for r2 in args[1::2] if r2 == r]) > 1)
+        duplicates = set(r for r in relation_names if len([r2 for r2 in relation_names if r2 == r]) > 1)
         for r in duplicates:
             print(f"\t{r}")
 
@@ -404,7 +413,3 @@ def main():
     except IOError:
         print("\nError: Could not write to design file.\n")
         exit(1)
-
-
-if __name__ == "__main__":
-    main()

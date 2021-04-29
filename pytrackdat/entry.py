@@ -2,7 +2,7 @@
 
 import argparse
 
-from pytrackdat.analysis import main as analyze
+from pytrackdat.analysis import analyze_entry
 from pytrackdat.ptd_site.manage import main as django_manage
 from pytrackdat.test_site import test_site
 from pytrackdat.common import print_license
@@ -10,7 +10,7 @@ from pytrackdat.common import print_license
 
 ACTIONS = {
     "analyze": {
-        "fn": analyze,
+        "fn": analyze_entry,
         "help": "Analyzes a series of CSVs and outputs a best-attempt generated design file.",
         "args": (
             ("--design-out", {
