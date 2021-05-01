@@ -43,9 +43,7 @@ setup(
     include_package_data=True,
 
     entry_points={
-        "console_scripts": ["ptd-analyze=pytrackdat.analysis:main",
-                            "ptd-test=pytrackdat.test_site:main",
-                            "pytrackdat=pytrackdat.entry:main"]
+        "console_scripts": ["pytrackdat=pytrackdat.entry:main"],
     },
 
     test_suite="tests"
