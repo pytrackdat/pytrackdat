@@ -1,6 +1,9 @@
+import hashlib
 import os
+from pytrackdat.common import exit_with_error
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_DIR = os.getenv("PTD_DATABASE_DIR", os.path.join(BASE_DIR, "databases"))
 
 
 # PyTrackDat custom settings
@@ -8,6 +11,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PTD_DESIGN_FILE = os.getenv("PTD_DESIGN_FILE", "")
 if not PTD_DESIGN_FILE:
     raise EnvironmentError("PTD_DESIGN_FILE must be set for PyTrackDat to run.")
+
+with open(PTD_DESIGN_FILE, "rb") as df:
+    _df_contents = df.read()
+    _df_hash = hashlib.md5(_df_contents, usedforsecurity=False).hexdigest()[:16]
 
 PTD_SITE_URL = os.getenv("PTD_SITE_URL", "http://localhost")
 PTD_SITE_NAME = os.getenv("PTD_SITE_NAME", "My Database")
@@ -88,7 +95,9 @@ WSGI_APPLICATION = 'ptd_site.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.spatialite" if PTD_GIS_MODE else "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),  # TODO: Data directory
+        # To allow multiple design files to be trialed in parallel, use the
+        # design file hash when in debug file to name the database file.
+        "NAME": os.path.join(DB_DIR, f"{_df_hash}.sqlite3" if DEBUG else "db.sqlite3"),
     }
 }
 

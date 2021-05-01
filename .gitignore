@@ -6,9 +6,9 @@ tmp/
 dist/
 build/
 docs/_build/
-/pytrackdat/ptd_site/db.sqlite3
-/pytrackdat/ptd_site/snapshots/snapshot-*
 /pytrackdat/ptd_site/core/migrations/*.py
+/pytrackdat/ptd_site/databases/*.sqlite3
+/pytrackdat/ptd_site/snapshots/snapshot-*
 /*.csv
 *.xls*
 *.zip
