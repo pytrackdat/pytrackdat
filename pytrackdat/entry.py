@@ -54,14 +54,14 @@ ACTIONS = {
         ),
     },
     "django-manage": {
-        "fn": lambda args: django_manage(args.args),
+        "fn": lambda args: django_manage(["django-manage", *args.args]),
         "help": "Runs site commands using the Django application's management script.",
         "args": (
             ("args", {
                 "nargs": "*",
-                "help": "Arguments to pass to the Django manage.py script.",  # TODO
+                "help": "Arguments to pass to the Django manage.py script.",
             }),
-        ),  # TODO: Arbitrary?
+        ),
     },
 
     # TODO: User creation wizard
