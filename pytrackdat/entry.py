@@ -69,9 +69,9 @@ ACTIONS = {
 
 
 def main():
-    print_license()
-
     parser = argparse.ArgumentParser(description="A tool for generating online databases and data portals.")
+    parser.add_argument("--no-license", help="Suppress license printing.", action="store_true")
+
     subparsers = parser.add_subparsers(
         title="action",
         dest="action",
@@ -85,6 +85,10 @@ def main():
             action_parser.add_argument(arg, **opts_dict)
 
     args = parser.parse_args()
+
+    if not args.no_license:
+        print_license()
+
     ACTIONS[args.action]["fn"](args)
 
 
