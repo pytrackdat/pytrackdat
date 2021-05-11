@@ -35,6 +35,7 @@
 import argparse
 import csv
 import re
+import sys
 
 from typing import Dict, List, Optional, Sequence, Tuple
 
@@ -42,8 +43,10 @@ from pytrackdat import common as c
 
 
 __all__ = [
+    "AnalysisError",
     "infer_column_type",
     "create_design_file_rows_from_inference",
+    "analyze_csv",
     "analyze_entry",
 ]
 
@@ -53,6 +56,10 @@ MAX_CHOICES = 16
 MAX_CHOICE_LENGTH = 24
 CHAR_FIELD_MAX_LENGTH = 48
 CHAR_FIELD_LENGTH = 128
+
+
+class AnalysisError(Exception):
+    pass
 
 
 def strip_blank_fields(fields: tuple) -> tuple:
@@ -298,37 +305,18 @@ def extract_data_from_relation_file(rf):
     return data, fields
 
 
-def analyze_entry(args: argparse.Namespace):
-    c.print_license()
-
-    design_file = args.design_out
-    name_file_pairs = args.name_file_pairs
-
-    # args = sys.argv[1:]
-
-    if len(name_file_pairs) % 2 or len(name_file_pairs) < 2:
-        print("Usage: pytrackdat analyze --design-out design_out.csv relation_1_name file1.csv "
-              "[relation_2_name file2.csv] ...")
-        exit(1)
-
-    # Split pairs of file name, relation name
-    relation_names = name_file_pairs[::2]
-    relations = tuple(zip(map(str.lower, relation_names), name_file_pairs[1::2]))
+def analyze_csv(relations: Tuple[Tuple[str, str], ...], output_cb=print):
+    relation_names = [r[0] for r in relations]
 
     if len(set(relation_names)) < len(relation_names):
-        print("Error: You cannot use the same relation name(s) for more than one table:")
-
-        duplicates = set(r for r in relation_names if len([r2 for r2 in relation_names if r2 == r]) > 1)
-        for r in duplicates:
-            print(f"\t{r}")
-
-        exit(1)
+        duplicates = "\t".join(set(r for r in relation_names if len([r2 for r2 in relation_names if r2 == r]) > 1))
+        raise AnalysisError(f"You cannot use the same relation name(s) for more than one table:\n\t{duplicates}")
 
     keys = {}
 
     # Pass 1: Find key candidates and possible foreign keys
     for rn, rf in relations:
-        print(f"Finding keys for relation '{rn}'...")
+        output_cb(f"Finding keys for relation '{rn}'...")
 
         data, fields = extract_data_from_relation_file(rf)
 
@@ -340,15 +328,15 @@ def analyze_entry(args: argparse.Namespace):
 
             if inference["is_key"]:
                 keys[rn] = (new_name, col)
-                print(f"    Field '{new_name}' identified as a key")
+                output_cb(f"    Field '{new_name}' identified as a key")
                 break
 
-        print()
+        output_cb()
 
     # Pass 2: Determine other column data types
     design_file_rows = []
     for rn, rf in relations:
-        print(f"Detecting types for fields in relation '{rn}'...")
+        output_cb(f"Detecting types for fields in relation '{rn}'...")
 
         data, fields = extract_data_from_relation_file(rf)
 
@@ -358,10 +346,10 @@ def analyze_entry(args: argparse.Namespace):
         new_design_file_rows = []
 
         if rn not in keys:
-            print(f"\n    Warning: No primary key found for relation '{rn}'. If you have a field you "
-                  f"\n             think should be the primary key (row identifier), this is an indication"
-                  f"\n             that there may be duplicate values. \n"
-                  f"\n             Adding an automatic key instead....")  # TODO
+            output_cb(f"\n    Warning: No primary key found for relation '{rn}'. If you have a field you "
+                      f"\n             think should be the primary key (row identifier), this is an indication"
+                      f"\n             that there may be duplicate values. \n"
+                      f"\n             Adding an automatic key instead....")  # TODO
 
             # Add automatic primary key to design file
             new_design_file_rows = [c.RelationField(
@@ -385,7 +373,7 @@ def analyze_entry(args: argparse.Namespace):
             design_file_row = create_design_file_rows_from_inference(f, new_name, inference)
             new_design_file_rows.extend(design_file_row)
 
-            print("    Field '{}':\n        Type: '{}'\n        Nullable: {}{}{}".format(
+            output_cb("    Field '{}':\n        Type: '{}'\n        Nullable: {}{}{}".format(
                 f,
                 inference["detected_type"],
                 inference["nullable"],
@@ -395,21 +383,46 @@ def analyze_entry(args: argparse.Namespace):
 
         new_design_file_rows.append([])
         design_file_rows.extend(new_design_file_rows)
-        print()
+        output_cb()
+
+    max_length = max(len(r) for r in design_file_rows)
+    for r in design_file_rows:
+        r.extend([""] * (max_length - len(r)))  # Pad out row with blank columns if needed
+        yield r
+
+    output_cb(f"Analyzed {len(relations)} relations.")
+
+
+def analyze_entry(args: argparse.Namespace):
+    c.print_license()
+
+    design_file = args.design_out
+    name_file_pairs = args.name_file_pairs
+
+    # args = sys.argv[1:]
+
+    if len(name_file_pairs) % 2 or len(name_file_pairs) < 2:
+        print("Usage: pytrackdat analyze --design-out design_out.csv relation_1_name file1.csv "
+              "[relation_2_name file2.csv] ...")
+        exit(1)
+
+    # Split pairs of file name, relation name
+    relation_names = name_file_pairs[::2]
+    relations = tuple(zip(map(str.lower, relation_names), name_file_pairs[1::2]))
 
     try:
+        g = analyze_csv(relations)
         with open(design_file, "w", newline="") as df:
             design_writer = csv.writer(df, delimiter=",")
-            max_length = max(len(r) for r in design_file_rows)
-
-            for r in design_file_rows:
-                r.extend([""] * (max_length - len(r)))  # Pad out row with blank columns if needed
+            for r in g:
                 design_writer.writerow(r)
 
             print(f"    Wrote design file to '{design_file}'...\n")
 
-        print(f"Analyzed {len(relations)} relations.")
+    except AnalysisError as e:
+        print(str(e), file=sys.stderr)
+        exit(1)
 
     except IOError:
-        print("\nError: Could not write to design file.\n")
+        print("\nError: Could not write to design file.\n", file=sys.stderr)
         exit(1)
