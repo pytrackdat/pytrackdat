@@ -19,8 +19,9 @@
 
 import os
 
-from django.test import TestCase as DjangoTestCase
+from django.core.wsgi import get_wsgi_application
 from django.db import models
+from django.test import TestCase as DjangoTestCase
 
 import pytrackdat.common as pc
 import pytrackdat.design_file.formatters as pf
@@ -29,6 +30,10 @@ os.environ["DJANGO_SETTINGS_MODULE"] = os.environ.get(
     "DJANGO_SETTINGS_MODULE", "pytrackdat.ptd_site.ptd_site.settings")
 
 os.environ["PTD_DESIGN_FILE"] = "./tests/design_files/dummy.csv"
+
+# Make test case class happy
+application = get_wsgi_application()
+
 
 AUTO_KEY_FIELD = pc.RelationField(
     csv_names=(),
