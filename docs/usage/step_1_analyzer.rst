@@ -15,7 +15,7 @@ following command:
 
 .. code-block:: bash
 
-   ptd-analyze design.csv sample_type_1 samples1.csv sample_type_2 samples2.csv [...]
+   pytrackdat analyze --design-out design.csv sample_type_1 samples1.csv sample_type_2 samples2.csv [...]
 
 
 Where ``design.csv`` is the name of the design file to output, and

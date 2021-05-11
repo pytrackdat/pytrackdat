@@ -2,73 +2,18 @@
 Step 4: Testing
 ===============
 
-The Quick Way
--------------
 
-PyTrackDat provides a script which helps test newly-created sites from the root
-PyTrackDat working directory. To test a site named ``site_name_here``, run the
-following command:
+Starting the Test Server
+------------------------
 
-.. code-block:: bash
-
-   ptd-test site_name_here
-
-
-The Manual Way
---------------
-
-If for some reason the method above fails, the following manual procedure can
-be employed to test a PyTrackDat site.
-
-To test the web application from the PyTrackDat directory, first change to the
-site directory within the temporary work directory, ``tmp``, which PyTrackDat
-will create, replacing ``site_name_here`` with the site name that you assigned in
-the previous (generator) step. Then, activate the Python virtual environment.
-These actions can be done with the following commands:
-
-
-
-**macOS/Linux:**
+To test a design file called ``my_design.csv``, run the following command:
 
 .. code-block:: bash
 
-   cd tmp/site_name_here
-   source site_env/bin/activate
+   pytrackdat test my_design.csv
 
-
-**Windows:**
-
-.. code-block:: bat
-
-   cd tmp\site_name_here
-   site_env\Scripts\activate.bat
-
-
-Then, run the development server from the command line with the following
-command, and navigate to the application in your web browser at
-``127.0.0.1:8000``:
-
-**macOS/Linux:**
-
-.. code-block:: bash
-
-   python3 ./manage.py runserver
-
-
-**Windows:**
-
-.. code-block:: bat
-
-   python manage.py runserver
-
-
-Afterwards, when testing is finished, to deactivate the site's virtual
-environment, run the following command:
-
-.. code-block:: bash
-
-   deactivate
-
+A development server will run on your local machine at port 8000, meaning it
+can be accessed in a web browser at ``http://localhost:8000/``.
 
 
 When the Server is Running

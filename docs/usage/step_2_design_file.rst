@@ -39,7 +39,7 @@ Design File Customization
 =========================
 
 In almost all cases, there are data types and settings that will be impossible
-for the ``analyze.py`` script to detect. For example, a **foreign key**, which
+for the ``analyze`` script to detect. For example, a **foreign key**, which
 is a data type that allows a row in a table to refer to a different row in
 either the same table or a different table, cannot be automatically detected.
 Foreign keys are very useful for reducing data duplication and encoding complex
@@ -107,7 +107,7 @@ Database Field Name
 """""""""""""""""""
 
 This cell contains the name of the field as it will appear in the database (as
-decided by the ``analyze.py`` script). It should only contain lowercase
+decided by the ``analyze`` script). It should only contain lowercase
 characters, numbers, and underscores.
 
 Data Type
@@ -212,7 +212,7 @@ These often can restrict the possible values that can be stored by the field
 in the database, and are useful for data integrity purposes.
 
 Some of these type-specific settings may be **automatically detected** by the
-``ptd-analyze`` script; these should be reviewed manually to make sure they
+``analyze`` script; these should be reviewed manually to make sure they
 cover all possible values which can be stored in the field.
 
 ``auto key``: Automatic Primary Key
