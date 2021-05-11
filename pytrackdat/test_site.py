@@ -18,16 +18,28 @@
 #     David Lougheed (david.lougheed@gmail.com)
 
 import os
-import subprocess
 from argparse import Namespace
+
+from pytrackdat.ptd_site.manage import main as django_manage
 
 
 def test_site(args: Namespace):
-    manage_path = os.path.join(os.path.dirname(__file__), "ptd_site", "django_manage.py")
+    old_df_val = os.environ.get("PTD_DESIGN_FILE")
 
-    current_env = os.environ.copy()
-    current_env["PTD_DESIGN_FILE"] = args.design_file
+    try:
+        # Apparently the underlying syscall is a memory leak here on macOS/FreeBSD... TODO
+        os.environ["PTD_DESIGN_FILE"] = args.design_file
 
-    subprocess.run((manage_path, "makemigrations"), env=current_env)
-    subprocess.run((manage_path, "migrate"), env=current_env)
-    subprocess.run((manage_path, "runserver"), env=current_env)
+        print("[PyTrackDat] Making any required migrations...")
+        django_manage(["django-manage", "makemigrations"])
+
+        print("\n[PyTrackDat] Running any migrations not yet applied...")
+        django_manage(["django-manage", "migrate"])
+
+        print("\n[PyTrackDat] Running development server...")
+        # Reloader will raise a ModuleNotFound error on pytrackdat
+        django_manage(["django-manage", "runserver", "--noreload"])
+
+    finally:
+        if old_df_val is not None:
+            os.environ["PTD_DESIGN_FILE"] = old_df_val
