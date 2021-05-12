@@ -29,7 +29,7 @@ The latest documentation is available on
 
 To enable experimental GIS support, add the following to the shell environment:
 ```
-PTD_GIS=true
+PTD_GIS_MODE=true
 ```
 
 The `SPATIALITE_LIBRARY_PATH` environment variable must also be configured to 
