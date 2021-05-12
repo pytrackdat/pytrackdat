@@ -1,0 +1,20 @@
+# development environment, build artifacts
+build/
+dist/
+env/
+*.egg-info/
+
+# docs etc.
+docs/
+example/
+images/
+mini-tutorials/
+
+# irrelevant repo stuff
+.github/
+docker-compose.example.yml
+
+# other artifacts
+*.csv
+*.xlsx
+*.zip
