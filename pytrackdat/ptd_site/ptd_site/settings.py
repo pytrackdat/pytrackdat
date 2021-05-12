@@ -2,6 +2,8 @@ import hashlib
 import os
 from pytrackdat.common import exit_with_error
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_DIR = os.getenv("PTD_DATABASE_DIR", os.path.join(BASE_DIR, "databases"))
 
