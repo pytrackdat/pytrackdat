@@ -22,9 +22,9 @@
 import argparse
 
 from pytrackdat.analysis import analyze_entry
+from pytrackdat.common import print_license
 from pytrackdat.ptd_site.manage import main as django_manage
 from pytrackdat.test_site import test_site
-from pytrackdat.common import print_license
 
 
 ACTIONS = {
