@@ -38,7 +38,7 @@ with open(settings.PTD_DESIGN_FILE, "r") as df:
                 for f in r.fields
             },
             "ptd_relation": r,
-            "__str__": classmethod(lambda self: f"{r.short_name}: {self.pk}"),
+            "__str__": lambda self: f"{r.short_name}: {self.pk}",
             "Meta": type("Meta", (object,), {"verbose_name": r.short_name}),
             "__module__": __name__,
         })
