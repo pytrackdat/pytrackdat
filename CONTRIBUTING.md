@@ -12,8 +12,8 @@ guide.
 
 ## Release Checklist
 
- - [ ] Check that `ptd-analyze`, `ptd-generate`, and `ptd-test` work correctly
-       on Windows, Mac, and Linux.
+ - [ ] Check that `pytrackdat`'s `analyze`, `test`, and `django-manage` 
+       entrypoints work  correctly on Windows, Mac, and Linux.
  - [ ] Make sure all changes are in the changelog and any relevant
        documentation is added / updated.
  - [ ] Bump the version number in `pytrackdat/common.py`
