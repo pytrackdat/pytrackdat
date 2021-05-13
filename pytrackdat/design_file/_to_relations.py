@@ -16,6 +16,11 @@ from .utils import get_default_from_csv_with_type
 # TODO: More customization options
 
 
+__all__ = [
+    "design_to_relations",
+]
+
+
 def design_to_relations(df: IO, gis_mode: bool) -> List[c.Relation]:
     """
     Validates the design file and converts it into relations and their fields.
