@@ -48,11 +48,10 @@ class Snapshot(models.Model):
 
                 name = "snapshot-{}.sqlite3".format(str(datetime.utcnow()).replace(" ", "_").replace(":", "-"))
 
-                shutil.copyfile(settings.DATABASES["default"]["NAME"],
-                                os.path.join(settings.BASE_DIR, "snapshots", name))
+                shutil.copyfile(settings.DATABASES["default"]["NAME"], os.path.join(settings.SNAPSHOTS_DIR, name))
 
                 self.name = name
-                self.size = os.path.getsize(os.path.join(settings.BASE_DIR, "snapshots", name))
+                self.size = os.path.getsize(os.path.join(settings.SNAPSHOTS_DIR, name))
 
         super(Snapshot, self).save(*args, **kwargs)
 
@@ -60,7 +59,7 @@ class Snapshot(models.Model):
 @receiver(pre_delete, sender=Snapshot)
 def delete_snapshot_file(sender, instance, **kwargs):
     try:
-        os.remove(os.path.join(settings.BASE_DIR, "snapshots", instance.name))
+        os.remove(os.path.join(settings.SNAPSHOTS_DIR, instance.name))
     except OSError:
         print("Error deleting snapshot")
         # TODO: prevent deletion in some way?
