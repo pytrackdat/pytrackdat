@@ -13,6 +13,7 @@ mini-tutorials/
 # irrelevant repo stuff
 .github/
 docker-compose.example.yml
+tests/
 
 # other artifacts
 *.csv
