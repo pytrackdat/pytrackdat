@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -39,7 +38,7 @@ setup(
     author="David Lougheed",
     author_email="david.lougheed@gmail.com",
 
-    packages=["pytrackdat"],
+    packages=find_packages(exclude="tests"),
     include_package_data=True,
 
     entry_points={
