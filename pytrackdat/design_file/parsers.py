@@ -4,7 +4,7 @@ from decimal import Decimal
 from datetime import datetime
 from typing import Optional
 
-from pytrackdat import common as c
+import pytrackdat.common as c
 
 
 __all__ = ["DATA_TYPE_STRING_PARSERS"]

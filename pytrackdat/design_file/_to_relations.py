@@ -4,7 +4,8 @@ import re
 # TODO: py3.9: Change these to new type hints
 from typing import IO, List
 
-from pytrackdat import common as c
+import pytrackdat.common as c
+
 from . import formatters
 from .errors import DesignFileError
 from .utils import get_default_from_csv_with_type

@@ -32,7 +32,7 @@ from io import TextIOWrapper
 # TODO: py3.9: new typing
 from typing import Dict, Tuple
 
-from pytrackdat import common as com
+import pytrackdat.common as com
 from pytrackdat.ptd_site.snapshot_manager.models import Snapshot
 
 # TODO: ACCEPT https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry FOR GIS

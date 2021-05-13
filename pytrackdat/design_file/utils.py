@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional, Tuple, Union
 
-from pytrackdat import common as pc
+import pytrackdat.common as pc
 
 from .parsers import DATA_TYPE_STRING_PARSERS
 

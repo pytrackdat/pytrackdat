@@ -37,9 +37,9 @@ import csv
 import re
 import sys
 
-from typing import Dict, List, Optional, Sequence, Tuple
+import pytrackdat.common as c
 
-from pytrackdat import common as c
+from typing import Dict, List, Optional, Sequence, Tuple
 
 
 __all__ = [

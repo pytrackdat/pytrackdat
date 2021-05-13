@@ -28,7 +28,7 @@ except ImproperlyConfigured:
 
 from functools import wraps
 
-from pytrackdat import common as c
+import pytrackdat.common as c
 
 from .errors import GISNotConfiguredError
 from .utils import get_choices_from_text_field
