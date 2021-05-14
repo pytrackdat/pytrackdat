@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+      - name: Pull base image
+        run: docker pull ghcr.io/pytrackdat/pytrackdat:latest
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v1
         with:
