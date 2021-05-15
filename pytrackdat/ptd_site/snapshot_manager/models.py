@@ -18,11 +18,11 @@
 #     David Lougheed (david.lougheed@gmail.com)
 
 import os
-import shutil
 from datetime import datetime
 
 from django.conf import settings
-from django.db import models, transaction
+from django.core.management.commands import dumpdata
+from django.db import models, connection
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
@@ -32,26 +32,32 @@ class Snapshot(models.Model):
     pdt_modified_at = models.DateTimeField(auto_now=True, null=False)
     snapshot_type = models.TextField(help_text="Created by whom?", max_length=6, default='manual',
                                      choices=(("auto", "Automatic"), ("manual", "Manual")), null=False, blank=False)
-    name = models.TextField(help_text="Name of snapshot file", max_length=127, null=False, blank=False)
+    name = models.TextField(help_text="Name of JSON snapshot file", max_length=127, null=False, blank=False)
     reason = models.TextField(help_text="Reason for snapshot creation", max_length=127, null=False, blank=True,
                               default="Manually created")
-    size = models.IntegerField(help_text="Size of database (in bytes)", null=False)
+    size = models.IntegerField(help_text="Size of snapshot (in bytes)", null=False)
 
     def __str__(self):
         return "{} snapshot ({}; size: {} bytes)".format(self.snapshot_type, str(self.name), str(self.size))
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            with transaction.atomic():
-                # TODO: THIS ONLY WORKS WITH SQLITE
-                # Newly-created snapshot
+            name = "snapshot-{}.json".format(str(datetime.utcnow()).replace(" ", "_").replace(":", "-"))
+            path = os.path.join(settings.SNAPSHOTS_DIR, name)
 
-                name = "snapshot-{}.sqlite3".format(str(datetime.utcnow()).replace(" ", "_").replace(":", "-"))
+            dumpdata.Command().run_from_argv([
+                "django-manage",
+                "dumpdata",
+                "--exclude", "auth.permission",
+                "--exclude", "contenttypes",
+                "--output", path,
+            ])
 
-                shutil.copyfile(settings.DATABASES["default"]["NAME"], os.path.join(settings.SNAPSHOTS_DIR, name))
+            # The dumpdata command disconnects from the database, so force a reconnection before trying to save
+            connection.connect()
 
-                self.name = name
-                self.size = os.path.getsize(os.path.join(settings.SNAPSHOTS_DIR, name))
+            self.name = name
+            self.size = os.path.getsize(path)
 
         super(Snapshot, self).save(*args, **kwargs)
 

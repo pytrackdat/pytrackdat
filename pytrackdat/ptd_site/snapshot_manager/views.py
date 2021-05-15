@@ -35,8 +35,8 @@ def download_view(request, snapshot_id):
         if os.path.exists(snapshot_path):
             # TODO
             with open(snapshot_path, "rb") as f:
-                response = HttpResponse(f.read(), content_type="application/x-sqlite3")
-                response["Content-Disposition"] = "inline; filename={}".format(snapshot.name)
+                response = HttpResponse(f.read(), content_type="application/json")
+                response["Content-Disposition"] = "attachment; filename={}".format(snapshot.name)
                 return response
         else:
             raise Http404("Snapshot file does not exist (database inconsistency!)")
