@@ -31,7 +31,7 @@ from .models import Snapshot
 def download_view(request, snapshot_id):
     try:
         snapshot = Snapshot.objects.get(pk=snapshot_id)
-        snapshot_path = os.path.join(settings.BASE_DIR, "snapshots", snapshot.name)
+        snapshot_path = os.path.join(settings.SNAPSHOTS_DIR, snapshot.name)
         if os.path.exists(snapshot_path):
             # TODO
             with open(snapshot_path, "rb") as f:
