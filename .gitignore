@@ -13,3 +13,6 @@ docs/_build/
 *.xls*
 *.zip
 *.egg-info/
+
+/pytrackdat/ptd_site/static/*
+!/pytrackdat/ptd_site/static/.gitkeep
