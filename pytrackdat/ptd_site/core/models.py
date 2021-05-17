@@ -19,8 +19,14 @@
 
 import sys
 
+from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.db import models
+
+try:
+    from django.contrib.gis.db import models as gis_models
+except ImproperlyConfigured:
+    gis_models = None
 
 from pytrackdat.design_file import design_to_relations
 from pytrackdat.design_file.formatters import DJANGO_TYPE_FORMATTERS
@@ -32,7 +38,7 @@ all_exports = []
 with open(settings.PTD_DESIGN_FILE, "r") as df:
     relations = design_to_relations(df, settings.PTD_GIS_MODE)
     for r in relations:
-        Model = type(r.name, (models.Model,), {
+        Model = type(r.name, (models.Model,) if gis_models is None else (gis_models.Model,), {
             **{
                 f.name: DJANGO_TYPE_FORMATTERS[f.data_type](f)
                 for f in r.fields

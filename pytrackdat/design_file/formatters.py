@@ -138,7 +138,7 @@ def require_gis(func):
             raise GISNotConfiguredError(
                 "GIS was not configured correctly; check the GDAL_LIBRARY_PATH and SPATIALITE_LIBRARY_PATH environment "
                 "variables")
-        func(*args, **kwargs)
+        return func(*args, **kwargs)
     return wrapper
 
 
