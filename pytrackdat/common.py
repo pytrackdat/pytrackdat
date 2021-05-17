@@ -345,6 +345,12 @@ class RelationField:
             self.choices,  # Inherit choices (shouldn't be any normally)
         )
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"<RelationField name={self.name}>"
+
     def __iter__(self):
         yield "csv_names", self.csv_names
         yield "name", self.name
@@ -378,6 +384,12 @@ class Relation:
     def name_lower(self) -> str:
         # Python variable-style (snake case) name for the relation
         return field_to_py_code(self.design_name)
+
+    def __str__(self):
+        return self.design_name
+
+    def __repr__(self):
+        return f"<Relation design_name={self.design_name}>"
 
     def __iter__(self):
         yield "name", self.name
