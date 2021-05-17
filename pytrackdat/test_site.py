@@ -36,6 +36,9 @@ def test_site(args: Namespace):
         print("\n[PyTrackDat] Running any migrations not yet applied...")
         django_manage(["django-manage", "migrate"])
 
+        print("[PyTrackDat] Collecting static files...")
+        django_manage(["django-manage", "collectstatic", "--noinput"])
+
         print("\n[PyTrackDat] Running development server...")
         # Reloader will raise a ModuleNotFound error on pytrackdat
         django_manage(["django-manage", "runserver", "--noreload"])
