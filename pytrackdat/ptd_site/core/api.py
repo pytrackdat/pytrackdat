@@ -16,20 +16,25 @@
 #
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
-
+import re
 import sys
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
+from django.db.models.functions import Cast
 from rest_framework import serializers
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
-from typing import List
 
-from pytrackdat.common import PDT_RELATION_PREFIX, API_FILTERABLE_FIELD_TYPES, Relation
+from collections.abc import Iterable
+from typing import Dict, List, Optional, Tuple
+
+from pytrackdat.common import DT_TEXT, PDT_RELATION_PREFIX, API_FILTERABLE_FIELD_TYPES, SEARCHABLE_FIELD_TYPES, Relation
 from pytrackdat.ptd_site.core import models as core_models
 from pytrackdat.ptd_site.snapshot_manager.models import Snapshot
 
@@ -40,6 +45,7 @@ api_router = DefaultRouter()
 
 
 relations: List[Relation] = []
+model_dict: Dict[str, models.Model] = {}
 
 for name in dir(core_models):
     Cls = getattr(core_models, name)
@@ -49,6 +55,7 @@ for name in dir(core_models):
     # noinspection PyUnresolvedReferences
     relation: Relation = Cls.ptd_relation
     relations.append(relation)
+    model_dict[Cls.ptd_relation.short_name.lower()] = Cls
     # TODO: Abstract mixin for this stuff
 
     serializer_name = f"{name}Serializer"
@@ -84,6 +91,8 @@ for name in dir(core_models):
 
     api_router.register(f"data/{relation.name_lower}", NewViewSet)
 
+model_name_set = set(n for n in model_dict)
+
 
 # TODO: Maybe put this in the snapshot app...
 class SnapshotSerializer(serializers.ModelSerializer):
@@ -111,5 +120,104 @@ class MetaViewSet(viewsets.ViewSet):
         })
 
 
+def _get_model_search_fields(model: models.Model) -> List[Tuple[str, Optional[str]]]:
+    model_search_fields = []
+
+    for f in model.ptd_relation.fields:
+        if f.data_type not in SEARCHABLE_FIELD_TYPES:
+            continue
+
+        if f.data_type == DT_TEXT:
+            model_search_fields.append((f.name, None))
+        else:
+            model_search_fields.append((f.name, f"{f.name}_str"))
+
+    return model_search_fields
+
+
+def _get_field_searchable(f: Tuple[str, Optional[str]]):
+    return f"{f[1] if f[1] is not None else f[0]}__icontains"
+
+
+# noinspection PyUnresolvedReferences
+def search_model(
+        query: str,
+        model: models.Model,
+        limit: int = 50,
+        fields: Iterable[Tuple[str, Optional[str]]] = (("pk", "pk_str"),),
+):
+    model_name = model.ptd_relation.short_name
+    model_url_name = model.ptd_relation.name_lower
+
+    db_q = Q(**{_get_field_searchable(fields[0]): query})
+
+    for f in fields[1:]:
+        db_q = db_q | Q(**{_get_field_searchable(f): query})
+
+    to_annotate = {k[1]: Cast(k[0], output_field=models.CharField()) for k in fields if k[1] is not None}
+
+    print(to_annotate, db_q)
+
+    queryset = model.objects
+    if to_annotate:
+        queryset = queryset.annotate(**to_annotate)
+
+    return [{
+        "name": model_name,
+        "url_name": model_url_name,
+        "pk": res.pk,
+        "matching_fields": [
+            {kk: r}
+            for kk, r in ((k[0], str(getattr(res, k[0]))) for k in fields)
+            if query.casefold() in r.casefold()
+        ],
+    } for res in queryset.filter(db_q)[:limit]]
+
+
+# noinspection PyMethodMayBeStatic
+class SearchViewSet(viewsets.ViewSet):
+    def list(self, request):
+        query: Optional[str] = request.query_params.get("q")
+
+        try:
+            limit = int(request.query_params.get("limit", "50"))
+        except ValueError:
+            raise ValidationError(detail="limit must be an integer")
+
+        if limit < len(model_name_set) or limit > 100:
+            raise ValidationError(detail=f"limit must be between {len(model_name_set)} and 100")
+
+        if query is None:
+            raise ValidationError(detail="q parameter must be specified")
+
+        split = re.split(r"\s+", query)
+        results = {
+            "barcodes": [],
+            "full_text": [],  # If left as None, full text search is not available
+        }
+
+        if len(split) == 2 and split[0].lower() in model_name_set:
+            # Treat this as a barcode and try to fetch partial or whole matches
+            # These will be the "first response" matches, before partial matches are considered further
+
+            m = model_dict[split[0].lower()]
+            results["barcodes"].extend(search_model(split[1], m, limit))
+
+        else:
+            # Pretty limited for now: search a few fields on all models
+            for n, m in model_dict.items():
+                results["full_text"].extend(search_model(
+                    query,
+                    m,
+                    limit=limit // len(model_name_set),
+                    fields=_get_model_search_fields(m)))
+
+        # TODO: If Postgres is present, use their engine to full-text-search all the models
+        #  and maybe rank them somehow...
+
+        return Response(results)
+
+
 api_router.register("snapshots", SnapshotViewSet)
 api_router.register("meta", MetaViewSet, basename="meta")
+api_router.register("search", SearchViewSet, basename="search")

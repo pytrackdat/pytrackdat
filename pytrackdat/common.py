@@ -50,6 +50,7 @@ __all__ = [
     "DATA_TYPES",
     "GIS_DATA_TYPES",
     "DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS",
+    "SEARCHABLE_FIELD_TYPES",
     "DESIGN_SEPARATOR",
 
     "RE_INTEGER",
@@ -230,6 +231,12 @@ API_FILTERABLE_FIELD_TYPES = {
 
     DT_FOREIGN_KEY: ["exact", "in"],
 }
+
+SEARCHABLE_FIELD_TYPES = frozenset({
+    DT_AUTO_KEY,
+    DT_MANUAL_KEY,
+    DT_TEXT,
+})
 
 
 def valid_data_type(data_type: str, gis_mode: bool) -> bool:
