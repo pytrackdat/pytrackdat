@@ -156,8 +156,6 @@ def search_model(
 
     to_annotate = {k[1]: Cast(k[0], output_field=models.CharField()) for k in fields if k[1] is not None}
 
-    print(to_annotate, db_q)
-
     queryset = model.objects
     if to_annotate:
         queryset = queryset.annotate(**to_annotate)
