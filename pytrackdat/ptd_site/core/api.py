@@ -164,8 +164,10 @@ def search_model(
         "name": model_name,
         "url_name": model_url_name,
         "pk": res.pk,
+
+        # Use a long form instead of a dict in case we need to provide more info about the nature of the results
         "matching_fields": [
-            {kk: r}
+            {"key": kk, "value": r}
             for kk, r in ((k[0], str(getattr(res, k[0]))) for k in fields)
             if query.casefold() in r.casefold()
         ],
