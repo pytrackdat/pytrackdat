@@ -69,6 +69,7 @@ for name in dir(core_models):
             f.name: f.choices + (("",) if f.nullable else ())
             for f in relation.fields if f.choices is not None
         }
+        # TODO: Use counter class?
         counts = {f: {c: 0 for c in categorical_choices[f]} for f in categorical_fields}
         for row in Cls.objects.values():
             for f in categorical_fields:
@@ -121,18 +122,10 @@ class MetaViewSet(viewsets.ViewSet):
 
 
 def _get_model_search_fields(model: models.Model) -> List[Tuple[str, Optional[str]]]:
-    model_search_fields = []
-
-    for f in model.ptd_relation.fields:
-        if f.data_type not in SEARCHABLE_FIELD_TYPES:
-            continue
-
-        if f.data_type == DT_TEXT:
-            model_search_fields.append((f.name, None))
-        else:
-            model_search_fields.append((f.name, f"{f.name}_str"))
-
-    return model_search_fields
+    return [
+        (f.name, f"{f.name}_str" if f.data_type != DT_TEXT else None)
+        for f in model.ptd_relation.fields if f.data_type in SEARCHABLE_FIELD_TYPES
+    ]
 
 
 def _get_field_searchable(f: Tuple[str, Optional[str]]):
