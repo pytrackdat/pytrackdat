@@ -57,12 +57,10 @@ jobs:
         run: pip install .[gis]
 
       - name: Run tests (Windows)
-        run: |
-          dir C:\Miniconda\Library\bin
-          python -m unittest discover -v tests
+        run: python -m unittest discover -v tests
         env:
           DJANGO_SETTINGS_MODULE: "pytrackdat.ptd_site.ptd_site.settings"
-          GDAL_LIBRARY_PATH: "C:\\Miniconda\\Library\\bin\\gdal302.dll"
+          GDAL_LIBRARY_PATH: "C:\\Miniconda\\Library\\bin\\gdal303.dll"
         if: runner.os == 'Windows'
 
       - name: Run tests (UNIX-Like)
