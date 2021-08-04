@@ -145,22 +145,15 @@ class ImportCSVMixin:
 
                             elif f.data_type == com.DT_TEXT:
                                 max_length = -1
-                                choices = []
 
-                                # TODO: More coercion for choices
-
-                                additional_fields = [f.strip() for f in f.additional_fields if f.strip()]
-
-                                if len(additional_fields) in (1, 2):
-                                    max_length = int(additional_fields[0])
-                                    if len(additional_fields) == 2:
-                                        choices = [c.strip() for c in additional_fields[1].split(";")]
+                                # TODO: More coercion for choices?
+                                choices = f.choices
 
                                 if 0 < max_length < len(str_v):
                                     raise ValueError(f"Line {i}: Value for text field {f.name} exceeded maximum "
                                                      f"length: {max_length}")
 
-                                if len(choices) > 0 and str_v not in choices:
+                                if choices is not None and str_v not in choices:
                                     if f.nullable:
                                         # TODO: This assumes null if not integer-like, might be wrong
                                         object_data[f.name][h] = None
