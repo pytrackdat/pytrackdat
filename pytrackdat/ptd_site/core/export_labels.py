@@ -17,33 +17,14 @@
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
 
-import os
 import shutil
-import subprocess
-
-from django.http import FileResponse, HttpResponse
+from .label_utils import labels_response
 
 have_r = shutil.which("Rscript") is not None
 
 
 class ExportLabelsMixin:
     def export_labels(self, _request, queryset):
-        model_name = self.model.get_label_name()
-        id_vector = ["{}\n{}".format(model_name, o.pk) for o in queryset]
-
-        response = HttpResponse(status=500)
-
-        for f in os.listdir("../../app_includes"):
-            if f.startswith("labels-"):
-                os.remove(os.path.join("../../app_includes", f))
-
-        if have_r:
-            # TODO: Prefix for IDs
-            result = subprocess.run(["Rscript", "./export_labels.R"] + id_vector, stdout=subprocess.PIPE, check=True)
-            path = result.stdout.decode("utf-8").split("\n")[-1] + ".pdf"
-            response = FileResponse(open(path, "rb"), as_attachment=True,
-                                    filename="labels_{}.pdf".format(self.model.__name__.lower()))
-
-        return response
+        return labels_response(self.model.ptd_relation.short_name, queryset)
 
     export_labels.short_description = "Export baRcodeR labels (PDF) for selected"

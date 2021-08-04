@@ -26,7 +26,8 @@ if (!require(baRcodeR)) {
     library(baRcodeR)
 }
 
-id_vector <- commandArgs(trailingOnly=TRUE)
+dir_and_id_vector <- commandArgs(trailingOnly=TRUE)
+id_vector <- dir_and_id_vector[2:length(dir_and_id_vector)]
 file_name <- paste("labels-", gsub("[ :]+", "-", Sys.time()), sep="")
-create_PDF(Labels=id_vector, name=file.path(getwd(), file_name), Fsz=8)
+create_PDF(Labels=id_vector, name=file.path(dir_and_id_vector[1], file_name), Fsz=8)
 cat(file_name)

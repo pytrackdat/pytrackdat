@@ -2,10 +2,10 @@ __pycache__
 .idea
 .coverage
 env*
-tmp/
-dist/
-build/
-docs/_build/
+/tmp/
+/dist/
+/build/
+/docs/_build/
 /pytrackdat/ptd_site/core/migrations/*.py
 /pytrackdat/ptd_site/databases/*.sqlite3
 /pytrackdat/ptd_site/databases/snapshots/snapshot-*
@@ -16,3 +16,6 @@ docs/_build/
 
 /pytrackdat/ptd_site/static/*
 !/pytrackdat/ptd_site/static/.gitkeep
+
+/pytrackdat/ptd_site/tmp/*
+!/pytrackdat/ptd_site/tmp/.gitkeep
