@@ -10,12 +10,12 @@ setup(
 
     python_requires="~=3.7",
     install_requires=[
-        "Django>=3.2.2,<3.3",
+        "Django>=3.2.6,<3.3",
         "django-advanced-filters>=1.3.0,<1.4",
         "django-cors-headers>=3.7.0,<3.8",
         "django-filter>=2.4.0,<2.5",
         "djangorestframework>=3.12.4,<3.13",
-        "djangorestframework-simplejwt==4.6.0",
+        "djangorestframework-simplejwt==4.7.2",
         "django-reversion>=3.0.9,<3.1",
     ],
     extras_require={
