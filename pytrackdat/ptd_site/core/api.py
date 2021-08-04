@@ -23,6 +23,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Cast
+from django.http import HttpResponse
 from rest_framework import serializers
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -36,6 +37,7 @@ from typing import Dict, List, Optional, Tuple
 
 from pytrackdat.common import DT_TEXT, PDT_RELATION_PREFIX, API_FILTERABLE_FIELD_TYPES, SEARCHABLE_FIELD_TYPES, Relation
 from pytrackdat.ptd_site.core import models as core_models
+from pytrackdat.ptd_site.core.label_utils import labels_response
 from pytrackdat.ptd_site.snapshot_manager.models import Snapshot
 
 __all__ = ["api_router"]
@@ -54,8 +56,11 @@ for name in dir(core_models):
 
     # noinspection PyUnresolvedReferences
     relation: Relation = Cls.ptd_relation
+    objects = Cls.objects
+
     relations.append(relation)
     model_dict[Cls.ptd_relation.short_name.lower()] = Cls
+
     # TODO: Abstract mixin for this stuff
 
     serializer_name = f"{name}Serializer"
@@ -71,20 +76,31 @@ for name in dir(core_models):
         }
         # TODO: Use counter class?
         counts = {f: {c: 0 for c in categorical_choices[f]} for f in categorical_fields}
-        for row in Cls.objects.values():
+        for row in objects.values():
             for f in categorical_fields:
                 counts[f][row[f]] += 1
         return Response(counts)
 
+    def labels(_self, request):
+        ids = request.query_params.getlist("ids")
+        if relation.id_type == "integer":
+            ids = list(map(int, ids))
+
+        if not ids:
+            return HttpResponse(status=400)
+
+        return labels_response(relation.short_name, objects.filter(pk__in=ids))
+
     viewset_name = f"{name}ViewSet"
     NewViewSet = type(viewset_name, (viewsets.ModelViewSet,), {
-        "queryset": Cls.objects.all(),
+        "queryset": objects.all(),
         "serializer_class": NewSerializer,
         "filterset_fields": {
             f.name: API_FILTERABLE_FIELD_TYPES[f.data_type]
             for f in relation.fields if f.data_type in API_FILTERABLE_FIELD_TYPES
         },
-        "categorical_counts": action(detail=False)(categorical_counts)
+        "categorical_counts": action(detail=False)(categorical_counts),
+        "labels": action(detail=False)(labels),
     })
 
     setattr(sys.modules[__name__], serializer_name, NewSerializer)
