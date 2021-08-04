@@ -375,7 +375,7 @@ class Relation:
     def __init__(self, design_name: str, fields: Sequence[RelationField], id_type: str):
         self.design_name = design_name.strip()
         self.fields = fields
-        self.id_type = id_type
+        self.id_type = id_type  # "integer" or "text"
 
     @property
     def name(self) -> str:
