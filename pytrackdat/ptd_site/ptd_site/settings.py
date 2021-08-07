@@ -16,8 +16,7 @@ if not PTD_DESIGN_FILE:
     raise EnvironmentError("PTD_DESIGN_FILE must be set for PyTrackDat to run.")
 
 with open(PTD_DESIGN_FILE, "rb") as df:
-    _df_contents = df.read()
-    _df_hash = hashlib.md5(_df_contents).hexdigest()[:16]
+    _df_hash = hashlib.md5(df.read()).hexdigest()[:16]
 
 PTD_SITE_URL = os.getenv("PTD_SITE_URL", "http://localhost")
 PTD_SITE_NAME = os.getenv("PTD_SITE_NAME", "My Database")
