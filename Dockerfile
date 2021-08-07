@@ -1,4 +1,4 @@
-FROM pytrackdat_base_image:latest
+FROM ghcr.io/pytrackdat/pytrackdat_base_image:sha-715a8d0
 
 ENV PYTHONUNBUFFERED 1
 
