@@ -1,4 +1,6 @@
-recursive-include pytrackdat/app_includes *.py *.html
 recursive-include pytrackdat/os_scripts *.bash *.bat
+recursive-include pytrackdat/ptd_site/databases .gitkeep
+recursive-include pytrackdat/ptd_site/databases/snapshots .gitkeep
 recursive-include pytrackdat/util_files *.yml *.template *.R *.conf *.txt
 include pytrackdat/common-passwords.txt.gz
+include pytrackdat/container_entry.bash

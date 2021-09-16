@@ -21,23 +21,50 @@ jobs:
           # still in private preview, see actions/virtual-environments#2486
           # - 'macos-11.0'
           - 'ubuntu-20.04'
-          - 'ubuntu-16.04'
           - 'windows-2019'
-          - 'windows-2016'
-        python-version:
-          - '3.5'
-          - '3.6'
-          - '3.7'
-          - '3.8'
-          - '3.9'
+        python-version: [3.7, 3.9]
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up conda for GDAL dependency (Windows only)
+        uses: s-weigand/setup-conda@v1
+        with:
+          activate-conda: false
+          update-conda: true
+        if: runner.os == 'Windows'
+
+      - name: Install apt dependencies
+        run: sudo apt install libgdal-dev
+        if: runner.os == 'Linux'
+
+      - name: Install brew dependencies
+        run: brew install gdal
+        if: runner.os == 'macOS'
+
+      - name: Install Windows dependencies
+        run:  |
+          conda install -c conda-forge gdal=3.1.4
+          conda --version
+          dir C:\\Miniconda\\Library\\bin
+        if: runner.os == 'Windows'
 
       - name: Package installation
-        run: pip install .
+        run: pip install .[gis]
 
-      - name: Run tests
-        run: python setup.py test
+      - name: Run tests (Windows)
+        run: python -m unittest discover -v tests
+        env:
+          DJANGO_SETTINGS_MODULE: "pytrackdat.ptd_site.ptd_site.settings"
+          GDAL_LIBRARY_PATH: "C:\\Miniconda\\Library\\bin\\gdal302.dll"
+        if: runner.os == 'Windows'
+
+      - name: Run tests (UNIX-Like)
+        run: python -m unittest discover -v tests
+        if: runner.os != 'Windows'
+        env:
+          DJANGO_SETTINGS_MODULE: "pytrackdat.ptd_site.ptd_site.settings"

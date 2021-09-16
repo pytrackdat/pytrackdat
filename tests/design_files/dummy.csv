@@ -1,0 +1,2 @@
+entry,new field name,data type,nullable?,null values,default,description,show in table?,additional fields...,
+Key 1,key_1,auto key,FALSE,,,first key,true,,

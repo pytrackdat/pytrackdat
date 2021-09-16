@@ -1,5 +1,5 @@
 # PyTrackDat is a utility for assisting in online database creation.
-# Copyright (C) 2018-2020 the PyTrackDat authors.
+# Copyright (C) 2018-2021 the PyTrackDat authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,9 @@
 #     David Lougheed (david.lougheed@gmail.com)
 
 import re
-from typing import Optional, Sequence, Tuple
+
+# TODO: py3.9: Use other Tuple typing
+from typing import Dict, Optional, Sequence, Tuple
 
 
 __all__ = [
@@ -48,6 +50,7 @@ __all__ = [
     "DATA_TYPES",
     "GIS_DATA_TYPES",
     "DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS",
+    "SEARCHABLE_FIELD_TYPES",
     "DESIGN_SEPARATOR",
 
     "RE_INTEGER",
@@ -75,6 +78,8 @@ __all__ = [
 
     "PDT_RELATION_PREFIX",
 
+    "API_FILTERABLE_FIELD_TYPES",
+
     "valid_data_type",
     "collapse_multiple_underscores",
     "sanitize_python_identifier",
@@ -90,7 +95,7 @@ __all__ = [
 
 
 VERSION = "0.3.0"
-COPYRIGHT_DATES = "2018-2020"
+COPYRIGHT_DATES = "2018-2021"
 
 PYTHON_KEYWORDS = ("False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", "continue",
                    "def", "del", "else", "elif", "except", "finally", "for", "from", "global", "if", "import", "in",
@@ -114,9 +119,9 @@ DT_GIS_MULTI_POINT = "multi point"
 DT_GIS_MULTI_LINE_STRING = "multi line string"
 DT_GIS_MULTI_POLYGON = "multi polygon"
 
-KEY_TYPES = (DT_AUTO_KEY, DT_MANUAL_KEY)
+KEY_TYPES: Tuple[str, ...] = (DT_AUTO_KEY, DT_MANUAL_KEY)
 
-DATA_TYPES = (
+DATA_TYPES: Tuple[str, ...] = (
     DT_AUTO_KEY,
     DT_MANUAL_KEY,
     DT_INTEGER,
@@ -129,7 +134,7 @@ DATA_TYPES = (
     DT_FOREIGN_KEY,
 )
 
-GIS_DATA_TYPES = (
+GIS_DATA_TYPES: Tuple[str, ...] = (
     DT_GIS_POINT,
     DT_GIS_LINE_STRING,
     DT_GIS_POLYGON,
@@ -139,24 +144,24 @@ GIS_DATA_TYPES = (
 )
 
 
-DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS = {
-    DT_AUTO_KEY: [],
-    DT_MANUAL_KEY: [],
-    DT_INTEGER: [],
-    DT_FLOAT: [],
-    DT_DECIMAL: ["max_length", "precision"],
-    DT_BOOLEAN: [],
-    DT_TEXT: ["max_length", "options"],
-    DT_DATE: [],
-    DT_TIME: [],
-    DT_FOREIGN_KEY: ["target"],
+DATA_TYPE_ADDITIONAL_DESIGN_SETTINGS: Dict[str, Tuple[str, ...]] = {
+    DT_AUTO_KEY: (),
+    DT_MANUAL_KEY: (),
+    DT_INTEGER: (),
+    DT_FLOAT: (),
+    DT_DECIMAL: ("max_length", "precision"),
+    DT_BOOLEAN: (),
+    DT_TEXT: ("max_length", "options"),
+    DT_DATE: (),
+    DT_TIME: (),
+    DT_FOREIGN_KEY: ("target",),
 
-    DT_GIS_POINT: [],  # TODO: COORDINATE TYPE
-    DT_GIS_LINE_STRING: [],  # TODO: COORDINATE TYPE
-    DT_GIS_POLYGON: [],  # TODO: COORDINATE TYPE
-    DT_GIS_MULTI_POINT: [],  # TODO: COORDINATE TYPE
-    DT_GIS_MULTI_LINE_STRING: [],  # TODO: COORDINATE TYPE
-    DT_GIS_MULTI_POLYGON: []  # TODO: COORDINATE TYPE
+    DT_GIS_POINT: (),  # TODO: COORDINATE TYPE
+    DT_GIS_LINE_STRING: (),  # TODO: COORDINATE TYPE
+    DT_GIS_POLYGON: (),  # TODO: COORDINATE TYPE
+    DT_GIS_MULTI_POINT: (),  # TODO: COORDINATE TYPE
+    DT_GIS_MULTI_LINE_STRING: (),  # TODO: COORDINATE TYPE
+    DT_GIS_MULTI_POLYGON: (),  # TODO: COORDINATE TYPE
 }
 
 DESIGN_SEPARATOR = ";"
@@ -204,7 +209,34 @@ DATE_FORMATS = (
 )
 
 
+# Prefix applied to all relation class names to guarantee no clashes in the models file namespace
 PDT_RELATION_PREFIX = "PyTrackDat"
+
+
+# What django-filter operations can be applied to which field data types
+API_FILTERABLE_FIELD_TYPES = {
+    DT_AUTO_KEY: ["exact", "in"],
+    DT_MANUAL_KEY: ["exact", "in"],
+
+    DT_INTEGER: ["exact", "lt", "lte", "gt", "gte", "in"],
+    DT_FLOAT: ["exact", "lt", "lte", "gt", "gte"],
+    DT_DECIMAL: ["exact", "lt", "lte", "gt", "gte", "in"],
+
+    DT_BOOLEAN: ["exact"],
+
+    DT_TEXT: ["exact", "iexact", "contains", "icontains", "in"],
+
+    DT_DATE: ["exact", "lt", "lte", "gt", "gte", "in"],
+    DT_TIME: ["exact", "lt", "lte", "gt", "gte", "in"],
+
+    DT_FOREIGN_KEY: ["exact", "in"],
+}
+
+SEARCHABLE_FIELD_TYPES = frozenset({
+    DT_AUTO_KEY,
+    DT_MANUAL_KEY,
+    DT_TEXT,
+})
 
 
 def valid_data_type(data_type: str, gis_mode: bool) -> bool:
@@ -214,19 +246,17 @@ def valid_data_type(data_type: str, gis_mode: bool) -> bool:
     return (not gis_mode and data_type in DATA_TYPES) or (gis_mode and data_type in DATA_TYPES + GIS_DATA_TYPES)
 
 
-def collapse_multiple_underscores(s: str):
-    return re.sub(RE_MULTIPLE_UNDERSCORES, "_", s)
+def collapse_multiple_underscores(s: str) -> str:
+    return RE_MULTIPLE_UNDERSCORES.sub("_", s)
 
 
 def sanitize_python_identifier(s: str) -> str:
-    return re.sub(RE_NON_IDENTIFIER_CHARACTERS, "", re.sub(RE_SEPARATOR_CHARACTERS, "_", s.strip()))
+    return RE_NON_IDENTIFIER_CHARACTERS.sub("", RE_SEPARATOR_CHARACTERS.sub("_", s.strip()))
 
 
 def field_to_py_code(field: str) -> str:
     field = sanitize_python_identifier(field.lower())
-    field = field + "_field" if field in PYTHON_KEYWORDS else field
-    field = collapse_multiple_underscores(field)
-    return field
+    return collapse_multiple_underscores(field + "_field" if field in PYTHON_KEYWORDS else field)
 
 
 def standardize_data_type(dt: str) -> str:
@@ -238,26 +268,29 @@ def to_relation_name(name: str) -> str:
     python_relation_name = PDT_RELATION_PREFIX + "".join(n.capitalize() for n in name_sanitized.split("_"))
 
     # Take care of plurals so they do not look dumb.
+    # This is actually a much harder problem than what is done here
+    #  - more of a hack to make things look nicer on average.
+    # TODO: Internationalization
 
     if python_relation_name[-3:] == "ies":
         old_name = python_relation_name
         python_relation_name = python_relation_name[:-3] + "y"
-        print("Warning: Auto-detected incorrect plural relation name.\n"
-              "         Changing {} to {}.\n"
-              "         To avoid this, specify singular names.".format(old_name, python_relation_name))
+        print(f"Warning: Auto-detected incorrect plural relation name.\n"
+              f"         Changing {old_name} to {python_relation_name}.\n"
+              f"         To avoid this, specify singular names.")
     elif python_relation_name[-1] == "s":
         old_name = python_relation_name
         python_relation_name = python_relation_name[:-1]
-        print("Warning: Auto-detected incorrect plural relation name.\n         Altering from "
-              "{} to {}.\n         To avoid this, specify singular names.".format(old_name, python_relation_name))
+        print(f"Warning: Auto-detected incorrect plural relation name.\n         Altering from "
+              f"{old_name} to {python_relation_name}.\n         To avoid this, specify singular names.")
 
     return python_relation_name
 
 
-def print_license() -> None:
-    print("""PyTrackDat v{}  Copyright (C) {} the PyTrackDat authors.
+def print_license():
+    print(f"""PyTrackDat v{VERSION}  Copyright (C) {COPYRIGHT_DATES} the PyTrackDat authors.
 This program comes with ABSOLUTELY NO WARRANTY; see LICENSE for details.
-""".format(VERSION, COPYRIGHT_DATES))
+""")
 
 
 def exit_with_error(message: str):
@@ -270,7 +303,7 @@ def exit_with_error(message: str):
 class RelationField:
     def __init__(
         self,
-        csv_names: Tuple,
+        csv_names: Tuple[str, ...],
         name: str,
         data_type: str,
         nullable: bool,
@@ -319,6 +352,12 @@ class RelationField:
             self.choices,  # Inherit choices (shouldn't be any normally)
         )
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"<RelationField name={self.name}>"
+
     def __iter__(self):
         yield "csv_names", self.csv_names
         yield "name", self.name
@@ -336,17 +375,28 @@ class Relation:
     def __init__(self, design_name: str, fields: Sequence[RelationField], id_type: str):
         self.design_name = design_name.strip()
         self.fields = fields
-        self.id_type = id_type
+        self.id_type = id_type  # "integer" or "text"
 
     @property
-    def name(self):
+    def name(self) -> str:
         # Python class-style name for the relation
         return to_relation_name(self.design_name)
 
     @property
-    def name_lower(self):
+    def short_name(self) -> str:
+        # Python class-style name for the relation, sans prefix
+        return self.name[len(PDT_RELATION_PREFIX):]
+
+    @property
+    def name_lower(self) -> str:
         # Python variable-style (snake case) name for the relation
         return field_to_py_code(self.design_name)
+
+    def __str__(self):
+        return self.design_name
+
+    def __repr__(self):
+        return f"<Relation design_name={self.design_name}>"
 
     def __iter__(self):
         yield "name", self.name

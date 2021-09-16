@@ -22,3 +22,4 @@
 chooseCRANmirror(ind=1)
 install.packages("shiny")
 install.packages("baRcodeR")
+install.packages("stringr")

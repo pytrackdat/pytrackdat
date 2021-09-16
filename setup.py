@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -9,11 +8,22 @@ setup(
     name="pytrackdat",
     version="0.3.0",
 
-    python_requires="~=3.6",
-    install_requires=["wheel", "virtualenv"],
+    python_requires="~=3.7",
+    install_requires=[
+        "Django>=3.2.7,<3.3",
+        "django-advanced-filters>=1.3.0,<1.4",
+        "django-cors-headers>=3.8.0,<3.9",
+        "django-filter>=2.4.0,<2.5",
+        "djangorestframework>=3.12.4,<3.13",
+        "djangorestframework-simplejwt==4.8.0",
+        "django-reversion>=3.0.9,<3.1",
+    ],
+    extras_require={
+        "gis": ["djangorestframework-gis>=0.17.0,<0.18"],
+    },
 
-    description='A utility for assisting in the creation of online '
-                'databases for biological data.',
+    description="A utility for assisting in the creation of online "
+                "databases for biological data.",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
@@ -28,13 +38,11 @@ setup(
     author="David Lougheed",
     author_email="david.lougheed@gmail.com",
 
-    packages=["pytrackdat"],
+    packages=find_packages(exclude="tests"),
     include_package_data=True,
 
     entry_points={
-        "console_scripts": ["ptd-analyze=pytrackdat.analysis:main",
-                            "ptd-generate=pytrackdat.generation:main",
-                            "ptd-test=pytrackdat.test_site:main"]
+        "console_scripts": ["pytrackdat=pytrackdat.entry:main"],
     },
 
     test_suite="tests"

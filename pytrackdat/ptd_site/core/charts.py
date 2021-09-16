@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.urls import path
 
+
 class ChartsMixin:
     def charts(self, request):
         return render(request, "admin/core/charts.html", dict(self.admin_site.each_context(request), title="Charts"))

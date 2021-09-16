@@ -1,5 +1,5 @@
-# PyTrackDat is a utility for assisting in online database creation.
-# Copyright (C) 2018-2020 the PyTrackDat authors.
+# PyTrackDat Snapshot Manager is a Django app for versioning SQLite databases.
+# Copyright (C) 2018-2021 the PyTrackDat authors.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,19 +17,19 @@
 # Contact information:
 #     David Lougheed (david.lougheed@gmail.com)
 
-from typing import Optional, Tuple
-from ..common import DESIGN_SEPARATOR, RelationField
+from django.contrib import admin
+from django.utils.html import format_html
+
+from pytrackdat.ptd_site.snapshot_manager.models import Snapshot
 
 
-__all__ = [
-    "get_choices_from_text_field",
-]
+@admin.register(Snapshot)
+class SnapshotAdmin(admin.ModelAdmin):
+    exclude = ('snapshot_type', 'size', 'name', 'reason')
+    list_display = ('__str__', 'download_link', 'reason')
 
+    def download_link(self, obj):
+        return format_html('<a href="{url}">Download Database Snapshot</a>',
+                           url='/snapshots/{}/download/'.format(obj.pk))
 
-def get_choices_from_text_field(f: RelationField) -> Optional[Tuple[str, ...]]:
-    if len(f.additional_fields) == 2:
-        # TODO: Choice human names
-        choice_names = tuple(str(c).strip() for c in f.additional_fields[1].split(DESIGN_SEPARATOR)
-                             if str(c).strip() != "")
-        return choice_names if len(choice_names) > 0 else None
-    return None
+    download_link.short_description = 'Download Link'

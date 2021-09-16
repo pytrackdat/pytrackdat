@@ -2,15 +2,27 @@
 
 ## Version 0.3.0 (TBD)
 
+ * Completely revamp how sites work
+    * Rely on Python metaprogramming for code generation
+    * **No longer requires a generation step**
+ * `ptd-analyze` -> `pytrackdat analyze`
+    * Improve output style for analysis
+    * Improve analysis performance
  * Add snapshot downloads
  * Add automatic pre-import snapshots
  * Add **experimental** (optional) GIS data support
  * Add search area for barcode contents (#6)
- * Improve output style for `ptd-analyze`
- * Improved analysis performance from `ptd-analyze`
+ * Improve Docker image system 
+    * Now, a Docker image is built using GitHub Actions and is available for 
+      anyone to download without needing to build it on their local machine.
+    * This image can be used to host production instances via a pre-loaded copy
+      of Gunicorn, or can be used to run PyTrackDat commands.
+ * Add a REST API for querying data, searching, summarizing categorical 
+   variables, and downloading labels.
  * Improve error and warning reporting
  * Revise documentation
- * Update Django to 2.2.6
+ * Update Django to 3.2.6
+ * Remove support for Python 3.6
 
 ## Version 0.2.1 (2019-05-13)
 

@@ -47,8 +47,10 @@ Getting Development Versions (Advanced Users Only)
 
 To get the latest development version of PyTrackDat, clone the repository
 (provided Git is installed) using the following command in a Terminal or
-Command Prompt window:
+Command Prompt window (use `pip3` instead of `pip` if needed):
 
 .. code-block:: bash
 
    git clone https://github.com/pytrackdat/pytrackdat.git
+   cd pytrackdat
+   pip install .

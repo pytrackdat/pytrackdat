@@ -1,17 +1,20 @@
 # PyTrackDat — A pipeline for online data collection and management
 
 [![PyPI version](https://badge.fury.io/py/pytrackdat.svg)](https://badge.fury.io/py/pytrackdat)
-[![Build Status](https://github.com/pytrackdat/pytrackdat/workflows/Tests/badge.svg?branch=master)](https://github.com/pytrackdat/pytrackdat/actions?query=workflow%3ATests+branch%3Amaster)
+[![Tests Status](https://github.com/pytrackdat/pytrackdat/workflows/Tests/badge.svg?branch=master)](https://github.com/pytrackdat/pytrackdat/actions?query=workflow%3ATests+branch%3Amaster)
 
 
 ## Overview
 
-PyTrackDat comprises two Python scripts that analyze and assist in converting
+PyTrackDat is a Python application that can analyze and assist in converting
 data and relevant metadata from `.csv` files into an online database that can
-facilitate data management, manipulation, and quality control. What each of
-these scripts does is outlined in this `README.md` file. Note that the care
-that is taken to assemble `.csv` files before using these scripts will help
-ensure that the database generated is maximally useful.
+facilitate data management, manipulation, and quality control. 
+
+The full capabilities of this software are outlined in the 
+[documentation](https://pytrackdat.readthedocs.io/en/latest/).
+
+Note that the care that is taken to assemble `.csv` files before using these 
+scripts will help ensure that the database generated is maximally useful.
 
 
 ## Documentation
@@ -26,7 +29,7 @@ The latest documentation is available on
 
 To enable experimental GIS support, add the following to the shell environment:
 ```
-PTD_GIS=true
+PTD_GIS_MODE=true
 ```
 
 The `SPATIALITE_LIBRARY_PATH` environment variable must also be configured to 
