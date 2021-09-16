@@ -23,7 +23,6 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.db.models.functions import Cast
-from django.http import HttpResponse
 from rest_framework import serializers
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -68,7 +67,7 @@ for name in dir(core_models):
     NewSerializer = type(f"{name}Serializer", (serializers.ModelSerializer,), {"Meta": NewSerializerMeta})
 
     # This MUST be called categorical_counts to match the attribute name on the viewset class
-    def categorical_counts(_self, _request):
+    def categorical_counts(self, _request):
         categorical_fields = tuple(f.name for f in relation.fields if f.choices is not None)
         categorical_choices = {
             f.name: f.choices + (("",) if f.nullable else ())
@@ -76,20 +75,13 @@ for name in dir(core_models):
         }
         # TODO: Use counter class?
         counts = {f: {c: 0 for c in categorical_choices[f]} for f in categorical_fields}
-        for row in objects.values():
+        for row in self.filter_queryset(self.get_queryset()).values():
             for f in categorical_fields:
                 counts[f][row[f]] += 1
         return Response(counts)
 
-    def labels(_self, request):
-        ids = request.query_params.getlist("ids")
-        if relation.id_type == "integer":
-            ids = list(map(int, ids))
-
-        if not ids:
-            return HttpResponse(status=400)
-
-        return labels_response(relation.short_name, objects.filter(pk__in=ids))
+    def labels(self, _request):
+        return labels_response(relation.short_name, self.filter_queryset(self.get_queryset()))
 
     viewset_name = f"{name}ViewSet"
     NewViewSet = type(viewset_name, (viewsets.ModelViewSet,), {
